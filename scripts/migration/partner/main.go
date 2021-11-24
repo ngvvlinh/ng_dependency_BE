@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"o.o/api/main/department"
 	"path"
 
 	identitycore "o.o/api/main/identity"
@@ -48,7 +49,8 @@ func main() {
 	var ctx = bus.Ctx()
 	_ = wl.Init(cmenv.EnvDev, wl.EtopServer)
 	evenBus := bus.New()
-	identityAggr = identity.NewAggregate(db, evenBus)
+	departmentQuery := department.NewQueryBus(evenBus)
+	identityAggr = identity.NewAggregate(db, evenBus, departmentQuery)
 	identityQuery = identity.NewQueryService(db)
 	partnerStore = sqlstore.NewPartnerStore(db)
 	accountAuthStore = sqlstore.NewAccountAuthStore(db)

@@ -2,11 +2,11 @@ package identity
 
 import (
 	"context"
-	"o.o/api/main/department"
 	"strings"
 	"time"
 
 	"o.o/api/main/authorization"
+	"o.o/api/main/department"
 	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
@@ -63,11 +63,11 @@ type Aggregate struct {
 	accountStore      identitystore.AccountStoreFactory
 	accountUserStore  identitystore.AccountUserStoreFactory
 	userRefSaffStore  identitystore.UserRefSaffStoreFactory
-	departmentQuery   department.QueryBus
 	eventBus          capi.EventBus
+	departmentQuery   department.QueryBus
 }
 
-func NewAggregate(db com.MainDB, eventBus capi.EventBus) *Aggregate {
+func NewAggregate(db com.MainDB, eventBus capi.EventBus, departmentQ department.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:                db,
 		userStore:         identitystore.NewUserStore(db),
@@ -78,6 +78,7 @@ func NewAggregate(db com.MainDB, eventBus capi.EventBus) *Aggregate {
 		accountUserStore:  identitystore.NewAccountUserStore(db),
 		userRefSaffStore:  identitystore.NewUserRefSaffStore(db),
 		eventBus:          eventBus,
+		departmentQuery:   departmentQ,
 	}
 }
 

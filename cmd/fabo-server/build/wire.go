@@ -34,6 +34,7 @@ import (
 	"o.o/backend/com/main/catalog"
 	"o.o/backend/com/main/connectioning"
 	"o.o/backend/com/main/identity"
+	"o.o/backend/com/main/department"
 	"o.o/backend/com/main/inventory/aggregatex"
 	"o.o/backend/com/main/location"
 	"o.o/backend/com/main/ordering"
@@ -115,6 +116,7 @@ func Build(
 		stocktaking.WireSet,
 		identity.WireSet,
 		notifier.WireSet,
+		department.WireSet,
 
 		address.WireSet,
 		receipting.WireSet,
