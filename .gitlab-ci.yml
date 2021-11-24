@@ -1,7 +1,6 @@
 stages:
 - verify
 - test
-- build
 - package
 - deploy
 - dev
@@ -37,20 +36,6 @@ verify:generate:
   extends: .verify
   script:
     - time scripts/ci/verify-generate.sh
-
-build:
-  image: golang:1.16.8
-  stage: build
-  extends: .go-cache
-  script:
-    - go install ./...
-    - time scripts/install-tools.sh
-  only:
-    refs:
-      - branches
-    changes:
-      - go.mod
-      - go.sum
 
 test:
   image: golang:1.16.8
