@@ -528,33 +528,44 @@ func (a *EtelecomAggregate) ImportExtensions(ctx context.Context, args *etelecom
 				mapTenant[tenant.ID] = tenant
 			}
 			tenant := mapTenant[imExt.TenantID]
-			cmd := &etelecom.Extension{
-				ID:              cm.NewID(),
-				AccountID:       imExt.AccountID,
-				HotlineID:       imExt.HotlineID,
-				ExtensionNumber: imExt.ExtensionNumber,
-				TenantID:        imExt.TenantID,
-				ExpiresAt:       imExt.ExpiresAt,
-			}
-			ext, _err := a.extensionStore(ctx).CreateExtension(cmd)
-			if _err != nil {
-				return _err
-			}
+			extension, _ := a.extensionStore(ctx).AccountID(imExt.AccountID).HotlineID(imExt.HotlineID).TenantID(imExt.TenantID).ExtensionNumber(imExt.ExtensionNumber).GetExtension()
+			if extension != nil {
+				updateExt := &etelecom.Extension{
+					ExpiresAt: imExt.ExpiresAt,
+				}
+				err := a.extensionStore(ctx).ID(extension.ID).AccountID(extension.AccountID).UpdateExtension(updateExt)
+				if err != nil {
+					return err
+				}
+			}else {
+				cmd := &etelecom.Extension{
+					ID:              cm.NewID(),
+					AccountID:       imExt.AccountID,
+					HotlineID:       imExt.HotlineID,
+					ExtensionNumber: imExt.ExtensionNumber,
+					TenantID:        imExt.TenantID,
+					ExpiresAt:       imExt.ExpiresAt,
+				}
+				ext, err := a.extensionStore(ctx).CreateExtension(cmd)
+				if err != nil {
+					return err
+				}
 
-			externalExtensionResp, _err := a.telecomManager.CreateExtension(ctx, ext)
-			if _err != nil {
-				return _err
-			}
-			updateExt := &etelecom.UpdateExternalExtensionInfoArgs{
-				ID:                externalExtensionResp.ExtensionID,
-				HotlineID:         externalExtensionResp.HotlineID,
-				ExternalID:        externalExtensionResp.ExternalID,
-				ExtensionNumber:   externalExtensionResp.ExtensionNumber,
-				ExtensionPassword: externalExtensionResp.ExtensionPassword,
-				TenantDomain:      tenant.Domain,
-			}
-			if err := a.UpdateExternalExtensionInfo(ctx, updateExt); err != nil {
-				return err
+				externalExtensionResp, _err := a.telecomManager.CreateExtension(ctx, ext)
+				if _err != nil {
+					return _err
+				}
+				updateExt := &etelecom.UpdateExternalExtensionInfoArgs{
+					ID:                externalExtensionResp.ExtensionID,
+					HotlineID:         externalExtensionResp.HotlineID,
+					ExternalID:        externalExtensionResp.ExternalID,
+					ExtensionNumber:   externalExtensionResp.ExtensionNumber,
+					ExtensionPassword: externalExtensionResp.ExtensionPassword,
+					TenantDomain:      tenant.Domain,
+				}
+				if err := a.UpdateExternalExtensionInfo(ctx, updateExt); err != nil {
+					return err
+				}
 			}
 			created++
 		}
