@@ -1,6 +1,6 @@
 stages:
 - verify
-- test
+#- test
 - package
 - deploy
 - dev
@@ -37,26 +37,26 @@ verify:generate:
   script:
     - time scripts/ci/verify-generate.sh
 
-test:
-  image: golang:1.16.8
-  extends: .go-cache
-  stage: test
-  services:
-    - postgres:13-alpine
-    - redis:6.2.4
-  variables:
-    POSTGRES_DB: test
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: "postgres"
-    POSTGRES_HOST_AUTH_METHOD: trust
-  dependencies: 
-    - verify:import
-    - verify:lint
-    - verify:generate
-  except: ["tags"] 
-  script:
-    - time go run ./scripts/init_testdb/main.go -drop
-    - time scripts/ci/test-all.sh simple
+#test:
+#  image: golang:1.16.8
+#  extends: .go-cache
+#  stage: test
+#  services:
+#    - postgres:13-alpine
+#    - redis:6.2.4
+#  variables:
+#    POSTGRES_DB: test
+#    POSTGRES_USER: postgres
+#    POSTGRES_PASSWORD: "postgres"
+#    POSTGRES_HOST_AUTH_METHOD: trust
+#  dependencies:
+#    - verify:import
+#    - verify:lint
+#    - verify:generate
+#  except: ["tags"]
+#  script:
+#    - time go run ./scripts/init_testdb/main.go -drop
+#    - time scripts/ci/test-all.sh simple
   
 create:releasetag:
   image: registry.gitlab.com/gitlab-org/release-cli:latest

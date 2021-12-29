@@ -1415,6 +1415,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Etelecom/SummaryEtelecom": {Type: Shop, Actions: actions(ShopDashboardView)},
 
 	"shop.Etelecom/DestroyCallSession": {Type: Shop, Actions: actions(ShopCallSessionDelete)},
+	"shop.Etelecom/ActionCall":         {Type: Public},
 
 	// Etelecom User Setting
 	"etelecom.User/GetUserSetting": {Type: Shop, Actions: actions(ShopEtelecomUserSettingView)},
@@ -1425,10 +1426,10 @@ var _acl = map[string]*permission.Decl{
 	"shop.Setting/GetSetting":    {Type: Shop},
 
 	// Account User
-	"shop.AccountUser/CreateAccountUser": {Type: Shop, Actions: actions(ShopAccountUserCreate)},
-	"shop.AccountUser/UpdateAccountUser": {Type: Shop, Actions: actions(ShopAccountUserUpdate)},
-	"shop.AccountUser/DeleteAccountUser": {Type: Shop, Actions: actions(ShopAccountUserDelete)},
-	"shop.AccountUser/GetAccountUsers":   {Type: Shop, Actions: actions(ShopAccountUserView)},
+	"shop.AccountUser/CreateAccountUser":         {Type: Shop, Actions: actions(ShopAccountUserCreate)},
+	"shop.AccountUser/UpdateAccountUser":         {Type: Shop, Actions: actions(ShopAccountUserUpdate)},
+	"shop.AccountUser/DeleteAccountUser":         {Type: Shop, Actions: actions(ShopAccountUserDelete)},
+	"shop.AccountUser/GetAccountUsers":           {Type: Shop, Actions: actions(ShopAccountUserView)},
 	"shop.AccountUser/RemoveUserOutOfDepartment": {Type: Shop, Actions: actions(ShopAccountUserUpdate)},
 
 	// Department

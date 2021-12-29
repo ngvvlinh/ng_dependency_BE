@@ -42,6 +42,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/ActionCall": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "ActionCall",
+        "operationId": "shop.Etelecom-ActionCall",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riActionCallResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/AssignUserToExtension": {
       "post": {
         "tags": [
@@ -740,6 +767,20 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "riActionCallResponse": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "status_code": {
+          "type": "integer"
         }
       }
     },

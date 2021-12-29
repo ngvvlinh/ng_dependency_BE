@@ -334,3 +334,11 @@ type GetTenantsResponse struct {
 }
 
 func (m *GetTenantsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ActionCallResponse struct {
+	StatusCode  int    `json:"status_code"`
+	Action      string `json:"action"`
+	Destination string `json:"destination"`
+}
+
+func (m *ActionCallResponse) String() string { return jsonx.MustMarshalToString(m) }

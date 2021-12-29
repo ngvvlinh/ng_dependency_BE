@@ -396,3 +396,60 @@ func (s *EtelecomService) DestroyCallSession(ctx context.Context, r *etelecomapi
 	}
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
+
+func (s *EtelecomService) ActionCall(ctx context.Context, empty *pbcm.Empty) (*etelecomtypes.ActionCallResponse, error) {
+	today := time.Now()
+	year := today.Year()
+	month := today.Month()
+	day := today.Day()
+	results := &etelecomtypes.ActionCallResponse{
+		StatusCode: 200,
+		Action:     "call",
+	}
+
+	b1 := dot.Time(time.Date(year, month, day, 7, 30, 0, 0, time.Local)).ToTime()
+	e1 := dot.Time(time.Date(year, month, day, 11, 30, 00, 0, time.Local)).ToTime()
+
+	b2 := dot.Time(time.Date(year, month, day, 11, 31, 0, 0, time.Local)).ToTime()
+	e2 := dot.Time(time.Date(year, month, day, 12, 59, 00, 0, time.Local)).ToTime()
+
+	b3 := dot.Time(time.Date(year, month, day, 13, 00, 0, 0, time.Local)).ToTime()
+	e3 := dot.Time(time.Date(year, month, day, 17, 00, 00, 0, time.Local)).ToTime()
+
+	b4 := dot.Time(time.Date(year, month, day, 00, 01, 0, 0, time.Local)).ToTime()
+	e4 := dot.Time(time.Date(year, month, day, 7, 29, 00, 0, time.Local)).ToTime()
+
+	b5 := dot.Time(time.Date(year, month, day, 17, 01, 0, 0, time.Local)).ToTime()
+	e5 := dot.Time(time.Date(year, month, day, 23, 50, 00, 0, time.Local)).ToTime()
+
+	t1 := today.After(b1) && today.Before(e1)
+	t2 := today.After(b2) && today.Before(e2)
+	t3 := today.After(b3) && today.Before(e3)
+	t4 := today.After(b4) && today.Before(e4)
+	t5 := today.After(b5) && today.Before(e5)
+
+	switch time.Now().Weekday() {
+	case time.Sunday, time.Saturday:
+		if t1 || t3 {
+			results.Destination = "900"
+		}
+
+		if t4 || t5 {
+			results.Destination = "901"
+		}
+	default:
+		if t1 || t3 {
+			results.Destination = "902"
+		}
+
+		if t2 {
+			results.Destination = "904"
+		}
+
+		if t4 || t5 {
+			results.Destination = "903"
+		}
+	}
+
+	return results, nil
+}

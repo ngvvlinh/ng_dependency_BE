@@ -44,6 +44,7 @@ func NewEtelecomServiceServer(builder func() EtelecomService, hooks ...httprpc.H
 
 const EtelecomServicePathPrefix = "/shop.Etelecom/"
 
+const Path_Etelecom_ActionCall = "/shop.Etelecom/ActionCall"
 const Path_Etelecom_AssignUserToExtension = "/shop.Etelecom/AssignUserToExtension"
 const Path_Etelecom_CreateCallLog = "/shop.Etelecom/CreateCallLog"
 const Path_Etelecom_CreateExtension = "/shop.Etelecom/CreateExtension"
@@ -92,6 +93,19 @@ func (s *EtelecomServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/shop.Etelecom/ActionCall":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ActionCall(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Etelecom/AssignUserToExtension":
 		msg := &AssignUserToExtensionRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
