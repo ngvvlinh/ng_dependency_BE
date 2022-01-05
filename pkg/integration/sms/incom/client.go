@@ -46,7 +46,7 @@ func New(cfg Config) *Client {
 	return &Client{
 		cfg:     cfg,
 		rClient: httpreq.NewResty(rcfg),
-		baseURL: "https://sms.etelecom.vn",
+		baseURL: "http://210.211.101.107",
 	}
 }
 
@@ -68,7 +68,7 @@ func (c *Client) SendSMS(ctx context.Context, phone string, content string) (str
 			ApiSecret: c.cfg.SecretKey,
 			Sms:       sms,
 		}}
-	if err := c.sendPostRequest(ctx, "/API/Sms/SMSService.svc/ccsms/json", &sendSMSRequest, &resp); err != nil {
+	if err := c.sendPostRequest(ctx, "/ccsmsunicode/Sms/SMSService.svc/ccsms/json", &sendSMSRequest, &resp); err != nil {
 		return "", err
 	}
 	statusCode := resp.Status
