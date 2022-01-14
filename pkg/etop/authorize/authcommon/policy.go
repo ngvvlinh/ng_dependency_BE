@@ -187,6 +187,7 @@ const shopPolicy = `#connection
 	p, shop/department:create, admin, m_admin, owner, salesman, telecom_customerservice
 	p, shop/department:update, admin, m_admin, owner, salesman, telecom_customerservice
 	p, shop/department:delete, admin, m_admin, owner, salesman, telecom_customerservice
+	p, shop/department:view, admin, m_admin, owner, salesman, telecom_customerservice
 `
 
 const adminPolicy = `
