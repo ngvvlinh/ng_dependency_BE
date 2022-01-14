@@ -1436,8 +1436,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Department/CreateDepartment": {Type: Shop, Actions: actions(ShopDepartmentCreate)},
 	"shop.Department/UpdateDepartment": {Type: Shop, Actions: actions(ShopDepartmentUpdate)},
 	"shop.Department/DeleteDepartment": {Type: Shop, Actions: actions(ShopDepartmentDelete)},
-	"shop.Department/GetDepartments":   {Type: Shop, Actions: actions(ShopDepartmentView)},
-	"shop.Department/GetDepartment":    {Type: Shop, Actions: actions(ShopDepartmentView)},
+	"shop.Department/GetDepartments":   {Type: CurUsr},
+	"shop.Department/GetDepartment":    {Type: CurUsr},
 
 	// -- Fabo --
 	"fabo.Page/ConnectPages":                                 {Type: Shop, Actions: actions(FbFanpageCreate)},
