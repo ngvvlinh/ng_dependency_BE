@@ -5008,7 +5008,7 @@ func (m *User) Migration(db *cmsql.Database) {
 			ColumnType:       "user_source.UserSource",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "psx", "etop", "topship", "ts_app_android", "ts_app_ios", "ts_app_web", "partner", "etop_app_ios", "etop_app_android"},
+			ColumnEnumValues: []string{"unknown", "psx", "etop", "topship", "ts_app_android", "ts_app_ios", "ts_app_web", "partner", "etop_app_ios", "etop_app_android", "telecom"},
 		},
 		"ref_user_id": {
 			ColumnName:       "ref_user_id",

@@ -39,4 +39,7 @@ const (
 
 	// +enum=etop_app_android
 	EtopAppAndroid UserSource = 9
+
+	// +enum=telecom
+	Telecom UserSource = 10
 )

@@ -876,7 +876,8 @@
         "ts_app_web",
         "partner",
         "etop_app_ios",
-        "etop_app_android"
+        "etop_app_android",
+        "telecom"
       ]
     },
     "fjWebhookType": {

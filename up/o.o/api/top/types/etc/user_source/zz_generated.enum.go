@@ -15,16 +15,17 @@ import (
 var __jsonNull = []byte("null")
 
 var enumUserSourceName = map[int]string{
-	0: "unknown",
-	1: "psx",
-	2: "etop",
-	3: "topship",
-	4: "ts_app_android",
-	5: "ts_app_ios",
-	6: "ts_app_web",
-	7: "partner",
-	8: "etop_app_ios",
-	9: "etop_app_android",
+	0:  "unknown",
+	1:  "psx",
+	2:  "etop",
+	3:  "topship",
+	4:  "ts_app_android",
+	5:  "ts_app_ios",
+	6:  "ts_app_web",
+	7:  "partner",
+	8:  "etop_app_ios",
+	9:  "etop_app_android",
+	10: "telecom",
 }
 
 var enumUserSourceValue = map[string]int{
@@ -38,6 +39,7 @@ var enumUserSourceValue = map[string]int{
 	"partner":          7,
 	"etop_app_ios":     8,
 	"etop_app_android": 9,
+	"telecom":          10,
 }
 
 func ParseUserSource(s string) (UserSource, bool) {
