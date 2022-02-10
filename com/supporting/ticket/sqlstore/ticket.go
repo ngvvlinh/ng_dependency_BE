@@ -121,6 +121,11 @@ func (s *TicketStore) RefID(refID dot.ID) *TicketStore {
 	return s
 }
 
+func (s *TicketStore) RefCode(refCode string) *TicketStore {
+	s.preds = append(s.preds, s.ft.ByRefCode(refCode))
+	return s
+}
+
 func (s *TicketStore) Type(typ ticket_type.TicketType) *TicketStore {
 	s.preds = append(s.preds, s.ft.ByType(typ).Optional())
 	return s

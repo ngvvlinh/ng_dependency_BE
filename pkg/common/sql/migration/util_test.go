@@ -20,9 +20,9 @@ func must(err error) {
 func init() {
 	cfg := cc.DefaultPostgres()
 	db = cmsql.MustConnect(cfg)
-	_, _ = db.Exec(`CREATE DATABASE test_src`)
+	_, _ = db.Exec(`CREATE DATABASE test_migration`)
 
-	cfg.Database = "test_src"
+	cfg.Database = "test_migration"
 	db = cmsql.MustConnect(cfg)
 	db.MustExec(`DROP SCHEMA IF EXISTS public CASCADE`)
 	db.MustExec(`CREATE SCHEMA public`)

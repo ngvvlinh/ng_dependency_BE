@@ -1,6 +1,7 @@
 stages:
 - verify
 #- test
+- build
 - package
 - deploy
 - dev
@@ -16,7 +17,7 @@ variables:
 .go-cache:
   before_script:
     - mkdir -p .cache
-    - export GOPATH="$CI_PROJECT_DIR/.cache" 
+    - export GOPATH="$CI_PROJECT_DIR/.cache"
   cache:
     key: ${CI_PROJECT_TITLE}
     paths:
@@ -31,11 +32,26 @@ verify:lint:
   extends: .verify
   script:
     - time scripts/ci/verify-lint.sh
- 
-verify:generate:
-  extends: .verify
-  script:
     - time scripts/ci/verify-generate.sh
+
+#verify:generate:
+#  extends: .verify
+#  script:
+#    - time scripts/ci/verify-generate.sh
+
+build:
+  image: golang:1.16.8
+  stage: build
+  extends: .go-cache
+  script:
+    - go install ./...
+    - time scripts/install-tools.sh
+  only:
+    refs:
+      - branches
+    changes:
+      - go.mod
+      - go.sum
 
 #test:
 #  image: golang:1.16.8
@@ -52,12 +68,12 @@ verify:generate:
 #  dependencies:
 #    - verify:import
 #    - verify:lint
-#    - verify:generate
+##    - verify:generate
 #  except: ["tags"]
 #  script:
 #    - time go run ./scripts/init_testdb/main.go -drop
 #    - time scripts/ci/test-all.sh simple
-  
+
 create:releasetag:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   stage: release

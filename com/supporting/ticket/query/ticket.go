@@ -79,6 +79,9 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if args.Filter.AccountID != 0 {
 			query = query.AccountID(args.Filter.AccountID)
 		}
+		if args.Filter.CreatedBy != 0 {
+			query = query.CreatedBy(args.Filter.CreatedBy)
+		}
 		if args.Filter.ConfirmedBy != 0 {
 			query = query.ConfirmedBy(args.Filter.ConfirmedBy)
 		}
@@ -97,11 +100,15 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if args.Filter.RefID != 0 {
 			query = query.RefID(args.Filter.RefID)
 		}
-		ll.Info("args.Filter.State", l.Object("args.Filter.State", args.Filter.State))
-		if args.Filter.State != 0 {
-			query = query.State(args.Filter.State)
-		}
 		if args.Filter.RefCode != "" {
+			query = query.RefCode(args.Filter.RefCode)
+		}
+		if len(args.Filter.AssignedUserIDs) > 0 || args.Filter.CreatedBy != 0 {
+			query = query.AssignedUserIDsOrCreatedBy(args.Filter.CreatedBy, args.Filter.AssignedUserIDs)
+		}
+		ll.Info("args.Filter.State", l.Object("args.Filter.State", args.Filter.State))
+
+		if args.Filter.State != 0 {
 			query = query.State(args.Filter.State)
 		}
 		if len(args.Filter.Types) != 0 {
