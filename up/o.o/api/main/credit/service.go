@@ -49,6 +49,8 @@ type GetCreditArgs struct {
 type ListCreditsArgs struct {
 	ShopID   dot.ID
 	Classify credit_type.NullCreditClassify
+	DateFrom time.Time `json:"date_from"`
+	DateTo   time.Time `json:"date_to"`
 	Paging   *meta.Paging
 }
 

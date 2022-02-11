@@ -411,6 +411,8 @@ func (m *GetCreditsRequest) String() string { return jsonx.MustMarshalToString(m
 type CreditsFilter struct {
 	ShopID   dot.ID                         `json:"shop_id"`
 	Classify credit_type.NullCreditClassify `json:"classify"`
+	DateFrom time.Time                      `json:"date_from"`
+	DateTo   time.Time                      `json:"date_to"`
 }
 
 type CreateCreditRequest struct {

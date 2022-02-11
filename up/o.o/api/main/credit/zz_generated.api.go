@@ -81,6 +81,8 @@ func (h QueryServiceHandler) HandleGetCredit(ctx context.Context, msg *GetCredit
 type ListCreditsQuery struct {
 	ShopID   dot.ID
 	Classify credit_type.NullCreditClassify
+	DateFrom time.Time `json:"date_from"`
+	DateTo   time.Time `json:"date_to"`
 	Paging   *meta.Paging
 
 	Result *ListCreditsResponse `json:"-"`
@@ -165,6 +167,8 @@ func (q *ListCreditsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *L
 		&ListCreditsArgs{
 			ShopID:   q.ShopID,
 			Classify: q.Classify,
+			DateFrom: q.DateFrom,
+			DateTo:   q.DateTo,
 			Paging:   q.Paging,
 		}
 }
@@ -172,6 +176,8 @@ func (q *ListCreditsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *L
 func (q *ListCreditsQuery) SetListCreditsArgs(args *ListCreditsArgs) {
 	q.ShopID = args.ShopID
 	q.Classify = args.Classify
+	q.DateFrom = args.DateFrom
+	q.DateTo = args.DateTo
 	q.Paging = args.Paging
 }
 

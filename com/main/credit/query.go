@@ -77,6 +77,16 @@ func (q *CreditQueryService) ListCredits(ctx context.Context, args *credit.ListC
 	if args.Classify.Valid {
 		query = query.Classify(args.Classify.Enum)
 	}
+	if args.DateTo.Before(args.DateFrom) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "date_to must be after date_from")
+	}
+	if args.DateFrom.IsZero() != args.DateTo.IsZero() {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "must provide both DateFrom and DateTo")
+	}
+	if !args.DateFrom.IsZero() {
+		query = query.BetweenDateFromAndDateTo(args.DateFrom, args.DateTo)
+	}
+
 	creditValues, err := query.WithPaging(args.Paging).ListCredit()
 	if err != nil {
 		return nil, err

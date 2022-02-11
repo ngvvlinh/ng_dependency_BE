@@ -84,6 +84,11 @@ func (s *CreditStore) Status(status status3.Status) *CreditStore {
 	return s
 }
 
+func (s *CreditStore) BetweenDateFromAndDateTo(dateFrom time.Time, dateTo time.Time) *CreditStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at >= ? AND created_at < ?", dateFrom, dateTo))
+	return s
+}
+
 func (s *CreditStore) UpdateCreditDB(args *model.Credit) error {
 	query := s.query().Where(s.preds)
 	return query.ShouldUpdate(args)

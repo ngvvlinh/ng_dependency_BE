@@ -62,6 +62,8 @@ func (s *CreditService) GetCredits(ctx context.Context, q *admin.GetCreditsReque
 	if q.Filter != nil {
 		query.ShopID = q.Filter.ShopID
 		query.Classify = q.Filter.Classify
+		query.DateFrom = q.Filter.DateFrom
+		query.DateTo = q.Filter.DateTo
 	}
 	if err := s.CreditQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
