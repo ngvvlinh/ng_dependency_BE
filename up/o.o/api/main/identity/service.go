@@ -277,6 +277,8 @@ type ListShopQuery struct {
 	ShopIDs              []dot.ID
 	OwnerID              dot.ID
 	IncludeWLPartnerShop bool
+	DateFrom             time.Time
+	DateTo               time.Time
 }
 
 type ListShopExtendedsResponse struct {
@@ -373,8 +375,8 @@ type RegisterSimplifyArgs struct {
 
 // +convert:create=AccountUser
 type CreateAccountUserArgs struct {
-	AccountID dot.ID
-	UserID    dot.ID
+	AccountID    dot.ID
+	UserID       dot.ID
 	DepartmentID dot.ID
 
 	Status status3.Status // 1: activated, -1: rejected/disabled, 0: pending

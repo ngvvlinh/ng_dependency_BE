@@ -91,6 +91,11 @@ func (s *ShopStore) ByOwnerID(id dot.ID) *ShopStore {
 	return s
 }
 
+func (s *ShopStore) BetweenDateFromAndDateTo(dateFrom time.Time, dateTo time.Time) *ShopStore {
+	s.preds = append(s.preds, sq.NewExpr("s.created_at >= ? AND s.created_at < ?", dateFrom, dateTo))
+	return s
+}
+
 func (s *ShopStore) GetShopDB() (*identitymodel.Shop, error) {
 	var shop identitymodel.Shop
 	query := s.query().Where(s.preds)

@@ -81,6 +81,16 @@ func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.Lis
 	if args.IncludeWLPartnerShop {
 		query = query.IncludeWLPartnerShop()
 	}
+	if args.DateTo.Before(args.DateFrom) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "date_to must be after date_from")
+	}
+	if args.DateFrom.IsZero() != args.DateTo.IsZero() {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "must provide both DateFrom and DateTo")
+	}
+	if !args.DateFrom.IsZero() {
+		query = query.BetweenDateFromAndDateTo(args.DateFrom, args.DateTo)
+	}
+
 	shops, err := query.ListShopExtendeds()
 	if err != nil {
 		return nil, err
@@ -418,17 +428,17 @@ func (q *QueryService) ListExtendedAccountUsers(ctx context.Context, args *ident
 		}
 		user := mapUser[accountUser.UserID]
 		extendedAccountUser := &identity.AccountUserExtended{
-			UserID:      accountUser.UserID,
-			AccountID:   accountUser.AccountID,
+			UserID:       accountUser.UserID,
+			AccountID:    accountUser.AccountID,
 			DepartmentID: accountUser.DepartmentID,
-			Roles:       accountUser.Roles,
-			Permissions: accountUser.Permissions,
-			FullName:    user.FullName,
-			ShortName:   user.ShortName,
-			Email:       user.Email,
-			Phone:       user.Phone,
-			Position:    accountUser.Position,
-			Deleted:     isDeleted,
+			Roles:        accountUser.Roles,
+			Permissions:  accountUser.Permissions,
+			FullName:     user.FullName,
+			ShortName:    user.ShortName,
+			Email:        user.Email,
+			Phone:        user.Phone,
+			Position:     accountUser.Position,
+			Deleted:      isDeleted,
 		}
 		extendedAccountUsers = append(extendedAccountUsers, extendedAccountUser)
 	}

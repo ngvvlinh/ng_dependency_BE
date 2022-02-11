@@ -711,6 +711,8 @@ type ListShopExtendedsQuery struct {
 	ShopIDs              []dot.ID
 	OwnerID              dot.ID
 	IncludeWLPartnerShop bool
+	DateFrom             time.Time
+	DateTo               time.Time
 
 	Result *ListShopExtendedsResponse `json:"-"`
 }
@@ -1522,6 +1524,8 @@ func (q *ListShopExtendedsQuery) GetArgs(ctx context.Context) (_ context.Context
 			ShopIDs:              q.ShopIDs,
 			OwnerID:              q.OwnerID,
 			IncludeWLPartnerShop: q.IncludeWLPartnerShop,
+			DateFrom:             q.DateFrom,
+			DateTo:               q.DateTo,
 		}
 }
 
@@ -1532,6 +1536,8 @@ func (q *ListShopExtendedsQuery) SetListShopQuery(args *ListShopQuery) {
 	q.ShopIDs = args.ShopIDs
 	q.OwnerID = args.OwnerID
 	q.IncludeWLPartnerShop = args.IncludeWLPartnerShop
+	q.DateFrom = args.DateFrom
+	q.DateTo = args.DateTo
 }
 
 func (q *ListShopsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopsByIDsArgs) {

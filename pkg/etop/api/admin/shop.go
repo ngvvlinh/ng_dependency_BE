@@ -59,6 +59,8 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 		query.Name = q.Filter.Name
 		query.ShopIDs = q.Filter.ShopIDs
 		query.OwnerID = q.Filter.OwnerID
+		query.DateFrom = q.Filter.DateFrom
+		query.DateTo = q.Filter.DateTo
 	}
 
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
@@ -72,16 +74,20 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 		_shopIDs = append(_shopIDs, shop.ID)
 	}
 
-	queryShopMoneyTxCount := &moneytx.CountMoneyTxShippingByShopIDsQuery{
-		ShopIDs: _shopIDs,
-	}
-	if err := s.MoneyTxQuery.Dispatch(ctx, queryShopMoneyTxCount); err != nil {
-		return nil, err
+	var moneyTxsCount []*moneytx.ShopFtMoneyTxShippingCount
+	if len(_shopIDs) > 0 {
+		queryShopMoneyTxCount := &moneytx.CountMoneyTxShippingByShopIDsQuery{
+			ShopIDs: _shopIDs,
+		}
+		if err := s.MoneyTxQuery.Dispatch(ctx, queryShopMoneyTxCount); err != nil {
+			return nil, err
+		}
+		moneyTxsCount = queryShopMoneyTxCount.Result
 	}
 
 	result := &admin.GetShopsResponse{
 		Paging: cmapi.PbPageInfo(paging),
-		Shops:  convertpball.Convert_core_ShopExtendeds_To_api_ShopExtendeds(shops, queryShopMoneyTxCount.Result),
+		Shops:  convertpball.Convert_core_ShopExtendeds_To_api_ShopExtendeds(shops, moneyTxsCount),
 	}
 	return result, nil
 }
