@@ -9516,6 +9516,14 @@
             "format": "int64"
           }
         },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
         "filters": {
           "type": "array",
           "items": {

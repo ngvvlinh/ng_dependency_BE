@@ -87,6 +87,8 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *admin.GetFu
 		ConnectionIDs: q.ConnectionIDs,
 		Paging:        paging,
 		Filters:       cmapi.ToFilters(q.Filters),
+		DateFrom:      q.DateFrom,
+		DateTo:        q.DateTo,
 	}
 	if q.ShopId != 0 {
 		query.ShopIDs = []dot.ID{q.ShopId}

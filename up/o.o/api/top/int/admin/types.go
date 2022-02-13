@@ -269,6 +269,8 @@ type GetFulfillmentsRequest struct {
 	Status        status3.NullStatus `json:"status"`
 	ConnectionIDs []dot.ID           `json:"connection_ids"`
 	Filters       []*common.Filter   `json:"filters"`
+	DateFrom      time.Time          `json:"date_from"`
+	DateTo        time.Time          `json:"date_to"`
 }
 
 func (m *GetFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
