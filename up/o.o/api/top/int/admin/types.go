@@ -17,6 +17,7 @@ import (
 	"o.o/api/top/types/etc/route_type"
 	shipping "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/shop_user_role"
 	status3 "o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
@@ -1191,3 +1192,27 @@ type GetAPIKeyResponse struct {
 }
 
 func (m *GetAPIKeyResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetAccountUsersRequest struct {
+	Paging *common.CursorPaging          `json:"paging"`
+	Filter *FilterGetAccountUsersRequest `json:"filter"`
+}
+
+func (m *GetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterGetAccountUsersRequest struct {
+	Name       filter.FullTextSearch     `json:"name"`
+	Phone      filter.FullTextSearch     `json:"phone"`
+	AccountID  dot.ID                    `json:"account_id"`
+	Roles      []shop_user_role.UserRole `json:"roles"`
+	ExactRoles []shop_user_role.UserRole `json:"exact_roles"`
+}
+
+func (m *FilterGetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetAccountUsersResponse struct {
+	AccountUsers []*shoptypes.AccountUserExtended `json:"account_users"`
+	Paging       *common.CursorPageInfo           `json:"paging"`
+}
+
+func (m *GetAccountUsersResponse) String() string { return jsonx.MustMarshalToString(m) }

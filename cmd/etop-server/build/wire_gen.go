@@ -936,6 +936,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		PartnerStore:     partnerStoreInterface,
 		AccountUserStore: accountUserStoreInterface,
 	}
+	adminAccountUserService := admin.AccountUserService{
+		Session:       session,
+		IdentityQuery: queryBus,
+	}
 	adminOrderService := admin.OrderService{
 		Session:    session,
 		OrderStore: orderStoreInterface,
@@ -1052,7 +1056,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		TransactionQuery: transactionQueryBus,
 		TransactionAggr:  transactionCommandBus,
 	}
-	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, adminCreditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, adminEtelecomService, adminInvoiceService, adminTransactionService)
+	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminAccountUserService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, adminCreditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, adminEtelecomService, adminInvoiceService, adminTransactionService)
 	sadminMiscService := &sadmin.MiscService{
 		Session: session,
 	}

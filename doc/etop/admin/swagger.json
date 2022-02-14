@@ -204,6 +204,33 @@
         }
       }
     },
+    "/api/admin.AccountUser/GetAccountUsers": {
+      "post": {
+        "tags": [
+          "AccountUser"
+        ],
+        "summary": "GetAccountUsers",
+        "operationId": "admin.AccountUser-GetAccountUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetAccountUsersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetAccountUsersResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Connection/ConfirmConnection": {
       "post": {
         "tags": [
@@ -4811,6 +4838,53 @@
         "exclude"
       ]
     },
+    "flAccountUserExtended": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "department_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "flGetTicketsByRefTicketIDRequest": {
       "type": "object",
       "properties": {
@@ -5065,6 +5139,14 @@
         "shipment_web",
         "admin",
         "webphone"
+      ]
+    },
+    "hbProductSubscriptionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ecomify",
+        "telecom-extension"
       ]
     },
     "iyTicketType": {
@@ -5489,7 +5571,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/vmProductSubscriptionType"
+          "$ref": "#/definitions/hbProductSubscriptionType"
         }
       }
     },
@@ -5822,7 +5904,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "shipping_provider": {
           "allOf": [
@@ -7587,7 +7669,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "$ref": "#/definitions/vmProductSubscriptionType"
+          "$ref": "#/definitions/hbProductSubscriptionType"
         },
         "updated_at": {
           "type": "string",
@@ -8045,12 +8127,20 @@
         }
       }
     },
-    "qeShippingPaymentType": {
+    "qeUserRole": {
       "type": "string",
       "enum": [
-        "none",
-        "seller",
-        "buyer"
+        "unknown",
+        "owner",
+        "staff_management",
+        "telecom_customerservice",
+        "inventory_management",
+        "purchasing_management",
+        "accountant",
+        "analyst",
+        "salesman",
+        "telecom_customerservice_management",
+        "m_admin"
       ]
     },
     "riActivateTenantRequest": {
@@ -8464,12 +8554,12 @@
         "deliver"
       ]
     },
-    "vmProductSubscriptionType": {
+    "vmShippingPaymentType": {
       "type": "string",
       "enum": [
-        "unknown",
-        "ecomify",
-        "telecom-extension"
+        "none",
+        "seller",
+        "buyer"
       ]
     },
     "wdNotifierEntity": {
@@ -9294,6 +9384,33 @@
         }
       }
     },
+    "xuFilterGetAccountUsersRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exact_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qeUserRole"
+          }
+        },
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "phone": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qeUserRole"
+          }
+        }
+      }
+    },
     "xuFilterGetTicketComment": {
       "type": "object",
       "properties": {
@@ -9444,6 +9561,31 @@
       "properties": {
         "api_key": {
           "type": "string"
+        }
+      }
+    },
+    "xuGetAccountUsersRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/xuFilterGetAccountUsersRequest"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "xuGetAccountUsersResponse": {
+      "type": "object",
+      "properties": {
+        "account_users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flAccountUserExtended"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },
@@ -10950,6 +11092,9 @@
   "tags": [
     {
       "name": "Account"
+    },
+    {
+      "name": "AccountUser"
     },
     {
       "name": "Connection"

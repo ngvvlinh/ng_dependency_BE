@@ -2315,7 +2315,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "shipping_provider": {
           "allOf": [
@@ -3467,14 +3467,6 @@
         }
       }
     },
-    "qeShippingPaymentType": {
-      "type": "string",
-      "enum": [
-        "none",
-        "seller",
-        "buyer"
-      ]
-    },
     "sdShippingFeeType": {
       "type": "string",
       "enum": [
@@ -3507,6 +3499,14 @@
         "delivered",
         "cancelled",
         "undeliverable"
+      ]
+    },
+    "vmShippingPaymentType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seller",
+        "buyer"
       ]
     },
     "xjSource": {

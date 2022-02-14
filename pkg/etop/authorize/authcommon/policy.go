@@ -183,7 +183,7 @@ const shopPolicy = `#connection
 	p, shop/account_user:update, admin, owner, staff_management, m_admin
 	p, shop/account_user:delete, admin, owner, staff_management, m_admin
 	p, shop/account_user:view, admin, owner, staff_management, telecom_customerservice, inventory_management, purchasing_management, accountant, telecom_customerservice_management, m_admin
-    # department	
+    # department
 	p, shop/department:create, admin, m_admin, owner, salesman, telecom_customerservice
 	p, shop/department:update, admin, m_admin, owner, salesman, telecom_customerservice
 	p, shop/department:delete, admin, m_admin, owner, salesman, telecom_customerservice
@@ -269,6 +269,8 @@ const adminPolicy = `
 	p, admin/user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant, ad_voip
 	p, admin/user:block, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_voip
 	p, admin/user_ref:update, admin, ad_salelead, ad_voip
+	# admin account_user
+	p, admin/account_user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant, ad_voip
 	# admin subscription
 	p, admin/subscription_product:create, admin, ad_voip
 	p, admin/subscription_product:view, admin, ad_voip

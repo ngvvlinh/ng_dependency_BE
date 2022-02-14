@@ -92,6 +92,11 @@ type UserService interface {
 	UpdateUserRef(context.Context, *UpdateUserRefRequest) (*cm.Empty, error)
 }
 
+// +apix:path=/admin.AccountUser
+type AccountUserService interface {
+	GetAccountUsers(context.Context, *GetAccountUsersRequest) (*GetAccountUsersResponse, error)
+}
+
 // +apix:path=/admin.Credit
 type CreditService interface {
 	GetCredit(context.Context, *GetCreditRequest) (*etop.Credit, error)

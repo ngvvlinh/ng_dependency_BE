@@ -8857,20 +8857,12 @@
         "webphone"
       ]
     },
-    "hbUserRole": {
+    "hbProductSubscriptionType": {
       "type": "string",
       "enum": [
         "unknown",
-        "owner",
-        "staff_management",
-        "telecom_customerservice",
-        "inventory_management",
-        "purchasing_management",
-        "accountant",
-        "analyst",
-        "salesman",
-        "telecom_customerservice_management",
-        "m_admin"
+        "ecomify",
+        "telecom-extension"
       ]
     },
     "idInventoryVoucherType": {
@@ -9805,7 +9797,7 @@
         "roles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/hbUserRole"
+            "$ref": "#/definitions/qeUserRole"
           }
         }
       }
@@ -10128,7 +10120,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "shipping_service_code": {
           "type": "string"
@@ -11364,7 +11356,7 @@
         "exact_roles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/hbUserRole"
+            "$ref": "#/definitions/qeUserRole"
           }
         },
         "extension_number": {
@@ -11385,7 +11377,7 @@
         "roles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/hbUserRole"
+            "$ref": "#/definitions/qeUserRole"
           }
         },
         "user_ids": {
@@ -13976,7 +13968,7 @@
           "type": "boolean"
         },
         "payment_type_id": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "return_address": {
           "$ref": "#/definitions/baAddress"
@@ -14526,7 +14518,7 @@
         "roles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/hbUserRole"
+            "$ref": "#/definitions/qeUserRole"
           }
         },
         "user_id": {
@@ -14768,7 +14760,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "try_on": {
           "$ref": "#/definitions/csTryOnCode"
@@ -15273,7 +15265,7 @@
           "type": "boolean"
         },
         "payment_type_id": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "return_address": {
           "$ref": "#/definitions/baAddress"
@@ -16822,7 +16814,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "shipping_provider": {
           "allOf": [
@@ -17349,7 +17341,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "$ref": "#/definitions/vmProductSubscriptionType"
+          "$ref": "#/definitions/hbProductSubscriptionType"
         }
       }
     },
@@ -18836,7 +18828,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "$ref": "#/definitions/vmProductSubscriptionType"
+          "$ref": "#/definitions/hbProductSubscriptionType"
         },
         "updated_at": {
           "type": "string",
@@ -19467,12 +19459,20 @@
         }
       }
     },
-    "qeShippingPaymentType": {
+    "qeUserRole": {
       "type": "string",
       "enum": [
-        "none",
-        "seller",
-        "buyer"
+        "unknown",
+        "owner",
+        "staff_management",
+        "telecom_customerservice",
+        "inventory_management",
+        "purchasing_management",
+        "accountant",
+        "analyst",
+        "salesman",
+        "telecom_customerservice_management",
+        "m_admin"
       ]
     },
     "rjInvoiceType": {
@@ -19575,12 +19575,12 @@
         "auto"
       ]
     },
-    "vmProductSubscriptionType": {
+    "vmShippingPaymentType": {
       "type": "string",
       "enum": [
-        "unknown",
-        "ecomify",
-        "telecom-extension"
+        "none",
+        "seller",
+        "buyer"
       ]
     },
     "wdNotifierEntity": {

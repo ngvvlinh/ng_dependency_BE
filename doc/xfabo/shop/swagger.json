@@ -3424,7 +3424,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "shipping_service_code": {
           "type": "string"
@@ -4248,7 +4248,7 @@
           "type": "boolean"
         },
         "payment_type_id": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "return_address": {
           "$ref": "#/definitions/baAddress"
@@ -4537,7 +4537,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "try_on": {
           "$ref": "#/definitions/csTryOnCode"
@@ -4768,7 +4768,7 @@
           "type": "boolean"
         },
         "payment_type_id": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "return_address": {
           "$ref": "#/definitions/baAddress"
@@ -5636,7 +5636,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/qeShippingPaymentType"
+          "$ref": "#/definitions/vmShippingPaymentType"
         },
         "shipping_provider": {
           "allOf": [
@@ -7433,14 +7433,6 @@
         }
       }
     },
-    "qeShippingPaymentType": {
-      "type": "string",
-      "enum": [
-        "none",
-        "seller",
-        "buyer"
-      ]
-    },
     "rtAutoInventoryVoucher": {
       "type": "string",
       "enum": [
@@ -7481,6 +7473,14 @@
         "delivered",
         "cancelled",
         "undeliverable"
+      ]
+    },
+    "vmShippingPaymentType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seller",
+        "buyer"
       ]
     },
     "wdNotifierEntity": {

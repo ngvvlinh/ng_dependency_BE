@@ -20,4 +20,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(EtelecomService), "*"),
 	wire.Struct(new(InvoiceService), "*"),
 	wire.Struct(new(TransactionService), "*"),
+	wire.Struct(new(AccountUserService), "*"),
 )

@@ -415,6 +415,9 @@ const (
 	AdminUserBlock     permission.ActionType = "admin/user:block"
 	AdminUpdateUserRef permission.ActionType = "admin/user_ref:update"
 
+	// Admin Account User
+	AdminAccountUserView permission.ActionType = "admin/account_user:view"
+
 	// AdminSubscription
 	AdminSubscriptionProductCreate permission.ActionType = "admin/subscription_product:create"
 	AdminSubscriptionProductView   permission.ActionType = "admin/subscription_product:view"
@@ -800,6 +803,8 @@ var _acl = map[string]*permission.Decl{
 	"admin.User/BlockUser":     {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
 	"admin.User/UnblockUser":   {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
 	"admin.User/UpdateUserRef": {Type: EtopAdmin, Actions: actions(AdminUpdateUserRef)},
+
+	"admin.AccountUser/GetAccountUsers": {Type: EtopAdmin, Actions: actions(AdminAccountUserView)},
 
 	"admin.Fulfillment/GetFulfillment":                 {Type: EtopAdmin, Actions: actions(AdminFulfillmentView)},
 	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin, Actions: actions(AdminFulfillmentView)},

@@ -16,6 +16,7 @@ func NewServers(
 	rd redis.Store,
 	miscService admin.MiscService,
 	accountService admin.AccountService,
+	accountUserService admin.AccountUserService,
 	orderService admin.OrderService,
 	fulfillmentService admin.FulfillmentService,
 	moneyTransactionService admin.MoneyTransactionService,
@@ -36,6 +37,7 @@ func NewServers(
 	servers := httprpc.MustNewServers(
 		miscService.Clone,
 		accountService.Clone,
+		accountUserService.Clone,
 		orderService.Clone,
 		fulfillmentService.Clone,
 		moneyTransactionService.Clone,
