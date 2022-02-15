@@ -12,6 +12,7 @@ var InternalRoles = []Role{
 	RoleAdmin, RoleAdminSaleLead, RoleAdminSale,
 	RoleAdminCustomerService, RoleAdminAccountant,
 	RoleAdminCustomerServiceLead, RoleAdminVoip,
+	RoleAdminDebugMode,
 }
 
 const (
@@ -22,6 +23,7 @@ const (
 	RoleAdminAccountant          Role = "ad_accountant"
 	RoleAdminCustomerServiceLead Role = "ad_customerservice_lead"
 	RoleAdminVoip                Role = "ad_voip"
+	RoleAdminDebugMode           Role = "ad_debug_mode"
 
 	RoleShopAdmin            Role = "m_admin"
 	RoleInventoryManagement  Role = "inventory_management"
@@ -36,7 +38,7 @@ const (
 	RoleTelecomCustomerServiceManagement Role = "telecom_customerservice_management"
 )
 
-var Roles = [17]Role{
+var Roles = [18]Role{
 	RoleAdmin,
 	RoleAdminSaleLead,
 	RoleAdminSale,
@@ -44,6 +46,7 @@ var Roles = [17]Role{
 	RoleAdminCustomerService,
 	RoleAdminCustomerServiceLead,
 	RoleAdminVoip,
+	RoleAdminDebugMode,
 	RoleInventoryManagement,
 	RoleSalesMan,
 	RoleShopOwner,
@@ -64,6 +67,7 @@ var roleLabels = map[Role]string{
 	RoleAdminCustomerService:             "Chăm Sóc Khách Hàng",
 	RoleAdminCustomerServiceLead:         "Chăm Sóc Khách Hàng - Trưởng",
 	RoleAdminVoip:                        "Voip",
+	RoleAdminDebugMode:                   "Debug Mode",
 	RoleShopOwner:                        "Chủ sở hữu",
 	RoleStaffManagement:                  "Quản lý nhân viên",
 	RoleAnalyst:                          "Phân tích",

@@ -30,4 +30,7 @@ const (
 
 	// +enum=ad_voip
 	AdminVoip AdminUserRole = 6
+
+	// +enum=ad_debug_mode
+	AdminDebugMode AdminUserRole = 7
 )

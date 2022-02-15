@@ -22,6 +22,7 @@ var enumAdminUserRoleName = map[int]string{
 	4: "ad_customerservice",
 	5: "ad_sale",
 	6: "ad_voip",
+	7: "ad_debug_mode",
 }
 
 var enumAdminUserRoleValue = map[string]int{
@@ -32,6 +33,7 @@ var enumAdminUserRoleValue = map[string]int{
 	"ad_customerservice":      4,
 	"ad_sale":                 5,
 	"ad_voip":                 6,
+	"ad_debug_mode":           7,
 }
 
 func ParseAdminUserRole(s string) (AdminUserRole, bool) {
