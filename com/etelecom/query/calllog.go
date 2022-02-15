@@ -68,3 +68,7 @@ func (q *QueryService) ListCallLogs(ctx context.Context, args *etelecom.ListCall
 func (q *QueryService) GetCallLog(ctx context.Context, id dot.ID) (*etelecom.CallLog, error) {
 	return q.callLogStore(ctx).ID(id).GetCallLog()
 }
+
+func (q *QueryService) GetCallLogByCallee(ctx context.Context, args *etelecom.GetCallLogByCalleeArgs) (*etelecom.CallLog, error) {
+	return q.callLogStore(ctx).HotlineIDs(args.HotlineIDs...).Callee(args.Callee).Direction(args.Direction).GetCallLogByCallee()
+}

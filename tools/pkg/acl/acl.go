@@ -1420,7 +1420,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Etelecom/SummaryEtelecom": {Type: Shop, Actions: actions(ShopDashboardView)},
 
 	"shop.Etelecom/DestroyCallSession": {Type: Shop, Actions: actions(ShopCallSessionDelete)},
-	"shop.Etelecom/ActionCall":         {Type: Public},
+	"shop.Etelecom/ActionCall":         {Type: Shop, Auth: APIKey},
 
 	// Etelecom User Setting
 	"etelecom.User/GetUserSetting": {Type: Shop, Actions: actions(ShopEtelecomUserSettingView)},

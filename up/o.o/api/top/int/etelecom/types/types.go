@@ -335,6 +335,18 @@ type GetTenantsResponse struct {
 
 func (m *GetTenantsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
+type ActionCallRequest struct {
+	From        string `json:"from"`
+	To          string `json:"to"`
+	Input       string `json:"input"`
+	FromName    string `json:"from_name"`
+	AccountName string `json:"account_name"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+}
+
+func (m *ActionCallRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type ActionCallResponse struct {
 	StatusCode  int    `json:"status_code"`
 	Action      string `json:"action"`

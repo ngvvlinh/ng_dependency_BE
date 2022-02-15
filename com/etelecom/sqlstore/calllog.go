@@ -86,6 +86,12 @@ func (s *CallLogStore) CallerOrCallee(num string) *CallLogStore {
 	return s
 }
 
+// phone number or extension_number
+func (s *CallLogStore) Callee(num string) *CallLogStore {
+	s.preds = append(s.preds, s.ft.ByCallee(num))
+	return s
+}
+
 func (s *CallLogStore) CallState(state call_state.CallState) *CallLogStore {
 	s.preds = append(s.preds, s.ft.ByCallState(state))
 	return s
@@ -146,8 +152,20 @@ func (s *CallLogStore) GetCallLog() (*etelecom.CallLog, error) {
 	return &res, nil
 }
 
+func (s *CallLogStore) GetCallLogByCallee() (*etelecom.CallLog, error) {
+	query := s.query().Where(s.preds).OrderBy("created_at DESC").Limit(1)
+	var callLog model.CallLog
+	err := query.ShouldGet(&callLog)
+
+	var res etelecom.CallLog
+	if err = scheme.Convert(&callLog, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 func (s *CallLogStore) ListCallLogsDB() (res []*model.CallLog, err error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).OrderBy()
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-started_at"}
 	}

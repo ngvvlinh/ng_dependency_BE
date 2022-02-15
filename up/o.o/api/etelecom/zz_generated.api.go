@@ -349,6 +349,19 @@ func (h QueryServiceHandler) HandleGetCallLog(ctx context.Context, msg *GetCallL
 	return err
 }
 
+type GetCallLogByCalleeQuery struct {
+	HotlineIDs []dot.ID
+	Callee     string
+	Direction  call_direction.CallDirection
+
+	Result *CallLog `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCallLogByCallee(ctx context.Context, msg *GetCallLogByCalleeQuery) (err error) {
+	msg.Result, err = h.inner.GetCallLogByCallee(msg.GetArgs(ctx))
+	return err
+}
+
 type GetCallLogByExternalIDQuery struct {
 	ExternalID string
 
@@ -527,6 +540,7 @@ func (q *UpdateExternalExtensionInfoCommand) command()   {}
 func (q *UpdateHotlineInfoCommand) command()             {}
 
 func (q *GetCallLogQuery) query()                {}
+func (q *GetCallLogByCalleeQuery) query()        {}
 func (q *GetCallLogByExternalIDQuery) query()    {}
 func (q *GetExtensionQuery) query()              {}
 func (q *GetHotlineQuery) query()                {}
@@ -919,6 +933,21 @@ func (q *GetCallLogQuery) GetArgs(ctx context.Context) (_ context.Context, ID do
 		q.ID
 }
 
+func (q *GetCallLogByCalleeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCallLogByCalleeArgs) {
+	return ctx,
+		&GetCallLogByCalleeArgs{
+			HotlineIDs: q.HotlineIDs,
+			Callee:     q.Callee,
+			Direction:  q.Direction,
+		}
+}
+
+func (q *GetCallLogByCalleeQuery) SetGetCallLogByCalleeArgs(args *GetCallLogByCalleeArgs) {
+	q.HotlineIDs = args.HotlineIDs
+	q.Callee = args.Callee
+	q.Direction = args.Direction
+}
+
 func (q *GetCallLogByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCallLogByExternalIDArgs) {
 	return ctx,
 		&GetCallLogByExternalIDArgs{
@@ -1139,6 +1168,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetCallLog)
+	b.AddHandler(h.HandleGetCallLogByCallee)
 	b.AddHandler(h.HandleGetCallLogByExternalID)
 	b.AddHandler(h.HandleGetExtension)
 	b.AddHandler(h.HandleGetHotline)

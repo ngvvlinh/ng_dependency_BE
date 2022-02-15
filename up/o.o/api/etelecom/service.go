@@ -62,6 +62,7 @@ type QueryService interface {
 	GetCallLogByExternalID(context.Context, *GetCallLogByExternalIDArgs) (*CallLog, error)
 	ListCallLogs(context.Context, *ListCallLogsArgs) (*ListCallLogsResponse, error)
 	GetCallLog(ctx context.Context, ID dot.ID) (*CallLog, error)
+	GetCallLogByCallee(context.Context, *GetCallLogByCalleeArgs) (*CallLog, error)
 
 	ListTenants(context.Context, *ListTenantsArgs) (*ListTenantsResponse, error)
 	GetTenantByID(ctx context.Context, ID dot.ID) (*Tenant, error)
@@ -242,6 +243,12 @@ type ListCallLogsArgs struct {
 	DateTo         time.Time
 	Direction      call_direction.CallDirection
 	Paging         meta.Paging
+}
+
+type GetCallLogByCalleeArgs struct {
+	HotlineIDs []dot.ID
+	Callee     string
+	Direction  call_direction.CallDirection
 }
 
 type ListCallLogsResponse struct {

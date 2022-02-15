@@ -2,6 +2,9 @@ package etelecom
 
 import (
 	"context"
+	"fmt"
+	"o.o/api/etelecom/call_direction"
+	"o.o/backend/pkg/integration/telecom"
 	"strconv"
 	"time"
 
@@ -397,57 +400,88 @@ func (s *EtelecomService) DestroyCallSession(ctx context.Context, r *etelecomapi
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
 
-func (s *EtelecomService) ActionCall(ctx context.Context, empty *pbcm.Empty) (*etelecomtypes.ActionCallResponse, error) {
-	today := time.Now()
-	year := today.Year()
-	month := today.Month()
-	day := today.Day()
+func (s *EtelecomService) ActionCall(ctx context.Context, req *etelecomtypes.ActionCallRequest) (*etelecomtypes.ActionCallResponse, error) {
 	results := &etelecomtypes.ActionCallResponse{
 		StatusCode: 200,
 		Action:     "call",
 	}
 
-	b1 := dot.Time(time.Date(year, month, day, 7, 30, 0, 0, time.Local)).ToTime()
-	e1 := dot.Time(time.Date(year, month, day, 11, 30, 00, 0, time.Local)).ToTime()
+	query := &etelecom.GetTenantByConnectionQuery{
+		OwnerID:      s.SS.Shop().OwnerID,
+		ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
+	}
 
-	b2 := dot.Time(time.Date(year, month, day, 11, 31, 0, 0, time.Local)).ToTime()
-	e2 := dot.Time(time.Date(year, month, day, 12, 59, 00, 0, time.Local)).ToTime()
+	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
 
-	b3 := dot.Time(time.Date(year, month, day, 13, 00, 0, 0, time.Local)).ToTime()
-	e3 := dot.Time(time.Date(year, month, day, 17, 00, 00, 0, time.Local)).ToTime()
+	today := time.Now()
+	weekday := today.Weekday()
+	year := today.Year()
+	month := today.Month()
+	day := today.Day()
+	formatDate := "%d-%d-%dT%s:00.000"
+	layout := "2006-1-2T15:04:05.999"
+	timeframes := telecom.GetTimeFramesByTenantID(query.Result.ID)
+	if len(timeframes) > 0 {
+		for _, tf := range timeframes {
+			begin, err := time.ParseInLocation(layout, fmt.Sprintf(formatDate, year, int(month), day, tf.Start), time.Local)
+			if err != nil {
+				return nil, err
+			}
 
-	b4 := dot.Time(time.Date(year, month, day, 00, 01, 0, 0, time.Local)).ToTime()
-	e4 := dot.Time(time.Date(year, month, day, 7, 29, 00, 0, time.Local)).ToTime()
+			end, err := time.ParseInLocation(layout, fmt.Sprintf(formatDate, year, int(month), day, tf.End), time.Local)
+			if err != nil {
+				return nil, err
+			}
 
-	b5 := dot.Time(time.Date(year, month, day, 17, 01, 0, 0, time.Local)).ToTime()
-	e5 := dot.Time(time.Date(year, month, day, 23, 50, 00, 0, time.Local)).ToTime()
+			if today.After(begin) && today.Before(end) {
+				results.Destination = tf.Destination.Default
+				if len(tf.Destination.Saturday) > 0 {
+					if weekday == time.Saturday {
+						results.Destination = tf.Destination.Saturday
+					}
+				}
 
-	t1 := today.After(b1) && today.Before(e1)
-	t2 := today.After(b2) && today.Before(e2)
-	t3 := today.After(b3) && today.Before(e3)
-	t4 := today.After(b4) && today.Before(e4)
-	t5 := today.After(b5) && today.Before(e5)
-
-	switch time.Now().Weekday() {
-	case time.Sunday, time.Saturday:
-		if t1 || t3 {
-			results.Destination = "900"
+				if len(tf.Destination.Sunday) > 0 {
+					if weekday == time.Sunday {
+						results.Destination = tf.Destination.Sunday
+					}
+				}
+			}
+		}
+	} else {
+		// Query callogs by callee
+		results.Destination = telecom.GetDefaultDestination(query.Result.ID)
+		hotlineQuery := &etelecom.ListHotlinesQuery{
+			OwnerID:  s.SS.Shop().OwnerID,
+			TenantID: query.Result.ID,
 		}
 
-		if t4 || t5 {
-			results.Destination = "901"
-		}
-	default:
-		if t1 || t3 {
-			results.Destination = "902"
+		if err := s.EtelecomQuery.Dispatch(ctx, hotlineQuery); err != nil {
+			return nil, err
 		}
 
-		if t2 {
-			results.Destination = "904"
+		hotlines := hotlineQuery.Result.Hotlines
+		var hotlineIDs []dot.ID
+		if len(hotlines) > 0 {
+			for _, hotline := range hotlines {
+				hotlineIDs = append(hotlineIDs, hotline.ID)
+			}
 		}
 
-		if t4 || t5 {
-			results.Destination = "903"
+		callLogQuery := &etelecom.GetCallLogByCalleeQuery{
+			Callee:     req.From,
+			Direction:  call_direction.Out,
+			HotlineIDs: hotlineIDs,
+		}
+
+		if err := s.EtelecomQuery.Dispatch(ctx, callLogQuery); err != nil {
+			return nil, err
+		}
+
+		if callLogQuery.Result.ID != 0 {
+			results.Destination = callLogQuery.Result.Caller
 		}
 	}
 

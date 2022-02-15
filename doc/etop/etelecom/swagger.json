@@ -55,7 +55,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/riActionCallRequest"
             }
           }
         ],
@@ -767,6 +767,32 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "riActionCallRequest": {
+      "type": "object",
+      "properties": {
+        "account_name": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        },
+        "from_name": {
+          "type": "string"
+        },
+        "input": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
         }
       }
     },
