@@ -3771,6 +3771,33 @@
         }
       }
     },
+    "/api/admin.User/ChangeUserCredential": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "ChangeUserCredential",
+        "operationId": "admin.User-ChangeUserCredential",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuChangeUserCredentialRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.User/GetUser": {
       "post": {
         "tags": [
@@ -8779,6 +8806,24 @@
       "type": "object",
       "properties": {
         "block_reason": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuChangeUserCredentialRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
           "type": "string"
         },
         "user_id": {

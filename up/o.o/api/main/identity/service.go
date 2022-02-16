@@ -32,6 +32,8 @@ type Aggregate interface {
 
 	UpdateExtensionNumberNorm(ctx context.Context, accountID, userID dot.ID, extensionNumber string) error
 
+	ChangeUserCredential(context.Context, *ChangeUserCredentialArgs) error
+
 	// if phone is not existed
 	// create new user & create a default shop for this user
 	RegisterSimplify(context.Context, *RegisterSimplifyArgs) error
@@ -502,4 +504,11 @@ func (a *RemoveUserOutOfDepartmentArgs) Validate() error {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing department ID")
 	}
 	return nil
+}
+
+type ChangeUserCredentialArgs struct {
+	UserID   dot.ID
+	Email    string
+	Phone    string
+	Password string
 }

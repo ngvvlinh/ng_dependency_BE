@@ -762,3 +762,60 @@ func (a *Aggregate) RemoveUserOutOfDepartment(ctx context.Context, args *identit
 	_, err = a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).ByDepartmentID(args.DepartmentID).RemoveDepartmentID()
 	return err
 }
+
+func (a *Aggregate) ChangeUserCredential(ctx context.Context, args *identity.ChangeUserCredentialArgs) error {
+	if args.UserID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing user ID")
+	}
+	_, err := a.userStore(ctx).ByID(args.UserID).GetUser()
+	if err != nil {
+		return err
+	}
+
+	email := args.Email
+	if email != "" {
+		emailNomalized, ok := validate.NormalizeEmail(args.Email)
+		if !ok {
+			return cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ")
+		}
+		email = emailNomalized.String()
+		if u, _ := a.userStore(ctx).ByEmail(email).GetUser(); u != nil && u.ID != args.UserID {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Email đã tồn tại trong hệ thống")
+		}
+	}
+
+	phone := args.Phone
+	if phone != "" {
+		phoneNomalized, isPhone := validate.NormalizePhone(phone)
+		if !isPhone {
+			return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+		}
+		phone = phoneNomalized.String()
+		if u, _ := a.userStore(ctx).ByPhone(phone).GetUser(); u != nil && u.ID != args.UserID {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại đã tồn tại trong hệ thống")
+		}
+	}
+
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if phone != "" || email != "" {
+			update := &identity.User{
+				Phone: phone,
+				Email: email,
+			}
+			if _err := a.userStore(ctx).ByID(args.UserID).UpdateUser(update); _err != nil {
+				return _err
+			}
+		}
+		if args.Password != "" {
+			pass := EncodePassword(args.Password)
+			updateUserInternal := &identity.UserInternal{
+				Hashpwd: pass,
+			}
+			if _err := a.userInternalStore(ctx).UserID(args.UserID).UpdateUserInternal(updateUserInternal); _err != nil {
+				return _err
+			}
+		}
+		return nil
+	})
+
+}

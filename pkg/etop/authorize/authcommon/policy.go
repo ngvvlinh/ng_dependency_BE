@@ -269,6 +269,7 @@ const adminPolicy = `
 	p, admin/user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant, ad_voip
 	p, admin/user:block, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_voip
 	p, admin/user_ref:update, admin, ad_salelead, ad_voip
+	p, admin/user:change_credential, admin
 	# admin account_user
 	p, admin/account_user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant, ad_voip
 	# admin subscription

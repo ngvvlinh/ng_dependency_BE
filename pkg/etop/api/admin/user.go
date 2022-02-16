@@ -169,3 +169,17 @@ func (s *UserService) UpdateUserRef(ctx context.Context, r *admin.UpdateUserRefR
 	}
 	return &pbcm.Empty{}, nil
 }
+
+func (s *UserService) ChangeUserCredential(ctx context.Context, r *admin.ChangeUserCredentialRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &identity.ChangeUserCredentialCommand{
+		UserID:   r.UserID,
+		Email:    r.Email,
+		Phone:    r.Phone,
+		Password: r.Password,
+	}
+	err := s.IdentityAggr.Dispatch(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}

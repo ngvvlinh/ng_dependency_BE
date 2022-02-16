@@ -1216,3 +1216,12 @@ type GetAccountUsersResponse struct {
 }
 
 func (m *GetAccountUsersResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ChangeUserCredentialRequest struct {
+	UserID   dot.ID `json:"user_id"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Password string `json:"password"`
+}
+
+func (m *ChangeUserCredentialRequest) String() string { return jsonx.MustMarshalToString(m) }

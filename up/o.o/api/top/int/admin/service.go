@@ -90,6 +90,7 @@ type UserService interface {
 	UnblockUser(context.Context, *UnblockUserRequest) (*etop.User, error)
 
 	UpdateUserRef(context.Context, *UpdateUserRefRequest) (*cm.Empty, error)
+	ChangeUserCredential(context.Context, *ChangeUserCredentialRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/admin.AccountUser

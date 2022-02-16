@@ -46,6 +46,20 @@ func (h AggregateHandler) HandleBlockUser(ctx context.Context, msg *BlockUserCom
 	return err
 }
 
+type ChangeUserCredentialCommand struct {
+	UserID   dot.ID
+	Email    string
+	Phone    string
+	Password string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleChangeUserCredential(ctx context.Context, msg *ChangeUserCredentialCommand) (err error) {
+	return h.inner.ChangeUserCredential(msg.GetArgs(ctx))
+}
+
 type CreateAccountUserCommand struct {
 	AccountID            dot.ID
 	UserID               dot.ID
@@ -761,6 +775,7 @@ func (h QueryServiceHandler) HandleListUsersByWLPartnerID(ctx context.Context, m
 // implement interfaces
 
 func (q *BlockUserCommand) command()                   {}
+func (q *ChangeUserCredentialCommand) command()        {}
 func (q *CreateAccountUserCommand) command()           {}
 func (q *CreateAffiliateCommand) command()             {}
 func (q *CreateShopCommand) command()                  {}
@@ -831,6 +846,23 @@ func (q *BlockUserCommand) SetBlockUserArgs(args *BlockUserArgs) {
 	q.UserID = args.UserID
 	q.BlockBy = args.BlockBy
 	q.BlockReason = args.BlockReason
+}
+
+func (q *ChangeUserCredentialCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ChangeUserCredentialArgs) {
+	return ctx,
+		&ChangeUserCredentialArgs{
+			UserID:   q.UserID,
+			Email:    q.Email,
+			Phone:    q.Phone,
+			Password: q.Password,
+		}
+}
+
+func (q *ChangeUserCredentialCommand) SetChangeUserCredentialArgs(args *ChangeUserCredentialArgs) {
+	q.UserID = args.UserID
+	q.Email = args.Email
+	q.Phone = args.Phone
+	q.Password = args.Password
 }
 
 func (q *CreateAccountUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateAccountUserArgs) {
@@ -1592,6 +1624,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleBlockUser)
+	b.AddHandler(h.HandleChangeUserCredential)
 	b.AddHandler(h.HandleCreateAccountUser)
 	b.AddHandler(h.HandleCreateAffiliate)
 	b.AddHandler(h.HandleCreateShop)

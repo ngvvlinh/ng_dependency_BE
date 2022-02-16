@@ -411,9 +411,10 @@ const (
 	AdminShopUpdate permission.ActionType = "admin/shop:update"
 
 	// Admin User
-	AdminUserView      permission.ActionType = "admin/user:view"
-	AdminUserBlock     permission.ActionType = "admin/user:block"
-	AdminUpdateUserRef permission.ActionType = "admin/user_ref:update"
+	AdminUserView             permission.ActionType = "admin/user:view"
+	AdminUserBlock            permission.ActionType = "admin/user:block"
+	AdminUpdateUserRef        permission.ActionType = "admin/user_ref:update"
+	AdminChangeUserCredential permission.ActionType = "admin/user:change_credential"
 
 	// Admin Account User
 	AdminAccountUserView permission.ActionType = "admin/account_user:view"
@@ -797,12 +798,13 @@ var _acl = map[string]*permission.Decl{
 	"admin.Order/GetOrders":      {Type: EtopAdmin, Actions: actions(AdminOrderView)},
 	"admin.Order/GetOrdersByIDs": {Type: EtopAdmin, Actions: actions(AdminOrderView)},
 
-	"admin.User/GetUsers":      {Type: EtopAdmin, Actions: actions(AdminUserView)},
-	"admin.User/GetUser":       {Type: EtopAdmin, Actions: actions(AdminUserView)},
-	"admin.User/GetUsersByIDs": {Type: EtopAdmin, Actions: actions(AdminUserView)},
-	"admin.User/BlockUser":     {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
-	"admin.User/UnblockUser":   {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
-	"admin.User/UpdateUserRef": {Type: EtopAdmin, Actions: actions(AdminUpdateUserRef)},
+	"admin.User/GetUsers":             {Type: EtopAdmin, Actions: actions(AdminUserView)},
+	"admin.User/GetUser":              {Type: EtopAdmin, Actions: actions(AdminUserView)},
+	"admin.User/GetUsersByIDs":        {Type: EtopAdmin, Actions: actions(AdminUserView)},
+	"admin.User/BlockUser":            {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
+	"admin.User/UnblockUser":          {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
+	"admin.User/UpdateUserRef":        {Type: EtopAdmin, Actions: actions(AdminUpdateUserRef)},
+	"admin.User/ChangeUserCredential": {Type: EtopAdmin, Actions: actions(AdminChangeUserCredential)},
 
 	"admin.AccountUser/GetAccountUsers": {Type: EtopAdmin, Actions: actions(AdminAccountUserView)},
 
