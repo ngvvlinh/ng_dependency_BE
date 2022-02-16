@@ -143,7 +143,7 @@ func BuildMainServer(
 	sqltrace.RegisterHTTPHandler(mux)
 
 	mwares := httpx.Compose(
-		headers.ForwardHeadersX(),
+		headers.ForwardHeadersX(headers.Config{AllowQueryAuthorization: true}),
 		bus.Middleware,
 	)
 	intHandlers = httprpc.WithPrefix("/api/", intHandlers)
