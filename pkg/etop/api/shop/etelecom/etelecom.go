@@ -437,17 +437,15 @@ func (s *EtelecomService) ActionCall(ctx context.Context, req *etelecomtypes.Act
 
 			if today.After(begin) && today.Before(end) {
 				results.Destination = tf.Destination.Default
-				if len(tf.Destination.Saturday) > 0 {
-					if weekday == time.Saturday {
-						results.Destination = tf.Destination.Saturday
-					}
+				if tf.Destination.Saturday != "" && weekday == time.Saturday {
+					results.Destination = tf.Destination.Saturday
 				}
 
-				if len(tf.Destination.Sunday) > 0 {
-					if weekday == time.Sunday {
-						results.Destination = tf.Destination.Sunday
-					}
+				if tf.Destination.Sunday != "" && weekday == time.Sunday {
+					results.Destination = tf.Destination.Sunday
 				}
+
+				break
 			}
 		}
 	} else {
