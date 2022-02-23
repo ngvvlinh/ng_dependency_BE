@@ -24,7 +24,7 @@ import (
 	"o.o/capi/dot"
 )
 
-const MinShopBalance = -100000
+const MinShopBalance = -200000
 
 type ProcessManager struct {
 	eventBus        capi.EventBus
