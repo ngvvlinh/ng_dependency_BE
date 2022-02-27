@@ -22,6 +22,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/user_otp_action"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 	"o.o/common/jsonx"
@@ -1225,3 +1226,19 @@ type ChangeUserCredentialRequest struct {
 }
 
 func (m *ChangeUserCredentialRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetLatestUserOTPRequest struct {
+	UserID dot.ID `json:"user_id"`
+	// Chỉ sử dụng phone trường hợp không tìm ra người dùng (vd: đăng ký user mới)
+	Phone string `json:"phone"`
+}
+
+func (m *GetLatestUserOTPRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetLatestUserOTPResponse struct {
+	OTP    string                        `json:"otp"`
+	Action user_otp_action.UserOTPAction `json:"action"`
+	Label  string                        `json:"label"`
+}
+
+func (m *GetLatestUserOTPResponse) String() string { return jsonx.MustMarshalToString(m) }

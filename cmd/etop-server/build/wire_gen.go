@@ -1031,6 +1031,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:       session,
 		IdentityQuery: queryBus,
 		IdentityAggr:  commandBus,
+		RedisStore:    store,
 	}
 	adminTicketService := admin.TicketService{
 		Session:        session,

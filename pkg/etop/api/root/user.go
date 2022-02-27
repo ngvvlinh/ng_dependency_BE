@@ -19,6 +19,7 @@ import (
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/authentication_method"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/user_otp_action"
 	config_server "o.o/backend/cogs/config/_server"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -155,7 +156,7 @@ func (s *UserService) updateUserPhone(ctx context.Context, r *api.UpdateUserPhon
 	switch r.FirstCode {
 	case "":
 		if r.AuthenticationMethod == authentication_method.Phone {
-			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod)
+			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdatePhoneFirstCode)
 			if err != nil {
 				return nil, err
 			}
@@ -163,7 +164,7 @@ func (s *UserService) updateUserPhone(ctx context.Context, r *api.UpdateUserPhon
 			return result, nil
 		}
 		if r.AuthenticationMethod == authentication_method.Email {
-			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod)
+			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdatePhoneFirstCode)
 			if err != nil {
 				return nil, err
 			}
@@ -200,7 +201,7 @@ func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *api.Up
 	codeSecond, count, err := s.getRedisCode(user.ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
 	switch err {
 	case redis.ErrNil:
-		msg, err2 := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
+		msg, err2 := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdatePhoneSecondCode)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -214,7 +215,7 @@ func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *api.Up
 
 	switch r.SecondCode {
 	case "":
-		msg, err2 := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
+		msg, err2 := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdatePhoneSecondCode)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -262,7 +263,7 @@ func (s *UserService) updateUserEmail(ctx context.Context, r *api.UpdateUserEmai
 	switch r.FirstCode {
 	case "":
 		if r.AuthenticationMethod == authentication_method.Phone {
-			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod)
+			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdateEmailFirstCode)
 			if err != nil {
 				return nil, err
 			}
@@ -270,7 +271,7 @@ func (s *UserService) updateUserEmail(ctx context.Context, r *api.UpdateUserEmai
 			return result, nil
 		}
 		if r.AuthenticationMethod == authentication_method.Email {
-			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod)
+			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdateEmailFirstCode)
 			if err != nil {
 				return nil, err
 			}
@@ -307,12 +308,12 @@ func (s *UserService) getRedisCode(userID dot.ID, keyCode string, method authent
 	return code, count, nil
 }
 
-func (s *UserService) setRedisCode(userID dot.ID, redisKeyCode string, method string, code string, count int, signal SignalUpdate) error {
-	err := s.RedisStore.SetWithTTL(fmt.Sprintf("Code:%v-%v-%v-%v", userID, redisKeyCode, method, signal), code, 2*60*60)
+func (s *UserService) setRedisCode(userID dot.ID, redisKeyCode string, method string, code string, count int, signal SignalUpdate, ttl int) error {
+	err := s.RedisStore.SetWithTTL(fmt.Sprintf("Code:%v-%v-%v-%v", userID, redisKeyCode, method, signal), code, ttl)
 	if err != nil {
 		return err
 	}
-	err = s.RedisStore.SetWithTTL(fmt.Sprintf("Code-Count:%v-%v-%v-%v", userID, redisKeyCode, method, signal), count, 2*60*60)
+	err = s.RedisStore.SetWithTTL(fmt.Sprintf("Code-Count:%v-%v-%v-%v", userID, redisKeyCode, method, signal), count, ttl)
 	if err != nil {
 		return err
 	}
@@ -407,7 +408,7 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *api.Up
 	codeSecond, count, err := s.getRedisCode(s.SS.User().ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
 	switch err {
 	case redis.ErrNil:
-		msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod)
+		msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdateEmailSecondCode)
 		if err != nil {
 			return nil, err
 		}
@@ -416,7 +417,7 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *api.Up
 	case nil:
 		switch r.SecondCode {
 		case "":
-			msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod)
+			msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod, user_otp_action.UserOTPActionUpdateEmailSecondCode)
 			if err != nil {
 				return nil, err
 			}
@@ -448,7 +449,7 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *api.Up
 	}
 }
 
-func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel.User, phone string, redisCode string, signal SignalUpdate, code6Digits string, sendCount int, method authentication_method.AuthenticationMethod) (string, error) {
+func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel.User, phone string, redisCode string, signal SignalUpdate, code6Digits string, sendCount int, method authentication_method.AuthenticationMethod, action user_otp_action.UserOTPAction) (string, error) {
 	phoneUse := phone
 	var code string
 	var err error
@@ -484,7 +485,7 @@ func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel
 		}
 	}
 
-	err = s.setRedisCode(user.ID, redisCode, method.String(), code, sendCount, signal)
+	err = s.setRedisCode(user.ID, redisCode, method.String(), code, sendCount, signal, 2*60*60)
 	if err != nil {
 		return "", err
 	}
@@ -495,11 +496,14 @@ func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel
 	if err = s.SMSClient.SendSMS(ctx, cmd); err != nil {
 		return "", err
 	}
+
+	s.SaveLatestUserOTP(user.ID, phoneUse, code, action, 2*60*60)
+
 	return fmt.Sprintf(
 		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", phoneUse, wl.X(ctx).CSEmail), nil
 }
 
-func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel.User, emailVerify string, redisKeyCode string, signal SignalUpdate, code6Digits string, sendCount int, method authentication_method.AuthenticationMethod) (string, error) {
+func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel.User, emailVerify string, redisKeyCode string, signal SignalUpdate, code6Digits string, sendCount int, method authentication_method.AuthenticationMethod, action user_otp_action.UserOTPAction) (string, error) {
 	if !EnabledEmail {
 		return "", cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
@@ -538,7 +542,7 @@ func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel
 			return "", cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", user.FullName).WithMeta("reason", "can not generate email content")
 		}
 	}
-	err = s.setRedisCode(user.ID, redisKeyCode, method.String(), code, sendCount, signal)
+	err = s.setRedisCode(user.ID, redisKeyCode, method.String(), code, sendCount, signal, 2*60*60)
 	if err != nil {
 		return "", err
 	}
@@ -552,6 +556,9 @@ func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel
 	if err = s.EmailClient.SendMail(ctx, cmd); err != nil {
 		return "", err
 	}
+
+	s.SaveLatestUserOTP(user.ID, "", code, action, 2*60*60)
+
 	return fmt.Sprintf(
 		"Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail), nil
 }
@@ -880,7 +887,7 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *api.ResetP
 		token, expiresIn = tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn
 	}
 	var redisCodeCount = fmt.Sprintf("reset-pasword-phone-%v", user.ID)
-	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, redisCodeCount, templatemessages.SmsResetPasswordTpl, templatemessages.SmsResetPasswordTplRepeat, false, token); err != nil {
+	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, redisCodeCount, templatemessages.SmsResetPasswordTpl, templatemessages.SmsResetPasswordTplRepeat, false, token, user_otp_action.UserOTPActionResetPassword); err != nil {
 		return nil, err
 	}
 
@@ -1381,6 +1388,9 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 	if err := s.TokenStore.UpdateSession(ctx, s.SS.Claim().Token, extra); err != nil {
 		return nil, err
 	}
+
+	s.SaveLatestUserOTP(user.ID, "", code, user_otp_action.UserOTPActionVerifyEmailUsingOTP, 2*60*60)
+
 	return result, nil
 }
 
@@ -1447,6 +1457,10 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *api.SendEmai
 		return nil, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 	}
 
+	// Save to LasterUserOTP
+	// otp: save the verification url
+	s.SaveLatestUserOTP(user.ID, "", verificationUrl.String(), user_otp_action.UserOTPActionVerifyEmail, 24*60*60)
+
 	address := user.Email
 	cmd := &email.SendEmailCommand{
 		FromName:    wl.X(ctx).CompanyName + " (no-reply)",
@@ -1505,7 +1519,7 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *api.SendPhon
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", s.SS.User().ID)
-	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat, true, s.SS.Claim().Token); err != nil {
+	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat, true, s.SS.Claim().Token, user_otp_action.UserOTPActionVerifyPhone); err != nil {
 		return nil, err
 	}
 
@@ -1922,6 +1936,9 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *api.SendSTokenEmai
 	}
 	result := cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
+
+	s.SaveLatestUserOTP(user.ID, "", code, user_otp_action.UserOTPActionSTokenUpdateShop, 2*60*60)
+
 	return result, nil
 }
 
@@ -2038,7 +2055,7 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *a
 	if err != nil && err != redis.ErrNil {
 		return nil, err
 	}
-	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, msg, false, s.SS.Claim().Token); err != nil {
+	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, msg, false, s.SS.Claim().Token, user_otp_action.UserOTPActionRegiter); err != nil {
 		return nil, err
 	}
 	return cmapi.Message("ok", fmt.Sprintf(
@@ -2046,7 +2063,7 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *a
 }
 
 func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *identitymodel.User, ttl int, usage string,
-	phone string, msg string, checkVerifyPhoneForUser bool, token string) error {
+	phone string, msg string, checkVerifyPhoneForUser bool, token string, action user_otp_action.UserOTPAction) error {
 	var userIDUse dot.ID
 	userIDUse = 0
 	if user != nil {
@@ -2058,6 +2075,14 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 		return err
 	}
 	msgUser := fmt.Sprintf(msg, code)
+
+	// save otp code to LatestUserOTP in redis
+	if user != nil {
+		s.SaveLatestUserOTP(user.ID, phone, code, action, ttl)
+	} else {
+		s.SaveLatestUserOTP(0, phone, code, action, ttl)
+	}
+
 	cmd := &sms.SendSMSCommand{
 		Phone:   phoneUse,
 		Content: msgUser,
@@ -2081,6 +2106,17 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 	return nil
 }
 
+func (s *UserService) SaveLatestUserOTP(userID dot.ID, phone string, otp string, action user_otp_action.UserOTPAction, ttl int) {
+	latestUserOTPData := identity.LatestUserOTPData{
+		OTP:    otp,
+		Action: action,
+	}
+	latestUserOTPRedisKey := identity.GetLatestUserOTPRedisKey(userID, phone)
+	// ignore if error
+	_ = s.RedisStore.SetWithTTL(latestUserOTPRedisKey, latestUserOTPData, ttl)
+	return
+}
+
 func (s *UserService) getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, error) {
 	_, ok := validate.NormalizePhone(phone)
 	if !ok {
@@ -2095,7 +2131,7 @@ func (s *UserService) getUserByPhone(ctx context.Context, phone string) (*identi
 	return userByPhone.Result, nil
 }
 
-func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, redisCodeCount string, msgFirstime string, msgMultiTime string, checkVerifyPhoneForUser bool, token string) error {
+func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, redisCodeCount string, msgFirstime string, msgMultiTime string, checkVerifyPhoneForUser bool, token string, action user_otp_action.UserOTPAction) error {
 	if user != nil && user.Phone != phone {
 		return cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
 	}
@@ -2107,7 +2143,7 @@ func (s *UserService) verifyPhone(ctx context.Context, usage string, user *ident
 		if !user.PhoneVerifiedAt.IsZero() {
 			return nil
 		}
-		if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, true, token); err != nil {
+		if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, true, token, user_otp_action.UserOTPActionVerifyPhone); err != nil {
 			return err
 		}
 		updateCmd := &identitymodelx.UpdateUserVerificationCommand{
@@ -2119,7 +2155,7 @@ func (s *UserService) verifyPhone(ctx context.Context, usage string, user *ident
 		}
 		return nil
 	}
-	if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, false, token); err != nil {
+	if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, false, token, action); err != nil {
 		return err
 	}
 	return nil

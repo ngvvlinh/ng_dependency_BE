@@ -91,6 +91,8 @@ type UserService interface {
 
 	UpdateUserRef(context.Context, *UpdateUserRefRequest) (*cm.Empty, error)
 	ChangeUserCredential(context.Context, *ChangeUserCredentialRequest) (*cm.UpdatedResponse, error)
+
+	GetLatestUserOTP(context.Context, *GetLatestUserOTPRequest) (*GetLatestUserOTPResponse, error)
 }
 
 // +apix:path=/admin.AccountUser

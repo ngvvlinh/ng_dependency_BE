@@ -1,7 +1,7 @@
 package identity
 
 import (
-	"o.o/api/top/types/etc/user_role"
+	"fmt"
 	"strings"
 	"time"
 
@@ -13,6 +13,8 @@ import (
 	"o.o/api/top/types/etc/shop_user_role"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/try_on"
+	"o.o/api/top/types/etc/user_otp_action"
+	"o.o/api/top/types/etc/user_role"
 	"o.o/api/top/types/etc/user_source"
 	"o.o/capi/dot"
 	cmutil "o.o/capi/util"
@@ -29,6 +31,15 @@ const (
 	SubjectTypeAccount SubjectType = "account"
 	SubjectTypeUser    SubjectType = "user"
 )
+
+const LatestUserOTPKey = "LatestUserOTP"
+
+func GetLatestUserOTPRedisKey(userID dot.ID, phone string) string {
+	if userID != 0 {
+		return fmt.Sprintf("%v:uID:%v", LatestUserOTPKey, userID)
+	}
+	return fmt.Sprintf("%v:uPhone:%v", LatestUserOTPKey, phone)
+}
 
 type Permission struct {
 	Roles       []string
@@ -239,8 +250,8 @@ type ShopExtended struct {
 }
 
 type AccountUser struct {
-	AccountID dot.ID
-	UserID    dot.ID
+	AccountID    dot.ID
+	UserID       dot.ID
 	DepartmentID dot.ID
 
 	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
@@ -300,20 +311,25 @@ type PartnerRelation struct {
 }
 
 type AccountUserExtended struct {
-	UserID      dot.ID
-	AccountID   dot.ID
+	UserID       dot.ID
+	AccountID    dot.ID
 	DepartmentID dot.ID
-	Roles       []string
-	Permissions []string
-	FullName    string
-	ShortName   string
-	Email       string
-	Phone       string
-	Position    string
-	Deleted     bool
+	Roles        []string
+	Permissions  []string
+	FullName     string
+	ShortName    string
+	Email        string
+	Phone        string
+	Position     string
+	Deleted      bool
 }
 
 type AccountUserWithGroupByDepartment struct {
 	DepartmentID dot.ID
 	Count        int64
+}
+
+type LatestUserOTPData struct {
+	OTP    string                        `json:"otp"`
+	Action user_otp_action.UserOTPAction `json:"action"`
 }

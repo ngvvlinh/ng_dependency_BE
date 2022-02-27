@@ -415,6 +415,7 @@ const (
 	AdminUserBlock            permission.ActionType = "admin/user:block"
 	AdminUpdateUserRef        permission.ActionType = "admin/user_ref:update"
 	AdminChangeUserCredential permission.ActionType = "admin/user:change_credential"
+	AdminGetLatestUserOTP     permission.ActionType = "admin/user:get_latest_user_otp"
 
 	// Admin Account User
 	AdminAccountUserView permission.ActionType = "admin/account_user:view"
@@ -805,6 +806,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.User/UnblockUser":          {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
 	"admin.User/UpdateUserRef":        {Type: EtopAdmin, Actions: actions(AdminUpdateUserRef)},
 	"admin.User/ChangeUserCredential": {Type: EtopAdmin, Actions: actions(AdminChangeUserCredential)},
+	"admin.User/GetLatestUserOTP":     {Type: EtopAdmin, Actions: actions(AdminGetLatestUserOTP)},
 
 	"admin.AccountUser/GetAccountUsers": {Type: EtopAdmin, Actions: actions(AdminAccountUserView)},
 

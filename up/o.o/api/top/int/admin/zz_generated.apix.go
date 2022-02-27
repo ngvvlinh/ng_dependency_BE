@@ -2930,6 +2930,7 @@ const UserServicePathPrefix = "/admin.User/"
 
 const Path_User_BlockUser = "/admin.User/BlockUser"
 const Path_User_ChangeUserCredential = "/admin.User/ChangeUserCredential"
+const Path_User_GetLatestUserOTP = "/admin.User/GetLatestUserOTP"
 const Path_User_GetUser = "/admin.User/GetUser"
 const Path_User_GetUsers = "/admin.User/GetUsers"
 const Path_User_GetUsersByIDs = "/admin.User/GetUsersByIDs"
@@ -2992,6 +2993,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.ChangeUserCredential(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.User/GetLatestUserOTP":
+		msg := &GetLatestUserOTPRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetLatestUserOTP(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

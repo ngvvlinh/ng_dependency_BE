@@ -8,7 +8,9 @@ import (
 	"o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
@@ -20,6 +22,7 @@ type UserService struct {
 
 	IdentityQuery identity.QueryBus
 	IdentityAggr  identity.CommandBus
+	RedisStore    redis.Store
 }
 
 func (s *UserService) Clone() admin.UserService {
@@ -182,4 +185,23 @@ func (s *UserService) ChangeUserCredential(ctx context.Context, r *admin.ChangeU
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *UserService) GetLatestUserOTP(ctx context.Context, r *admin.GetLatestUserOTPRequest) (*admin.GetLatestUserOTPResponse, error) {
+	if r.UserID == 0 && r.Phone == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing user ID or phone number")
+	}
+	if r.UserID != 0 && r.Phone != "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Only provide user ID or phone number")
+	}
+	redisKey := identity.GetLatestUserOTPRedisKey(r.UserID, r.Phone)
+	res := identity.LatestUserOTPData{}
+	if err := s.RedisStore.Get(redisKey, &res); err != nil && err != redis.ErrNil {
+		return nil, err
+	}
+	return &admin.GetLatestUserOTPResponse{
+		OTP:    res.OTP,
+		Action: res.Action,
+		Label:  res.Action.GetLabelRefName(),
+	}, nil
 }

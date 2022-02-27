@@ -3798,6 +3798,33 @@
         }
       }
     },
+    "/api/admin.User/GetLatestUserOTP": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "GetLatestUserOTP",
+        "operationId": "admin.User-GetLatestUserOTP",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetLatestUserOTPRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetLatestUserOTPResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.User/GetUser": {
       "post": {
         "tags": [
@@ -4856,6 +4883,22 @@
         "fail",
         "ignore",
         "cancel"
+      ]
+    },
+    "dsUserOTPAction": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "reset_password",
+        "register",
+        "verify_phone",
+        "update_phone_first_code",
+        "update_phone_second_code",
+        "update_email_first_code",
+        "update_email_second_code",
+        "verify_email_using_otp",
+        "verify_email",
+        "stoken_update_shop"
       ]
     },
     "fdFilterType": {
@@ -9730,6 +9773,33 @@
         },
         "status": {
           "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "xuGetLatestUserOTPRequest": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "description": "Chỉ sử dụng phone trường hợp không tìm ra người dùng (vd: đăng ký user mới)\n",
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetLatestUserOTPResponse": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/dsUserOTPAction"
+        },
+        "label": {
+          "type": "string"
+        },
+        "otp": {
+          "type": "string"
         }
       }
     },
