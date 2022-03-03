@@ -87,6 +87,7 @@ type Extra struct {
 	GhnId       int
 	GhnCode     string
 	VtpostId    int
+	NTXId       int
 	HaravanCode string
 }
 

@@ -354,6 +354,7 @@ var Provinces = []*types.Province{
 		Region:      location.South,
 		Name:        "Tỉnh Đồng Nai",
 		VTPostID:    51,
+		NTXID:       60,
 		HaravanCode: "DN",
 	},
 	{
@@ -369,6 +370,7 @@ var Provinces = []*types.Province{
 		Region:      location.South,
 		Name:        "Thành phố Hồ Chí Minh",
 		VTPostID:    2,
+		NTXID:       50,
 		HaravanCode: "HC",
 		Special:     true,
 		Alias:       []string{"HCM", "TPHCM"},

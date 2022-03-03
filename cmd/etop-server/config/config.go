@@ -165,6 +165,7 @@ func Load(isTest bool) (Config, error) {
 	cfg.Shipment.GHN.MustLoadEnv()
 	cfg.Shipment.GHTK.MustLoadEnv()
 	cfg.Shipment.VTPost.MustLoadEnv()
+	cfg.Shipment.NTX.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
 	cfg.VTPay.MustLoadEnv()
 	cfg.KPay.MustLoadEnv()

@@ -3775,6 +3775,7 @@ var Districts = []*types.District{
 		Name:         "Huyện Tân Phú",
 		GhnID:        1693,
 		VTPostID:     575,
+		NTXID:        6003,
 		HaravanCode:  "DN528",
 		UrbanType:    2,
 	}, {
@@ -3895,6 +3896,7 @@ var Districts = []*types.District{
 		Name:         "Quận 1",
 		GhnID:        1442,
 		VTPostID:     43,
+		NTXID:        5001,
 		HaravanCode:  "HC466",
 		UrbanType:    -1,
 		Alias:        []string{"1"},

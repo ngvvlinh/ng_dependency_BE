@@ -81,7 +81,7 @@ func main() {
 }
 
 func buildDistricts(gopath string, vtpostDistricts []*vtpostClient.District) {
-	data, err := ioutil.ReadFile(filepath.Join(gopath, "src/etop.vn/backend/pkg/integration/location/.list_ghn.json"))
+	data, err := ioutil.ReadFile(filepath.Join(gopath, "src/gitlab.com/backend/com/main/location/list/.list_ghn.json"))
 	must(err)
 
 	var list struct {

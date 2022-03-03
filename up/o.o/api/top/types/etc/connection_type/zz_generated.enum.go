@@ -148,16 +148,17 @@ func (n *NullConnectionMethod) UnmarshalJSON(data []byte) error {
 }
 
 var enumConnectionProviderName = map[int]string{
-	0: "unknown",
-	1: "ghn",
-	2: "ghtk",
-	3: "vtpost",
-	4: "partner",
-	5: "ahamove",
-	6: "ninjavan",
-	7: "dhl",
-	8: "suitecrm",
-	9: "portsip",
+	0:  "unknown",
+	1:  "ghn",
+	2:  "ghtk",
+	3:  "vtpost",
+	4:  "partner",
+	5:  "ahamove",
+	6:  "ninjavan",
+	7:  "dhl",
+	8:  "suitecrm",
+	9:  "portsip",
+	10: "ntx",
 }
 
 var enumConnectionProviderValue = map[string]int{
@@ -171,6 +172,7 @@ var enumConnectionProviderValue = map[string]int{
 	"dhl":      7,
 	"suitecrm": 8,
 	"portsip":  9,
+	"ntx":      10,
 }
 
 func ParseConnectionProvider(s string) (ConnectionProvider, bool) {

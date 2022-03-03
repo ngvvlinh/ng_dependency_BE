@@ -25,6 +25,7 @@ var enumShippingProviderName = map[int]string{
 	25: "partner",
 	26: "ninjavan",
 	27: "dhl",
+	28: "ntx",
 }
 
 var enumShippingProviderValue = map[string]int{
@@ -38,6 +39,7 @@ var enumShippingProviderValue = map[string]int{
 	"partner":  25,
 	"ninjavan": 26,
 	"dhl":      27,
+	"ntx":      28,
 }
 
 func ParseShippingProvider(s string) (ShippingProvider, bool) {

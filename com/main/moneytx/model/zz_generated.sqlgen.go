@@ -1306,7 +1306,7 @@ func (m *MoneyTransactionShippingExternal) Migration(db *cmsql.Database) {
 			ColumnType:       "shipping_provider.ShippingProvider",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "all", "manual", "ghn", "ghtk", "vtpost", "etop", "partner", "ninjavan", "dhl"},
+			ColumnEnumValues: []string{"unknown", "all", "manual", "ghn", "ghtk", "vtpost", "etop", "partner", "ninjavan", "dhl", "ntx"},
 		},
 		"bank_account": {
 			ColumnName:       "bank_account",

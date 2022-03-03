@@ -8431,7 +8431,8 @@
         "etop",
         "partner",
         "ninjavan",
-        "dhl"
+        "dhl",
+        "ntx"
       ]
     },
     "cdConnectionMethod": {
@@ -8455,7 +8456,8 @@
         "ninjavan",
         "dhl",
         "suitecrm",
-        "portsip"
+        "portsip",
+        "ntx"
       ]
     },
     "cdConnectionSubtype": {

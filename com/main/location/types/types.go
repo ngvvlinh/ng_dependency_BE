@@ -24,6 +24,7 @@ type Province struct {
 	Code        string
 	Region      location.VietnamRegion
 	VTPostID    int
+	NTXID       int
 	HaravanCode string
 }
 
@@ -37,6 +38,7 @@ type District struct {
 	GhnID        int
 	UrbanType    location.UrbanType
 	VTPostID     int
+	NTXID        int
 	HaravanCode  string
 }
 
@@ -45,6 +47,7 @@ type Ward struct {
 	NameNorm    string
 	Alias       []string
 	VTPostID    int
+	NTXID       int
 	GhnCode     string
 	HaravanCode string
 

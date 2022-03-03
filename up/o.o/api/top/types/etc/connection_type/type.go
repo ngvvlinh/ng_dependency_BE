@@ -108,4 +108,7 @@ const (
 
 	// +enum=portsip
 	ConnectionProviderPortsip ConnectionProvider = 9
+
+	// +enum=ntx
+	ConnectionProviderNTX ConnectionProvider = 10
 )

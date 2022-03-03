@@ -26,7 +26,7 @@ var WireSet = wire.NewSet(
 	shipmentwebhookall.WireSet,
 	_ghtk.WireSet,
 	_vtpost.WireSet,
-	wire.FieldsOf(new(Config), "GHN", "GHNWebhook", "GHTK", "GHTKWebhook", "VTPost", "VTPostWebhook"),
+	wire.FieldsOf(new(Config), "GHN", "GHNWebhook", "GHTK", "GHTKWebhook", "VTPost", "VTPostWebhook", "NTX"),
 	ghnimport.WireSet,
 	ghtkimport.WireSet,
 	vtpostimport.WireSet,

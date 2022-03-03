@@ -1,6 +1,7 @@
 package shipment_all
 
 import (
+	ntxclient "o.o/backend/pkg/integration/shipping/ntx/client"
 	"strconv"
 
 	"o.o/api/main/connectioning"
@@ -29,6 +30,8 @@ import (
 	"o.o/backend/pkg/integration/shipping/ninjavan"
 	ninjavanclient "o.o/backend/pkg/integration/shipping/ninjavan/client"
 	ninjavandriver "o.o/backend/pkg/integration/shipping/ninjavan/driver"
+	//ntxclient "o.o/backend/pkg/integration/shipping/ntx/client"
+	ntxdriver "o.o/backend/pkg/integration/shipping/ntx/driver"
 	"o.o/backend/pkg/integration/shipping/services"
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
@@ -45,6 +48,7 @@ type Config struct {
 	GHTK            ghtk.Config            `yaml:"ghtk"`
 	GHTKWebhook     _ghtk.WebhookConfig    `yaml:"ghtk_webhook"`
 	VTPost          vtpost.Config          `yaml:"vtpost"`
+	NTX             ntxclient.Config       `yaml:"ntx"`
 	VTPostWebhook   _vtpost.WebhookConfig  `yaml:"vtpost_webhook"`
 	NinjaVanWebhook ninjavan.WebhookConfig `yaml:"ninjavan_webhook"`
 }
@@ -53,6 +57,7 @@ func (cfg *Config) MustLoadEnv() {
 	cfg.GHN.MustLoadEnv()
 	cfg.GHTK.MustLoadEnv()
 	cfg.VTPost.MustLoadEnv()
+	cfg.NTX.MustLoadEnv()
 }
 
 func DefaultConfig() Config {
@@ -64,6 +69,7 @@ func DefaultConfig() Config {
 		VTPost:          vtpost.DefaultConfig(),
 		VTPostWebhook:   _vtpost.WebhookConfig{Port: 9042},
 		NinjaVanWebhook: ninjavan.DefaultWebhookConfig(),
+		NTX:             ntxclient.DefaultConfig(),
 	}
 }
 
@@ -146,6 +152,13 @@ func (d CarrierDriver) GetShipmentDriver(
 	case connection_type.ConnectionProviderNinjaVan:
 		driver := ninjavandriver.New(env, ninjavanclient.NinjaVanCfg{
 			Token: shopConnection.Token,
+		}, locationQS, identityQS, shippingcodeQS)
+		return driver, nil
+	case connection_type.ConnectionProviderNTX:
+		driver := ntxdriver.New(env, ntxclient.Config{
+			Username:  "etop",
+			Password:  "hm73Tyrk9EzNnhSJ",
+			PartnerID: 350,
 		}, locationQS, identityQS, shippingcodeQS)
 		return driver, nil
 
