@@ -17,7 +17,7 @@ var (
 	ll          = l.New()
 	cfg         config.Config
 	DBEtelecom  *cmsql.Database
-	url         = "https://sip.etelecom.vn:8900/api/extensions/update"
+	url         = "https://sip.dinodata.vn:8900/api/extensions/update"
 	accessToken = "002f6a7db4474d7c91d0bb78c70b1764"
 )
 
