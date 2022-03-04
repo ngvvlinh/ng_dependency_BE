@@ -189,17 +189,17 @@ func (c CommonResponse) GetCommonResponse() CommonResponse {
 }
 
 type CalcShippingFeeRequest struct {
-	PartnerID     int    `json:"partner_id"`
-	CodAmount     int    `json:"cod_amount"`
-	CargoValue    int    `json:"cargo_value"`
-	Weight        int    `json:"weight"`
-	PaymentMethod int    `json:"payment_method"`
-	SProvinceID   int    `json:"s_province_id"`
-	SDistrictID   int    `json:"s_district_id"`
-	RProvinceID   int    `json:"r_province_id"`
-	RDistrictID   int    `json:"r_district_id"`
-	PackageNo     int    `json:"package_no"`
-	UtmSource     string `json:"utm_source"`
+	PartnerID     int     `json:"partner_id"`
+	CodAmount     int     `json:"cod_amount"`
+	CargoValue    int     `json:"cargo_value"`
+	Weight        float64 `json:"weight"`
+	PaymentMethod int     `json:"payment_method"`
+	SProvinceID   int     `json:"s_province_id"`
+	SDistrictID   int     `json:"s_district_id"`
+	RProvinceID   int     `json:"r_province_id"`
+	RDistrictID   int     `json:"r_district_id"`
+	PackageNo     int     `json:"package_no"`
+	UtmSource     string  `json:"utm_source"`
 }
 
 type CalcShippingFeeResponse struct {

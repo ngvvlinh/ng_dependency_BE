@@ -25,10 +25,11 @@ const (
 )
 
 type Client struct {
-	baseUrl   string
-	PartnerID int
-	headers   map[string]string
-	rclient   *httpreq.Resty
+	baseUrl       string
+	PartnerID     int
+	PaymentMethod int
+	headers       map[string]string
+	rclient       *httpreq.Resty
 }
 
 func New(env string, cfg Config) *Client {
@@ -50,8 +51,10 @@ func New(env string, cfg Config) *Client {
 	switch env {
 	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
 		c.baseUrl = "https://apisandbox.ntx.com.vn"
+		c.PaymentMethod = 10
 	case cmenv.PartnerEnvProd:
 		c.baseUrl = "https://apiws.ntx.com.vn"
+		c.PaymentMethod = 11
 	default:
 		ll.Fatal("NTX: Invalid env")
 	}
