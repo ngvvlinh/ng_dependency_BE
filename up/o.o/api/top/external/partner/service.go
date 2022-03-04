@@ -175,3 +175,13 @@ type VariantService interface {
 
 	DeleteVariant(context.Context, *types.GetVariantRequest) (*cm.Empty, error)
 }
+
+// usecase:
+// - Shop want to create order/ffm => they must deposit money to TopShip's account
+// - Shop tranfers money to TopShip's bank account
+// - A tool will read the transaction and call this api to deposit money to that shop
+
+// +apix:path=/partner.Internal
+type InternalService interface {
+	CreateBankStatement(context.Context, *CreateBankStatementRequest) (*cm.Empty, error)
+}

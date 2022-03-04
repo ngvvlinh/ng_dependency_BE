@@ -856,6 +856,7 @@ func convert_identitymodel_Partner_identity_Partner(arg *identitymodel.Partner, 
 	out.ImageURL = arg.ImageURL           // simple assign
 	out.WebsiteURL = arg.WebsiteURL       // simple assign
 	out.WhiteLabelKey = arg.WhiteLabelKey // simple assign
+	out.WhitelistIPs = arg.WhitelistIPs   // simple assign
 }
 
 func Convert_identitymodel_Partners_identity_Partners(args []*identitymodel.Partner) (outs []*identity.Partner) {
@@ -895,6 +896,7 @@ func convert_identity_Partner_identitymodel_Partner(arg *identity.Partner, out *
 	out.ContactPersons = nil              // zero value
 	out.RecognizedHosts = nil             // zero value
 	out.RedirectURLs = nil                // zero value
+	out.WhitelistIPs = arg.WhitelistIPs   // simple assign
 	out.AvailableFromEtop = false         // zero value
 	out.AvailableFromEtopConfig = nil     // zero value
 	out.WhiteLabelKey = arg.WhiteLabelKey // simple assign

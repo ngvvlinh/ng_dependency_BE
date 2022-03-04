@@ -11,16 +11,17 @@ import (
 
 // +sqlgen
 type Credit struct {
-	ID        dot.ID
-	Amount    int
-	ShopID    dot.ID
-	Type      credit_type.CreditType
-	Status    status3.Status
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-	DeletedAt time.Time
-	PaidAt    time.Time
-	Classify  credit_type.CreditClassify
+	ID              dot.ID
+	Amount          int
+	ShopID          dot.ID
+	Type            credit_type.CreditType
+	Status          status3.Status
+	CreatedAt       time.Time `sq:"create"`
+	UpdatedAt       time.Time `sq:"update"`
+	DeletedAt       time.Time
+	PaidAt          time.Time
+	Classify        credit_type.CreditClassify
+	BankStatementID dot.ID
 }
 
 // +sqlgen:           Credit as c

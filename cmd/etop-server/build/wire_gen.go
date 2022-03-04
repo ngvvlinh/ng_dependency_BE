@@ -53,6 +53,7 @@ import (
 	query15 "o.o/backend/com/main/accountshipnow/query"
 	"o.o/backend/com/main/address"
 	aggregate3 "o.o/backend/com/main/authorization/aggregate"
+	"o.o/backend/com/main/bankstatement"
 	aggregate4 "o.o/backend/com/main/catalog/aggregate"
 	pm4 "o.o/backend/com/main/catalog/pm"
 	query5 "o.o/backend/com/main/catalog/query"
@@ -63,6 +64,7 @@ import (
 	aggregate21 "o.o/backend/com/main/contact/aggregate"
 	query25 "o.o/backend/com/main/contact/query"
 	"o.o/backend/com/main/credit"
+	pm25 "o.o/backend/com/main/credit/pm"
 	aggregate25 "o.o/backend/com/main/department/aggregate"
 	"o.o/backend/com/main/department/query"
 	"o.o/backend/com/main/identity"
@@ -1217,7 +1219,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:  session,
 		Shopping: shoppingShopping,
 	}
-	partnerServers, cleanup4 := partner.NewServers(store, generator, partnerAuthURL, partnerMiscService, partnerShopService, partnerWebhookService, partnerHistoryService, shippingService, partnerOrderService, partnerFulfillmentService, partnerCustomerService, customerAddressService, partnerCustomerGroupService, customerGroupRelationshipService, partnerInventoryService, variantService, partnerProductService, productCollectionService, productCollectionRelationshipService)
+	bankStatementAggregate := bankstatement.NewAggregateBankStatement(busBus, mainDB, queryBus)
+	bankstatementCommandBus := bankstatement.BankStatementAggregateMessageBus(bankStatementAggregate)
+	internalService := &partner.InternalService{
+		Session:           session,
+		BankStatementAggr: bankstatementCommandBus,
+	}
+	partnerServers, cleanup4 := partner.NewServers(store, generator, partnerAuthURL, partnerMiscService, partnerShopService, partnerWebhookService, partnerHistoryService, shippingService, partnerOrderService, partnerFulfillmentService, partnerCustomerService, customerAddressService, partnerCustomerGroupService, customerGroupRelationshipService, partnerInventoryService, variantService, partnerProductService, productCollectionService, productCollectionRelationshipService, internalService)
 	xshopMiscService := &xshop.MiscService{
 		Session:  session,
 		Shipping: shippingShipping,
@@ -1493,6 +1501,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager22 := pm23.New(busBus, usersettingQueryBus, queryBus)
 	processManager23 := pm24.NewProcessManager(busBus, ticketCommandBus)
 	portsip_pmProcessManager := portsip_pm.New(busBus, connectionManager, connectioningQueryBus, connectioningCommandBus, telecomManager, etelecomQueryBus, etelecomCommandBus, accountAuthStoreFactory, queryBus)
+	bankStatementQueryService := bankstatement.NewQueryBankStatement(mainDB, queryBus)
+	bankstatementQueryBus := bankstatement.BankStatementQueryServiceMessageBus(bankStatementQueryService)
+	processManager24 := pm25.New(busBus, creditCommandBus, creditQueryBus, bankstatementQueryBus)
 	output := Output{
 		Servers:                v4,
 		Health:                 service,
@@ -1521,6 +1532,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		_etelecomUserSettingPM: processManager22,
 		_ticketPM:              processManager23,
 		_portsipPM:             portsip_pmProcessManager,
+		_creditPM:              processManager24,
 	}
 	return output, func() {
 		cleanup9()

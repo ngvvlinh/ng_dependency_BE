@@ -81,16 +81,17 @@ func Convert_creditmodel_Credit_credit_Credit(arg *creditmodel.Credit, out *cred
 }
 
 func convert_creditmodel_Credit_credit_Credit(arg *creditmodel.Credit, out *credit.Credit) {
-	out.ID = arg.ID               // simple assign
-	out.Amount = arg.Amount       // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Type = arg.Type           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
-	out.PaidAt = arg.PaidAt       // simple assign
-	out.Classify = arg.Classify   // simple assign
+	out.ID = arg.ID                           // simple assign
+	out.Amount = arg.Amount                   // simple assign
+	out.ShopID = arg.ShopID                   // simple assign
+	out.Type = arg.Type                       // simple assign
+	out.Status = arg.Status                   // simple assign
+	out.CreatedAt = arg.CreatedAt             // simple assign
+	out.UpdatedAt = arg.UpdatedAt             // simple assign
+	out.DeletedAt = arg.DeletedAt             // simple assign
+	out.PaidAt = arg.PaidAt                   // simple assign
+	out.Classify = arg.Classify               // simple assign
+	out.BankStatementID = arg.BankStatementID // simple assign
 }
 
 func Convert_creditmodel_Credits_credit_Credits(args []*creditmodel.Credit) (outs []*credit.Credit) {
@@ -117,16 +118,17 @@ func Convert_credit_Credit_creditmodel_Credit(arg *credit.Credit, out *creditmod
 }
 
 func convert_credit_Credit_creditmodel_Credit(arg *credit.Credit, out *creditmodel.Credit) {
-	out.ID = arg.ID               // simple assign
-	out.Amount = arg.Amount       // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Type = arg.Type           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
-	out.PaidAt = arg.PaidAt       // simple assign
-	out.Classify = arg.Classify   // simple assign
+	out.ID = arg.ID                           // simple assign
+	out.Amount = arg.Amount                   // simple assign
+	out.ShopID = arg.ShopID                   // simple assign
+	out.Type = arg.Type                       // simple assign
+	out.Status = arg.Status                   // simple assign
+	out.CreatedAt = arg.CreatedAt             // simple assign
+	out.UpdatedAt = arg.UpdatedAt             // simple assign
+	out.DeletedAt = arg.DeletedAt             // simple assign
+	out.PaidAt = arg.PaidAt                   // simple assign
+	out.Classify = arg.Classify               // simple assign
+	out.BankStatementID = arg.BankStatementID // simple assign
 }
 
 func Convert_credit_Credits_creditmodel_Credits(args []*credit.Credit) (outs []*creditmodel.Credit) {
@@ -153,16 +155,17 @@ func Apply_credit_CreateCreditArgs_credit_Credit(arg *credit.CreateCreditArgs, o
 }
 
 func apply_credit_CreateCreditArgs_credit_Credit(arg *credit.CreateCreditArgs, out *credit.Credit) {
-	out.ID = 0                  // zero value
-	out.Amount = arg.Amount     // simple assign
-	out.ShopID = arg.ShopID     // simple assign
-	out.Type = arg.Type         // simple assign
-	out.Status = 0              // zero value
-	out.CreatedAt = time.Time{} // zero value
-	out.UpdatedAt = time.Time{} // zero value
-	out.DeletedAt = time.Time{} // zero value
-	out.PaidAt = arg.PaidAt     // simple assign
-	out.Classify = arg.Classify // simple assign
+	out.ID = 0                                // zero value
+	out.Amount = arg.Amount                   // simple assign
+	out.ShopID = arg.ShopID                   // simple assign
+	out.Type = arg.Type                       // simple assign
+	out.Status = 0                            // zero value
+	out.CreatedAt = time.Time{}               // zero value
+	out.UpdatedAt = time.Time{}               // zero value
+	out.DeletedAt = time.Time{}               // zero value
+	out.PaidAt = arg.PaidAt                   // simple assign
+	out.Classify = arg.Classify               // simple assign
+	out.BankStatementID = arg.BankStatementID // simple assign
 }
 
 //-- convert o.o/api/main/credit.CreditExtended --//

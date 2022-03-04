@@ -40,11 +40,12 @@ func (h AggregateHandler) HandleConfirmCredit(ctx context.Context, msg *ConfirmC
 }
 
 type CreateCreditCommand struct {
-	Amount   int
-	ShopID   dot.ID
-	Type     credit_type.CreditType
-	PaidAt   time.Time
-	Classify credit_type.CreditClassify
+	Amount          int
+	ShopID          dot.ID
+	Type            credit_type.CreditType
+	PaidAt          time.Time
+	Classify        credit_type.CreditClassify
+	BankStatementID dot.ID
 
 	Result *CreditExtended `json:"-"`
 }
@@ -120,11 +121,12 @@ func (q *ConfirmCreditCommand) SetConfirmCreditArgs(args *ConfirmCreditArgs) {
 func (q *CreateCreditCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCreditArgs) {
 	return ctx,
 		&CreateCreditArgs{
-			Amount:   q.Amount,
-			ShopID:   q.ShopID,
-			Type:     q.Type,
-			PaidAt:   q.PaidAt,
-			Classify: q.Classify,
+			Amount:          q.Amount,
+			ShopID:          q.ShopID,
+			Type:            q.Type,
+			PaidAt:          q.PaidAt,
+			Classify:        q.Classify,
+			BankStatementID: q.BankStatementID,
 		}
 }
 
@@ -134,6 +136,7 @@ func (q *CreateCreditCommand) SetCreateCreditArgs(args *CreateCreditArgs) {
 	q.Type = args.Type
 	q.PaidAt = args.PaidAt
 	q.Classify = args.Classify
+	q.BankStatementID = args.BankStatementID
 }
 
 func (q *DeleteCreditCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteCreditArgs) {

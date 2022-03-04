@@ -235,6 +235,8 @@ type Partner struct {
 	// Dùng để xác thực redirect_url được gửi khi gọi AuthorizeShop
 	RedirectURLs []string
 
+	WhitelistIPs []string
+
 	// AvailableFromEtop: dùng để xác định `partner` này có thể xác thực shop trực tiếp từ client của Etop hay không
 	// Sau khi xác thực xong sẽ trỏ trực tiếp về `redirect_url` trong field AvailableFromEtopConfig để về trang xác thực của `partner`
 	AvailableFromEtop       bool
@@ -413,9 +415,9 @@ type Permission struct {
 // +convert:type=identity.AccountUser
 // +sqlgen
 type AccountUser struct {
-	ID        dot.ID `paging:"id"`
-	AccountID dot.ID
-	UserID    dot.ID
+	ID           dot.ID `paging:"id"`
+	AccountID    dot.ID
+	UserID       dot.ID
 	DepartmentID dot.ID
 
 	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending

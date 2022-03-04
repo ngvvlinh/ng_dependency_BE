@@ -12,16 +12,17 @@ import (
 // +gen:event:topic=event/credit
 
 type Credit struct {
-	ID        dot.ID
-	Amount    int
-	ShopID    dot.ID
-	Type      credit_type.CreditType
-	Status    status3.Status
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
-	PaidAt    time.Time
-	Classify  credit_type.CreditClassify
+	ID              dot.ID
+	Amount          int
+	ShopID          dot.ID
+	Type            credit_type.CreditType
+	Status          status3.Status
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	DeletedAt       time.Time
+	PaidAt          time.Time
+	Classify        credit_type.CreditClassify
+	BankStatementID dot.ID
 }
 
 type CreditExtended struct {

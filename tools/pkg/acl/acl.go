@@ -575,6 +575,8 @@ var _acl = map[string]*permission.Decl{
 	"ext/partner.Webhook/GetWebhooks":   {Type: Partner, Auth: APIKey},
 	"ext/partner.Webhook/DeleteWebhook": {Type: Partner, Auth: APIKey},
 
+	"ext/partner.Internal/CreateBankStatement": {Type: Partner, Auth: APIKey, RequiredWhitelistIPs: true},
+
 	//-- external: partner using partnerShopKey --//
 	"ext/partner.Import/Products":           {Type: Shop, Auth: APIPartnerShopKey},
 	"ext/partner.Import/Brands":             {Type: Shop, Auth: APIPartnerShopKey},

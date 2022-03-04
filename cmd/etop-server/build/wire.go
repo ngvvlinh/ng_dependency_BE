@@ -31,12 +31,13 @@ import (
 	minfabo "o.o/backend/com/fabo/cogs/_min"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/main/address"
+	"o.o/backend/com/main/bankstatement"
 	"o.o/backend/com/main/catalog"
 	"o.o/backend/com/main/connectioning"
 	"o.o/backend/com/main/contact"
 	credit "o.o/backend/com/main/credit"
-	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/department"
+	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/inventory"
 	"o.o/backend/com/main/invoicing"
 	"o.o/backend/com/main/ledgering"
@@ -217,6 +218,7 @@ func Build(
 		ticket.WireSet,
 		contact.WireSet,
 		department.WireSet,
+		bankstatement.WireSet,
 
 		admin_all.WireSet,
 		shop_all.WireSet,

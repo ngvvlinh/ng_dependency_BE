@@ -24,11 +24,12 @@ type QueryService interface {
 
 // +convert:create=Credit
 type CreateCreditArgs struct {
-	Amount   int
-	ShopID   dot.ID
-	Type     credit_type.CreditType
-	PaidAt   time.Time
-	Classify credit_type.CreditClassify
+	Amount          int
+	ShopID          dot.ID
+	Type            credit_type.CreditType
+	PaidAt          time.Time
+	Classify        credit_type.CreditClassify
+	BankStatementID dot.ID
 }
 
 type ConfirmCreditArgs struct {

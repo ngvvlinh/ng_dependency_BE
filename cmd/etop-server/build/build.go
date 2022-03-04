@@ -2,7 +2,6 @@ package build
 
 import (
 	"net/http"
-	_ntx "o.o/backend/cogs/shipment/ntx"
 	"strings"
 
 	"o.o/api/main/catalog"
@@ -17,6 +16,7 @@ import (
 	server_shop "o.o/backend/cogs/server/shop"
 	server_vtpay "o.o/backend/cogs/server/vtpay"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
+	_ntx "o.o/backend/cogs/shipment/ntx"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
 	etelecompm "o.o/backend/com/etelecom/pm"
@@ -24,6 +24,7 @@ import (
 	etelecomusersettingpm "o.o/backend/com/etelecom/usersetting/pm"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	connectioningpm "o.o/backend/com/main/connectioning/pm"
+	creditpm "o.o/backend/com/main/credit/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
 	inventorypm "o.o/backend/com/main/inventory/pm"
 	invitationpm "o.o/backend/com/main/invitation/pm"
@@ -98,6 +99,7 @@ type Output struct {
 	_etelecomUserSettingPM *etelecomusersettingpm.ProcessManager
 	_ticketPM              *ticketpm.ProcessManager
 	_portsipPM             *portsippm.ProcessManager
+	_creditPM              *creditpm.ProcessManager
 }
 
 func BuildServers(

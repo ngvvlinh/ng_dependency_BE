@@ -1,6 +1,8 @@
 package partner_proto
 
 import (
+	"time"
+
 	"o.o/api/top/types/etc/authorize_shop_config"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -33,3 +35,15 @@ type AuthorizeShopResponse struct {
 }
 
 func (m *AuthorizeShopResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateBankStatementRequest struct {
+	Amount            int               `json:"amount"`
+	Description       string            `json:"description"` // format: {mã shop} {số điện thoại}
+	TransferedAt      time.Time         `json:"transfered_at"`
+	TransactionID     string            `json:"transaction_id"`
+	SenderName        string            `json:"sender_name"`
+	SenderBankAccount string            `json:"sender_bank_account"`
+	OtherInfo         map[string]string `json:"other_info"`
+}
+
+func (m *CreateBankStatementRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -637,6 +637,33 @@
         }
       }
     },
+    "/v1/partner.Internal/CreateBankStatement": {
+      "post": {
+        "tags": [
+          "Internal"
+        ],
+        "summary": "CreateBankStatement",
+        "operationId": "partner.Internal-CreateBankStatement",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iqCreateBankStatementRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
     "/v1/partner.Inventory/ListInventoryLevels": {
       "post": {
         "tags": [
@@ -1816,6 +1843,36 @@
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "iqCreateBankStatementRequest": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "other_info": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "sender_bank_account": {
+          "type": "string"
+        },
+        "sender_name": {
+          "type": "string"
+        },
+        "transaction_id": {
+          "type": "string"
+        },
+        "transfered_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -4814,6 +4871,9 @@
     },
     {
       "name": "History"
+    },
+    {
+      "name": "Internal"
     },
     {
       "name": "Inventory"

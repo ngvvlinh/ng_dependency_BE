@@ -49,14 +49,15 @@ func (a AuthOpt) AuthPartner() bool {
 }
 
 type Decl struct {
-	Type            PermType
-	Auth            AuthType
-	Permissions     string
-	Validate        string
-	Captcha         string
-	AuthPartner     AuthOpt
-	Actions         Actions
-	IncludeFaboInfo bool
+	Type                 PermType
+	Auth                 AuthType
+	Permissions          string
+	Validate             string
+	Captcha              string
+	AuthPartner          AuthOpt
+	Actions              Actions
+	IncludeFaboInfo      bool
+	RequiredWhitelistIPs bool
 
 	Rename string
 }

@@ -49,6 +49,7 @@ func NewServers(
 	productService *ProductService,
 	productCollectionService *ProductCollectionService,
 	productCollectionRelationshipService *ProductCollectionRelationshipService,
+	internalService *InternalService,
 ) (Servers, func()) {
 	authStore = auth.NewGenerator(rd)
 	authURL = string(_authURL)
@@ -77,6 +78,7 @@ func NewServers(
 		productService.Clone,
 		productCollectionService.Clone,
 		productCollectionRelationshipService.Clone,
+		internalService.Clone,
 	)
 	return servers, idempgroup.Shutdown
 }

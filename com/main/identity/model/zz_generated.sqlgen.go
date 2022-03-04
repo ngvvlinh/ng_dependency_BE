@@ -2326,8 +2326,8 @@ func (ms *AffiliateHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type Partners []*Partner
 
 const __sqlPartner_Table = "partner"
-const __sqlPartner_ListCols = "\"id\",\"owner_id\",\"status\",\"is_test\",\"name\",\"public_name\",\"phone\",\"email\",\"image_url\",\"website_url\",\"contact_persons\",\"recognized_hosts\",\"redirect_urls\",\"available_from_etop\",\"available_from_etop_config\",\"white_label_key\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlPartner_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"status\" = EXCLUDED.\"status\",\"is_test\" = EXCLUDED.\"is_test\",\"name\" = EXCLUDED.\"name\",\"public_name\" = EXCLUDED.\"public_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"image_url\" = EXCLUDED.\"image_url\",\"website_url\" = EXCLUDED.\"website_url\",\"contact_persons\" = EXCLUDED.\"contact_persons\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"redirect_urls\" = EXCLUDED.\"redirect_urls\",\"available_from_etop\" = EXCLUDED.\"available_from_etop\",\"available_from_etop_config\" = EXCLUDED.\"available_from_etop_config\",\"white_label_key\" = EXCLUDED.\"white_label_key\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlPartner_ListCols = "\"id\",\"owner_id\",\"status\",\"is_test\",\"name\",\"public_name\",\"phone\",\"email\",\"image_url\",\"website_url\",\"contact_persons\",\"recognized_hosts\",\"redirect_urls\",\"whitelist_ips\",\"available_from_etop\",\"available_from_etop_config\",\"white_label_key\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlPartner_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"status\" = EXCLUDED.\"status\",\"is_test\" = EXCLUDED.\"is_test\",\"name\" = EXCLUDED.\"name\",\"public_name\" = EXCLUDED.\"public_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"image_url\" = EXCLUDED.\"image_url\",\"website_url\" = EXCLUDED.\"website_url\",\"contact_persons\" = EXCLUDED.\"contact_persons\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"redirect_urls\" = EXCLUDED.\"redirect_urls\",\"whitelist_ips\" = EXCLUDED.\"whitelist_ips\",\"available_from_etop\" = EXCLUDED.\"available_from_etop\",\"available_from_etop_config\" = EXCLUDED.\"available_from_etop_config\",\"white_label_key\" = EXCLUDED.\"white_label_key\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlPartner_Insert = "INSERT INTO \"partner\" (" + __sqlPartner_ListCols + ") VALUES"
 const __sqlPartner_Select = "SELECT " + __sqlPartner_ListCols + " FROM \"partner\""
 const __sqlPartner_Select_history = "SELECT " + __sqlPartner_ListCols + " FROM history.\"partner\""
@@ -2445,6 +2445,13 @@ func (m *Partner) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"whitelist_ips": {
+			ColumnName:       "whitelist_ips",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"available_from_etop": {
 			ColumnName:       "available_from_etop",
 			ColumnType:       "bool",
@@ -2513,6 +2520,7 @@ func (m *Partner) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.ContactPersons},
 		core.Array{m.RecognizedHosts, opts},
 		core.Array{m.RedirectURLs, opts},
+		core.Array{m.WhitelistIPs, opts},
 		core.Bool(m.AvailableFromEtop),
 		core.JSON{m.AvailableFromEtopConfig},
 		core.String(m.WhiteLabelKey),
@@ -2537,6 +2545,7 @@ func (m *Partner) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.ContactPersons},
 		core.Array{&m.RecognizedHosts, opts},
 		core.Array{&m.RedirectURLs, opts},
+		core.Array{&m.WhitelistIPs, opts},
 		(*core.Bool)(&m.AvailableFromEtop),
 		core.JSON{&m.AvailableFromEtopConfig},
 		(*core.String)(&m.WhiteLabelKey),
@@ -2580,7 +2589,7 @@ func (_ *Partners) SQLSelect(w SQLWriter) error {
 func (m *Partner) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPartner_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -2590,7 +2599,7 @@ func (ms Partners) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPartner_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(19)
+		w.WriteMarkers(20)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -2725,6 +2734,14 @@ func (m *Partner) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.RedirectURLs, opts})
 	}
+	if m.WhitelistIPs != nil {
+		flag = true
+		w.WriteName("whitelist_ips")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.WhitelistIPs, opts})
+	}
 	if m.AvailableFromEtop {
 		flag = true
 		w.WriteName("available_from_etop")
@@ -2783,7 +2800,7 @@ func (m *Partner) SQLUpdate(w SQLWriter) error {
 func (m *Partner) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlPartner_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -2820,6 +2837,7 @@ func (m PartnerHistory) RecognizedHosts() core.Interface {
 	return core.Interface{m["recognized_hosts"]}
 }
 func (m PartnerHistory) RedirectURLs() core.Interface { return core.Interface{m["redirect_urls"]} }
+func (m PartnerHistory) WhitelistIPs() core.Interface { return core.Interface{m["whitelist_ips"]} }
 func (m PartnerHistory) AvailableFromEtop() core.Interface {
 	return core.Interface{m["available_from_etop"]}
 }
@@ -2832,15 +2850,15 @@ func (m PartnerHistory) UpdatedAt() core.Interface     { return core.Interface{m
 func (m PartnerHistory) DeletedAt() core.Interface     { return core.Interface{m["deleted_at"]} }
 
 func (m *PartnerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(PartnerHistory, 19)
+	res := make(PartnerHistory, 20)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
 	res["status"] = data[2]
@@ -2854,20 +2872,21 @@ func (m *PartnerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["contact_persons"] = data[10]
 	res["recognized_hosts"] = data[11]
 	res["redirect_urls"] = data[12]
-	res["available_from_etop"] = data[13]
-	res["available_from_etop_config"] = data[14]
-	res["white_label_key"] = data[15]
-	res["created_at"] = data[16]
-	res["updated_at"] = data[17]
-	res["deleted_at"] = data[18]
+	res["whitelist_ips"] = data[13]
+	res["available_from_etop"] = data[14]
+	res["available_from_etop_config"] = data[15]
+	res["white_label_key"] = data[16]
+	res["created_at"] = data[17]
+	res["updated_at"] = data[18]
+	res["deleted_at"] = data[19]
 	*m = res
 	return nil
 }
 
 func (ms *PartnerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	res := make(PartnerHistories, 0, 128)
@@ -2889,12 +2908,13 @@ func (ms *PartnerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["contact_persons"] = data[10]
 		m["recognized_hosts"] = data[11]
 		m["redirect_urls"] = data[12]
-		m["available_from_etop"] = data[13]
-		m["available_from_etop_config"] = data[14]
-		m["white_label_key"] = data[15]
-		m["created_at"] = data[16]
-		m["updated_at"] = data[17]
-		m["deleted_at"] = data[18]
+		m["whitelist_ips"] = data[13]
+		m["available_from_etop"] = data[14]
+		m["available_from_etop_config"] = data[15]
+		m["white_label_key"] = data[16]
+		m["created_at"] = data[17]
+		m["updated_at"] = data[18]
+		m["deleted_at"] = data[19]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

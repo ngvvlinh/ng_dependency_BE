@@ -216,3 +216,22 @@ func (ft *CreditFilters) ByClassifyPtr(Classify *credit_type.CreditClassify) *sq
 		IsZero: Classify != nil && (*Classify) == 0,
 	}
 }
+
+func (ft *CreditFilters) ByBankStatementID(BankStatementID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "bank_statement_id",
+		Value:  BankStatementID,
+		IsNil:  BankStatementID == 0,
+	}
+}
+
+func (ft *CreditFilters) ByBankStatementIDPtr(BankStatementID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "bank_statement_id",
+		Value:  BankStatementID,
+		IsNil:  BankStatementID == nil,
+		IsZero: BankStatementID != nil && (*BankStatementID) == 0,
+	}
+}

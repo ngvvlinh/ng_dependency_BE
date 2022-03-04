@@ -241,6 +241,8 @@ type Partner struct {
 	WebsiteURL string
 
 	WhiteLabelKey string
+
+	WhitelistIPs []string
 }
 
 type ShopExtended struct {
