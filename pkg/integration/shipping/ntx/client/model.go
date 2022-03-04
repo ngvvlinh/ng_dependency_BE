@@ -208,13 +208,13 @@ type CalcShippingFeeResponse struct {
 }
 
 type ShippingFeeData struct {
-	Weight      int    `json:"weight"`
-	TotalFee    int    `json:"total_fee"`
-	MainFee     int    `json:"main_fee"`
-	ServiceID   int    `json:"service_id"`
-	ServiceCode string `json:"service_code"`
-	ServiceName string `json:"service_name"`
-	LeadTime    string `json:"lead_time"`
+	Weight      float64 `json:"weight"`
+	TotalFee    int     `json:"total_fee"`
+	MainFee     int     `json:"main_fee"`
+	ServiceID   int     `json:"service_id"`
+	ServiceCode string  `json:"service_code"`
+	ServiceName string  `json:"service_name"`
+	LeadTime    string  `json:"lead_time"`
 }
 
 type FindAvailableServicesResponse struct {
