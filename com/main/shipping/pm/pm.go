@@ -279,10 +279,10 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing shop ID").WithMeta("event", "SingleFulfillmentCreatingEvent")
 	}
 
-	provinces := []string{
-		"01", // HN
-		"79", // HCM
-	}
+	// provinces := []string{
+	// 	// "01", // HN
+	// 	// "79", // HCM
+	// }
 
 	// Trường hợp địa chỉ lấy hàng nằm ngoài HCM, HN
 	// Tính số dư user: GetBalanceUser
@@ -304,15 +304,16 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 	}
 	actualBalance := query.Result.ActualBalance
 
-	// HCM, HN
-	if cm.StringsContain(provinces, fromAddress.ProvinceCode) {
-		if actualBalance-event.ShippingFee < MinShopBalance {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
-		}
-		return nil
-	}
+	// // HCM, HN
+	// if cm.StringsContain(provinces, fromAddress.ProvinceCode) {
+	// 	if actualBalance-event.ShippingFee < MinShopBalance {
+	// 		return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
+	// 	}
+	// 	return nil
+	// }
 
-	if actualBalance-event.ShippingFee < 0 {
+	// update 20220305: allow min shop balance in nationwide
+	if actualBalance-event.ShippingFee < MinShopBalance {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
 	}
 	return nil
