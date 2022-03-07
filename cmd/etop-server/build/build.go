@@ -2,6 +2,7 @@ package build
 
 import (
 	"net/http"
+	_ntx "o.o/backend/cogs/shipment/ntx"
 	"strings"
 
 	"o.o/api/main/catalog"
@@ -105,6 +106,7 @@ func BuildServers(
 	shipmentWebhookServer shipmentwebhookall.ShipmentWebhookServer,
 	ghtkServer _ghtk.GHTKWebhookServer,
 	vtpostServer _vtpost.VTPostWebhookServer,
+	ntxServer _ntx.NTXWebhookServer,
 	ahamoveServer ahamoveserver.AhamoveWebhookServer,
 ) []lifecycle.HTTPServer {
 	svrs := []lifecycle.HTTPServer{
@@ -113,6 +115,7 @@ func BuildServers(
 		{"Shipment webhook    ", shipmentWebhookServer},
 		{"GHTK   ", ghtkServer},
 		{"VTPOST ", vtpostServer},
+		{"NTX ", ntxServer},
 		{"AHAMOVE", ahamoveServer},
 	}
 	return svrs

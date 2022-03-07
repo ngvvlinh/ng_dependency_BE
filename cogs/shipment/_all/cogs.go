@@ -1,6 +1,7 @@
 package shipment_all
 
 import (
+	_ntx "o.o/backend/cogs/shipment/ntx"
 	ntxclient "o.o/backend/pkg/integration/shipping/ntx/client"
 	"strconv"
 
@@ -48,8 +49,9 @@ type Config struct {
 	GHTK            ghtk.Config            `yaml:"ghtk"`
 	GHTKWebhook     _ghtk.WebhookConfig    `yaml:"ghtk_webhook"`
 	VTPost          vtpost.Config          `yaml:"vtpost"`
-	NTX             ntxclient.Config       `yaml:"ntx"`
 	VTPostWebhook   _vtpost.WebhookConfig  `yaml:"vtpost_webhook"`
+	NTX             ntxclient.Config       `yaml:"ntx"`
+	NTXWebhook      _ntx.WebhookConfig     `yaml:"ntx_webhook"`
 	NinjaVanWebhook ninjavan.WebhookConfig `yaml:"ninjavan_webhook"`
 }
 
@@ -70,6 +72,7 @@ func DefaultConfig() Config {
 		VTPostWebhook:   _vtpost.WebhookConfig{Port: 9042},
 		NinjaVanWebhook: ninjavan.DefaultWebhookConfig(),
 		NTX:             ntxclient.DefaultConfig(),
+		NTXWebhook:      _ntx.WebhookConfig{Port: 9062},
 	}
 }
 
@@ -352,6 +355,16 @@ var shipmentServicesByCarrier = services.MapShipmentServices{
 		{
 			ServiceID: string(ninjavanclient.ServiceLevelStandard),
 			Name:      "Chuẩn",
+		},
+	},
+	sptypes.NTX: {
+		{
+			ServiceID: string(ntxclient.OrderServiceCodeCH),
+			Name:      "Chuẩn",
+		},
+		{
+			ServiceID: string(ntxclient.OrderServiceCodeNH),
+			Name:      "Nhanh",
 		},
 	},
 	sptypes.DHL: {

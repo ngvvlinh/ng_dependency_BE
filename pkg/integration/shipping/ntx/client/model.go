@@ -2,6 +2,7 @@ package client
 
 import (
 	typesshipping "o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/status5"
 	"o.o/backend/pkg/common/apifw/httpreq"
 	cc "o.o/backend/pkg/common/config"
@@ -155,6 +156,15 @@ func (s State) ToModel() typesshipping.State {
 	}
 }
 
+func (s State) ToSubstateModel() shippingsubstate.Substate {
+	switch s {
+	case StateUnsuccessfulPickup:
+		return shippingsubstate.PickFail
+	default:
+		return 0
+	}
+}
+
 func (s State) ToStatus5() status5.Status {
 	switch s.ToModel() {
 	case typesshipping.Cancelled:
@@ -296,4 +306,17 @@ type OrderResponse struct {
 
 type CancelOrderRequest struct {
 	ListDocode []string `json:"listDocode"`
+}
+
+type CallbackOrder struct {
+	BillNo          string        `json:"bill_no"`
+	RefCode         string        `json:"ref_code"`
+	StatusID        int           `json:"status_id"`
+	StatusName      string        `json:"status_name"`
+	StatusTime      int           `json:"status_time"`
+	ShippingFee     int           `json:"shipping_fee"`
+	ListIssue       []interface{} `json:"list_issue"`
+	Weight          float64       `json:"weight"`
+	DimensionWeight int           `json:"dimension_weight"`
+	CodAmount       int           `json:"cod_amount"`
 }

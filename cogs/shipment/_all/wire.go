@@ -7,6 +7,7 @@ import (
 
 	_shipment "o.o/backend/cogs/shipment"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
+	_ntx "o.o/backend/cogs/shipment/ntx"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
 	"o.o/backend/com/main/shippingcode"
@@ -26,7 +27,8 @@ var WireSet = wire.NewSet(
 	shipmentwebhookall.WireSet,
 	_ghtk.WireSet,
 	_vtpost.WireSet,
-	wire.FieldsOf(new(Config), "GHN", "GHNWebhook", "GHTK", "GHTKWebhook", "VTPost", "VTPostWebhook", "NTX"),
+	_ntx.WireSet,
+	wire.FieldsOf(new(Config), "GHN", "GHNWebhook", "GHTK", "GHTKWebhook", "VTPost", "VTPostWebhook", "NTX", "NTXWebhook"),
 	ghnimport.WireSet,
 	ghtkimport.WireSet,
 	vtpostimport.WireSet,

@@ -19,6 +19,7 @@ import (
 	"o.o/backend/cogs/server/vtpay"
 	"o.o/backend/cogs/shipment/_all"
 	"o.o/backend/cogs/shipment/ghtk"
+	"o.o/backend/cogs/shipment/ntx"
 	"o.o/backend/cogs/shipment/vtpost"
 	_all3 "o.o/backend/cogs/shipment/webhook/_all"
 	"o.o/backend/cogs/shipnow/_all"
@@ -243,12 +244,13 @@ import (
 	"o.o/backend/pkg/integration/shipnow/ahamove"
 	client2 "o.o/backend/pkg/integration/shipnow/ahamove/client"
 	server3 "o.o/backend/pkg/integration/shipnow/ahamove/server"
-	webhook6 "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
+	webhook7 "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
 	webhook2 "o.o/backend/pkg/integration/shipping/direct/webhook"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v1"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
 	webhook4 "o.o/backend/pkg/integration/shipping/ghtk/webhook"
 	webhook3 "o.o/backend/pkg/integration/shipping/ninjavan/webhook"
+	webhook6 "o.o/backend/pkg/integration/shipping/ntx/webhook"
 	webhook5 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/backend/pkg/integration/sms"
 	"o.o/backend/pkg/services/affiliate/api"
@@ -1438,23 +1440,26 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webhookConfig := shipment_allConfig.GHNWebhook
 	v1Webhook := v1.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	v2Webhook := v2.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
-	webhook7 := webhook3.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
-	shipmentWebhookServer := _all3.NewShipmentWebhookServer(webhookConfig, v1Webhook, v2Webhook, webhook7)
+	webhook8 := webhook3.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
+	shipmentWebhookServer := _all3.NewShipmentWebhookServer(webhookConfig, v1Webhook, v2Webhook, webhook8)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
-	webhook8 := webhook4.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
-	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook8)
+	webhook9 := webhook4.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
+	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook9)
 	_vtpostWebhookConfig := shipment_allConfig.VTPostWebhook
-	webhook9 := webhook5.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
-	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook9)
+	webhook10 := webhook5.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
+	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook10)
+	_ntxWebhookConfig := shipment_allConfig.NTXWebhook
+	webhook11 := webhook6.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
+	ntxWebhookServer := _ntx.NewNTXWebhookServer(_ntxWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook11)
 	serverWebhookConfig := cfg.AhamoveWebhook
 	config4 := cfg.Ahamove
 	client3 := client2.New(config4)
 	urlConfig := shipnow_all.AhamoveConfig(cfg)
 	ahamoveCarrier := ahamove.New(client3, urlConfig, locationQueryBus, queryBus, accountshipnowQueryBus)
 	ahamoveVerificationFileServer := server3.NewAhamoveVerificationFileServer(ctx, accountshipnowQueryBus)
-	webhook10 := webhook6.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)
-	ahamoveWebhookServer := server3.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, queryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook10)
-	v4 := BuildServers(mainServer, webServer, shipmentWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
+	webhook12 := webhook7.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)
+	ahamoveWebhookServer := server3.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, queryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook12)
+	v4 := BuildServers(mainServer, webServer, shipmentWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ntxWebhookServer, ahamoveWebhookServer)
 	processManager := pm.New(busBus, queryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus, accountUserStoreInterface)
 	pmProcessManager := pm2.New(busBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
 	processManager2 := pm3.New(busBus, invitationQueryBus, invitationCommandBus)

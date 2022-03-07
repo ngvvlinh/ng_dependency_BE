@@ -101,7 +101,7 @@ func (d *NTXDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.Fulfil
 		Weight:         float64(args.ChargeableWeight) / 1000,
 		CargoContentID: 8,
 		CargoContent:   "Khác",
-		Note:           "",
+		Note:           ffm.ShippingNote,
 		UtmSource:      ntxclient.UTMSource,
 		PackageNo:      1,
 	}

@@ -16,14 +16,16 @@ import (
 
 var ll = l.New()
 
-type ServiceType string
-type ServiceLevel string
+type NTXOrderServiceCode string
 
 const (
 	UTMSource           = "api_etop"
 	PathCalcShippingFee = "/v1/bill/calc-fee"
 	PathCreateOrder     = "/v1/bill/create"
 	PathCancelOrder     = "/v1/bill/destroy"
+
+	OrderServiceCodeCH NTXOrderServiceCode = "STANDARD"
+	OrderServiceCodeNH NTXOrderServiceCode = "FAST"
 )
 
 type Client struct {
