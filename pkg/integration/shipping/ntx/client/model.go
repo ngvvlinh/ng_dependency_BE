@@ -293,3 +293,7 @@ type OrderResponse struct {
 	CargoValue        int     `json:"cargo_value"`
 	Note              string  `json:"note"`
 }
+
+type CancelOrderRequest struct {
+	ListDocode []string `json:"listDocode"`
+}

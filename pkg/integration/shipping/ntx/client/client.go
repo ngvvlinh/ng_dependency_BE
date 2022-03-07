@@ -23,6 +23,7 @@ const (
 	UTMSource           = "api_etop"
 	PathCalcShippingFee = "/v1/bill/calc-fee"
 	PathCreateOrder     = "/v1/bill/create"
+	PathCancelOrder     = "/v1/bill/destroy"
 )
 
 type Client struct {
@@ -71,6 +72,12 @@ func (c *Client) CalcShippingFee(ctx context.Context, req *CalcShippingFeeReques
 func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
 	var resp CreateOrderResponse
 	err := c.sendPostRequest(ctx, PathCreateOrder, req, &resp, "Không thể tạo đơn hàng")
+	return &resp, err
+}
+
+func (c *Client) CancelOrder(ctx context.Context, req *CancelOrderRequest) (*CommonResponse, error) {
+	var resp CommonResponse
+	err := c.sendPostRequest(ctx, PathCancelOrder, req, &resp, "Không thể hủy đơn hàng")
 	return &resp, err
 }
 

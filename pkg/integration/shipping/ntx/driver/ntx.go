@@ -17,6 +17,7 @@ import (
 	"o.o/backend/pkg/common/randgenerator"
 	"o.o/backend/pkg/integration/shipping"
 	ntxclient "o.o/backend/pkg/integration/shipping/ntx/client"
+	"o.o/capi/dot"
 	"time"
 )
 
@@ -54,7 +55,7 @@ func (d *NTXDriver) GetAffiliateID() string {
 }
 
 func (d *NTXDriver) GenerateToken(ctx context.Context) (*carriertypes.GenerateTokenResponse, error) {
-	panic("implement me")
+	return nil, cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }
 
 func (d *NTXDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, args *carriertypes.GetShippingServicesArgs, service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
@@ -124,17 +125,23 @@ func (d *NTXDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.Fulfil
 	}
 
 	now := time.Now()
+	maxValueFreeInsuranceFee := d.GetMaxValueFreeInsuranceFee()
+	insuranceValue := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 	updateFfm := &shipmodel.Fulfillment{
-		ID:                        ffm.ID,
-		ProviderServiceID:         service.ProviderServiceID,
-		Status:                    status5.S,
-		ShippingFeeShop:           ffm.ShippingServiceFee,
+		ID:                ffm.ID,
+		ProviderServiceID: service.ProviderServiceID,
+		Status:            status5.S,
+
+		ShippingFeeShop: ffm.ShippingServiceFee,
+
 		ShippingCode:              r.Order.BillCode,
 		ExternalShippingName:      service.Name,
+		ExternalShippingID:        r.Order.BillCode,
 		ExternalShippingCode:      r.Order.BillCode,
 		ExternalShippingCreatedAt: now,
 		ExternalShippingUpdatedAt: now,
 		ShippingCreatedAt:         now,
+		ExternalShippingFee:       r.Order.TotalFee,
 		ShippingState:             shippingstate.Created,
 		SyncStatus:                status4.P,
 		SyncStates: &shippingsharemodel.FulfillmentSyncStates{
@@ -142,25 +149,31 @@ func (d *NTXDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.Fulfil
 			TrySyncAt: now,
 		},
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
+		InsuranceValue:     dot.Int(insuranceValue),
 	}
 
 	return updateFfm, nil
 }
 
-func (d *NTXDriver) RefreshFulfillment(ctx context.Context, fulfillment *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	panic("implement me")
+func (d *NTXDriver) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+	return nil, cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }
 
-func (d *NTXDriver) UpdateFulfillmentInfo(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
-	panic("implement me")
+func (d *NTXDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }
 
-func (d *NTXDriver) UpdateFulfillmentCOD(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
-	panic("implement me")
+func (d *NTXDriver) UpdateFulfillmentCOD(ctx context.Context, ffm *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }
 
-func (d *NTXDriver) CancelFulfillment(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
-	panic("implement me")
+func (d *NTXDriver) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) error {
+	cmd := &ntxclient.CancelOrderRequest{
+		ListDocode: []string{ffm.ExternalShippingCode},
+	}
+
+	_, err := d.client.CancelOrder(ctx, cmd)
+	return err
 }
 
 func (d *NTXDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
@@ -255,11 +268,11 @@ func (d *NTXDriver) GetMaxValueFreeInsuranceFee() int {
 	return 0
 }
 
-func (d *NTXDriver) SignIn(ctx context.Context, args *carriertypes.SignInArgs) (*carriertypes.AccountResponse, error) {
+func (d *NTXDriver) SignIn(context.Context, *carriertypes.SignInArgs) (*carriertypes.AccountResponse, error) {
 	return nil, cm.Errorf(cm.Unimplemented, nil, "Không hỗ trợ đăng nhập tài khoản NTX")
 }
 
-func (d *NTXDriver) SignUp(ctx context.Context, args *carriertypes.SignUpArgs) (*carriertypes.AccountResponse, error) {
+func (d *NTXDriver) SignUp(context.Context, *carriertypes.SignUpArgs) (*carriertypes.AccountResponse, error) {
 	return nil, cm.Errorf(cm.Unimplemented, nil, "Không hỗ trợ đăng ký tài khoản NTX")
 }
 
