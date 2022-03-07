@@ -226,7 +226,7 @@ type AvailableService struct {
 	ServiceCode String
 }
 
-type OrderRequest struct {
+type CreateOrderRequest struct {
 	PartnerID      int     `json:"partner_id"`
 	SName          string  `json:"s_name"`
 	SPhone         string  `json:"s_phone"`
@@ -250,6 +250,8 @@ type OrderRequest struct {
 	Note           string  `json:"note"`
 	UtmSource      string  `json:"utm_source"`
 	RefCode        string  `json:"ref_code"`
+	PackageNo      int     `json:"package_no"`
+	IsDeductCod    int     `json:"is_deduct_cod"`
 }
 
 type CreateOrderResponse struct {

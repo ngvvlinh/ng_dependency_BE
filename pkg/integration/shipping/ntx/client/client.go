@@ -22,6 +22,7 @@ type ServiceLevel string
 const (
 	UTMSource           = "api_etop"
 	PathCalcShippingFee = "/v1/bill/calc-fee"
+	PathCreateOrder     = "/v1/bill/create"
 )
 
 type Client struct {
@@ -64,6 +65,12 @@ func New(env string, cfg Config) *Client {
 func (c *Client) CalcShippingFee(ctx context.Context, req *CalcShippingFeeRequest) (*CalcShippingFeeResponse, error) {
 	var resp CalcShippingFeeResponse
 	err := c.sendPostRequest(ctx, PathCalcShippingFee, req, &resp, "Không thể tính phí giao hàng")
+	return &resp, err
+}
+
+func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
+	var resp CreateOrderResponse
+	err := c.sendPostRequest(ctx, PathCreateOrder, req, &resp, "Không thể tạo đơn hàng")
 	return &resp, err
 }
 

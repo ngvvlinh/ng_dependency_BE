@@ -6,7 +6,10 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/main/shippingcode"
+	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/status5"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
@@ -54,8 +57,94 @@ func (d *NTXDriver) GenerateToken(ctx context.Context) (*carriertypes.GenerateTo
 	panic("implement me")
 }
 
-func (d *NTXDriver) CreateFulfillment(ctx context.Context, fulfillment *shipmodel.Fulfillment, args *carriertypes.GetShippingServicesArgs, service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	panic("implement me")
+func (d *NTXDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, args *carriertypes.GetShippingServicesArgs, service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+	fromQuery := &location.GetLocationQuery{
+		DistrictCode: ffm.AddressFrom.DistrictCode,
+		WardCode:     ffm.AddressFrom.WardCode,
+	}
+	toQuery := &location.GetLocationQuery{
+		DistrictCode: ffm.AddressTo.DistrictCode,
+		WardCode:     ffm.AddressTo.WardCode,
+	}
+	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+		return nil, err
+	}
+
+	fromWard, fromDistrict, fromProvince := fromQuery.Result.Ward, fromQuery.Result.District, fromQuery.Result.Province
+	toWard, toDistrict, toProvince := toQuery.Result.Ward, toQuery.Result.District, toQuery.Result.Province
+	if toWard.VtpostId == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "NTX không thể giao hàng tới địa chỉ này (%v, %v, %v)", toWard.Name, toDistrict.Name, toProvince.Name)
+	}
+
+	orderService, err := d.ParseServiceID(service.ProviderServiceID)
+	if err != nil {
+		return nil, err
+	}
+
+	cmd := &ntxclient.CreateOrderRequest{
+		PartnerID:      d.client.PartnerID,
+		SName:          ffm.AddressFrom.GetFullName(),
+		SPhone:         ffm.AddressFrom.Phone,
+		SAddress:       cm.Coalesce(ffm.AddressFrom.Address1, ffm.AddressFrom.Address2),
+		SProvinceID:    fromProvince.NTXId,
+		SDistrictID:    fromDistrict.NTXId,
+		SWardID:        fromWard.NTXId,
+		RName:          ffm.AddressTo.GetFullName(),
+		RPhone:         ffm.AddressTo.Phone,
+		RAddress:       cm.Coalesce(ffm.AddressTo.Address1, ffm.AddressTo.Address2),
+		RProvinceID:    toProvince.NTXId,
+		RDistrictID:    toDistrict.NTXId,
+		RWardID:        toWard.NTXId,
+		CodAmount:      ffm.TotalCODAmount,
+		PaymentMethod:  d.client.PaymentMethod,
+		Weight:         float64(args.ChargeableWeight) / 1000,
+		CargoContentID: 8,
+		CargoContent:   "Khác",
+		Note:           "",
+		UtmSource:      ntxclient.UTMSource,
+		PackageNo:      1,
+	}
+
+	generateShippingCodeQuery := &shippingcode.GenerateShippingCodeQuery{}
+	if err := d.shippingcodeQS.Dispatch(ctx, generateShippingCodeQuery); err != nil {
+		return nil, err
+	}
+	cmd.RefCode = generateShippingCodeQuery.Result
+	if orderService == "NH" {
+		cmd.ServiceID = 1
+	}
+
+	if orderService == "CH" {
+		cmd.ServiceID = 2
+	}
+
+	r, err := d.client.CreateOrder(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now()
+	updateFfm := &shipmodel.Fulfillment{
+		ID:                        ffm.ID,
+		ProviderServiceID:         service.ProviderServiceID,
+		Status:                    status5.S,
+		ShippingFeeShop:           ffm.ShippingServiceFee,
+		ShippingCode:              r.Order.BillCode,
+		ExternalShippingName:      service.Name,
+		ExternalShippingCode:      r.Order.BillCode,
+		ExternalShippingCreatedAt: now,
+		ExternalShippingUpdatedAt: now,
+		ShippingCreatedAt:         now,
+		ShippingState:             shippingstate.Created,
+		SyncStatus:                status4.P,
+		SyncStates: &shippingsharemodel.FulfillmentSyncStates{
+			SyncAt:    now,
+			TrySyncAt: now,
+		},
+		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
+	}
+
+	return updateFfm, nil
 }
 
 func (d *NTXDriver) RefreshFulfillment(ctx context.Context, fulfillment *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {

@@ -46788,6 +46788,7 @@ var Wards = []*types.Ward{
 		DistrictCode: "760",
 		Name:         "Phường Đa Kao",
 		VTPostID:     776,
+		NTXID:        28249,
 		HaravanCode:  "26737",
 		GhnCode:      "20106",
 	},
