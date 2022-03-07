@@ -134,14 +134,14 @@ func (d *NTXDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.Fulfil
 
 		ShippingFeeShop: ffm.ShippingServiceFee,
 
-		ShippingCode:              r.Order.BillCode,
+		ShippingCode:              r.Data.BillCode,
 		ExternalShippingName:      service.Name,
-		ExternalShippingID:        r.Order.BillCode,
-		ExternalShippingCode:      r.Order.BillCode,
+		ExternalShippingID:        r.Data.BillCode,
+		ExternalShippingCode:      r.Data.BillCode,
 		ExternalShippingCreatedAt: now,
 		ExternalShippingUpdatedAt: now,
 		ShippingCreatedAt:         now,
-		ExternalShippingFee:       r.Order.TotalFee,
+		ExternalShippingFee:       r.Data.TotalFee,
 		ShippingState:             shippingstate.Created,
 		SyncStatus:                status4.P,
 		SyncStates: &shippingsharemodel.FulfillmentSyncStates{

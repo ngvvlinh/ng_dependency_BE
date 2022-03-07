@@ -227,15 +227,6 @@ type ShippingFeeData struct {
 	LeadTime    string  `json:"lead_time"`
 }
 
-type FindAvailableServicesResponse struct {
-	AvailableServices []*AvailableService
-}
-
-type AvailableService struct {
-	Name        String
-	ServiceCode String
-}
-
 type CreateOrderRequest struct {
 	PartnerID      int     `json:"partner_id"`
 	SName          string  `json:"s_name"`
@@ -266,42 +257,40 @@ type CreateOrderRequest struct {
 
 type CreateOrderResponse struct {
 	CommonResponse
-	Order OrderResponse `json:"order"`
-}
-
-type OrderResponse struct {
-	BillID            int     `json:"bill_id"`
-	BillCode          string  `json:"bill_code"`
-	RefCode           string  `json:"ref_code"`
-	StatusID          int     `json:"status_id"`
-	StatusName        string  `json:"status_name"`
-	CodAmount         int     `json:"cod_amount"`
-	ServiceName       string  `json:"service_name"`
-	PaymentMethodCode string  `json:"payment_method_code"`
-	PaymentMethod     string  `json:"payment_method"`
-	CreatedAt         string  `json:"created_at"`
-	TotalFee          int     `json:"total_fee"`
-	CodFee            int     `json:"cod_fee"`
-	SName             string  `json:"s_name"`
-	SPhone            string  `json:"s_phone"`
-	SAddress          string  `json:"s_address"`
-	SProvinceName     string  `json:"s_province_name"`
-	SDistrictName     string  `json:"s_district_name"`
-	SWardName         string  `json:"s_ward_name"`
-	SPostName         string  `json:"s_post_name"`
-	RName             string  `json:"r_name"`
-	RPhone            string  `json:"r_phone"`
-	RAddress          string  `json:"r_address"`
-	RProvinceName     string  `json:"r_province_name"`
-	RDistrictName     string  `json:"r_district_name"`
-	RWardName         string  `json:"r_ward_name"`
-	RPostName         string  `json:"r_post_name"`
-	PackageNo         int     `json:"package_no"`
-	Weight            float64 `json:"weight"`
-	CargoContent      string  `json:"cargo_content"`
-	CargoName         string  `json:"cargo_name"`
-	CargoValue        int     `json:"cargo_value"`
-	Note              string  `json:"note"`
+	Data struct {
+		BillID            int     `json:"bill_id"`
+		BillCode          string  `json:"bill_code"`
+		RefCode           string  `json:"ref_code"`
+		StatusID          int     `json:"status_id"`
+		StatusName        string  `json:"status_name"`
+		CodAmount         int     `json:"cod_amount"`
+		ServiceName       string  `json:"service_name"`
+		PaymentMethodCode string  `json:"payment_method_code"`
+		PaymentMethod     string  `json:"payment_method"`
+		CreatedAt         string  `json:"created_at"`
+		TotalFee          int     `json:"total_fee"`
+		CodFee            int     `json:"cod_fee"`
+		SName             string  `json:"s_name"`
+		SPhone            string  `json:"s_phone"`
+		SAddress          string  `json:"s_address"`
+		SProvinceName     string  `json:"s_province_name"`
+		SDistrictName     string  `json:"s_district_name"`
+		SWardName         string  `json:"s_ward_name"`
+		SPostName         string  `json:"s_post_name"`
+		RName             string  `json:"r_name"`
+		RPhone            string  `json:"r_phone"`
+		RAddress          string  `json:"r_address"`
+		RProvinceName     string  `json:"r_province_name"`
+		RDistrictName     string  `json:"r_district_name"`
+		RWardName         string  `json:"r_ward_name"`
+		RPostName         string  `json:"r_post_name"`
+		PackageNo         int     `json:"package_no"`
+		Weight            float64 `json:"weight"`
+		CargoContent      string  `json:"cargo_content"`
+		CargoName         string  `json:"cargo_name"`
+		CargoValue        int     `json:"cargo_value"`
+		Note              string  `json:"note"`
+	} `json:"data"`
 }
 
 type CancelOrderRequest struct {

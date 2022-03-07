@@ -150,7 +150,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 }
 
 func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ntxclient.CallbackOrder) (ffm *shipmodel.Fulfillment, err error) {
-	orderCode := msg.RefCode
+	orderCode := msg.BillNo
 	if orderCode == "" {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "OrderCode is empty")
 	}
