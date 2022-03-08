@@ -2,6 +2,8 @@
 
 // Total VTPost Province not found: 0/63
 // Total VTPost: 0/63
+// Total NTX Province not found: 0/63
+// Total NTX: 0/63
 
 package list
 
@@ -19,6 +21,7 @@ var Provinces = []*types.Province{
 		Name:        "Thành phố Hà Nội",
 		VTPostID:    1,
 		HaravanCode: "HI",
+		NTXID:       29,
 		Special:     true,
 		Alias:       []string{"HN"},
 	},
@@ -28,6 +31,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Hà Giang",
 		VTPostID:    18,
 		HaravanCode: "HG",
+		NTXID:       23,
 	},
 	{
 		Code:        "04",
@@ -35,6 +39,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Cao Bằng",
 		VTPostID:    19,
 		HaravanCode: "CB",
+		NTXID:       11,
 	},
 	{
 		Code:        "06",
@@ -42,6 +47,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bắc Kạn",
 		VTPostID:    21,
 		HaravanCode: "BK",
+		NTXID:       97,
 		Alias:       []string{"Bắc Cạn"},
 	},
 	{
@@ -50,6 +56,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Tuyên Quang",
 		VTPostID:    23,
 		HaravanCode: "TQ",
+		NTXID:       22,
 	},
 	{
 		Code:        "10",
@@ -57,6 +64,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Lào Cai",
 		VTPostID:    20,
 		HaravanCode: "LO",
+		NTXID:       24,
 	},
 	{
 		Code:        "11",
@@ -64,6 +72,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Điện Biên",
 		VTPostID:    64,
 		HaravanCode: "DB",
+		NTXID:       27,
 	},
 	{
 		Code:        "12",
@@ -71,6 +80,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Lai Châu",
 		VTPostID:    29,
 		HaravanCode: "LI",
+		NTXID:       25,
 	},
 	{
 		Code:        "14",
@@ -78,6 +88,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Sơn La",
 		VTPostID:    30,
 		HaravanCode: "SL",
+		NTXID:       26,
 	},
 	{
 		Code:        "15",
@@ -85,6 +96,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Yên Bái",
 		VTPostID:    24,
 		HaravanCode: "YB",
+		NTXID:       21,
 	},
 	{
 		Code:        "17",
@@ -92,6 +104,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Hoà Bình",
 		VTPostID:    31,
 		HaravanCode: "HO",
+		NTXID:       28,
 	},
 	{
 		Code:        "19",
@@ -99,6 +112,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Thái Nguyên",
 		VTPostID:    25,
 		HaravanCode: "TY",
+		NTXID:       20,
 	},
 	{
 		Code:        "20",
@@ -106,6 +120,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Lạng Sơn",
 		VTPostID:    22,
 		HaravanCode: "LS",
+		NTXID:       12,
 	},
 	{
 		Code:        "22",
@@ -113,6 +128,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Quảng Ninh",
 		VTPostID:    28,
 		HaravanCode: "QN",
+		NTXID:       14,
 	},
 	{
 		Code:        "24",
@@ -120,6 +136,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bắc Giang",
 		VTPostID:    27,
 		HaravanCode: "BG",
+		NTXID:       98,
 	},
 	{
 		Code:        "25",
@@ -127,6 +144,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Phú Thọ",
 		VTPostID:    26,
 		HaravanCode: "PT",
+		NTXID:       19,
 	},
 	{
 		Code:        "26",
@@ -134,6 +152,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Vĩnh Phúc",
 		VTPostID:    10,
 		HaravanCode: "VT",
+		NTXID:       88,
 	},
 	{
 		Code:        "27",
@@ -141,6 +160,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bắc Ninh",
 		VTPostID:    11,
 		HaravanCode: "BN",
+		NTXID:       99,
 	},
 	{
 		Code:        "30",
@@ -148,6 +168,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Hải Dương",
 		VTPostID:    12,
 		HaravanCode: "HD",
+		NTXID:       34,
 	},
 	{
 		Code:        "31",
@@ -155,6 +176,7 @@ var Provinces = []*types.Province{
 		Name:        "Thành phố Hải Phòng",
 		VTPostID:    3,
 		HaravanCode: "HP",
+		NTXID:       16,
 	},
 	{
 		Code:        "33",
@@ -162,6 +184,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Hưng Yên",
 		VTPostID:    13,
 		HaravanCode: "HY",
+		NTXID:       89,
 	},
 	{
 		Code:        "34",
@@ -169,6 +192,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Thái Bình",
 		VTPostID:    16,
 		HaravanCode: "TB",
+		NTXID:       17,
 	},
 	{
 		Code:        "35",
@@ -176,6 +200,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Hà Nam",
 		VTPostID:    14,
 		HaravanCode: "HM",
+		NTXID:       90,
 	},
 	{
 		Code:        "36",
@@ -183,6 +208,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Nam Định",
 		VTPostID:    15,
 		HaravanCode: "ND",
+		NTXID:       18,
 	},
 	{
 		Code:        "37",
@@ -190,6 +216,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Ninh Bình",
 		VTPostID:    17,
 		HaravanCode: "NB",
+		NTXID:       35,
 	},
 	{
 		Code:        "38",
@@ -197,6 +224,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Thanh Hóa",
 		VTPostID:    32,
 		HaravanCode: "TH",
+		NTXID:       36,
 	},
 	{
 		Code:        "40",
@@ -204,6 +232,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Nghệ An",
 		VTPostID:    33,
 		HaravanCode: "NA",
+		NTXID:       37,
 	},
 	{
 		Code:        "42",
@@ -211,6 +240,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Hà Tĩnh",
 		VTPostID:    34,
 		HaravanCode: "HT",
+		NTXID:       38,
 	},
 	{
 		Code:        "44",
@@ -218,6 +248,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Quảng Bình",
 		VTPostID:    35,
 		HaravanCode: "QB",
+		NTXID:       73,
 	},
 	{
 		Code:        "45",
@@ -225,6 +256,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Quảng Trị",
 		VTPostID:    36,
 		HaravanCode: "QT",
+		NTXID:       74,
 	},
 	{
 		Code:        "46",
@@ -232,6 +264,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Thừa Thiên Huế",
 		VTPostID:    37,
 		HaravanCode: "TT",
+		NTXID:       75,
 		Alias:       []string{"Huế"},
 	},
 	{
@@ -240,6 +273,7 @@ var Provinces = []*types.Province{
 		Name:        "Thành phố Đà Nẵng",
 		VTPostID:    4,
 		HaravanCode: "DA",
+		NTXID:       43,
 		Special:     true,
 	},
 	{
@@ -248,6 +282,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Quảng Nam",
 		VTPostID:    38,
 		HaravanCode: "QM",
+		NTXID:       92,
 	},
 	{
 		Code:        "51",
@@ -255,6 +290,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Quảng Ngãi",
 		VTPostID:    39,
 		HaravanCode: "QG",
+		NTXID:       76,
 	},
 	{
 		Code:        "52",
@@ -262,6 +298,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bình Định",
 		VTPostID:    40,
 		HaravanCode: "BD",
+		NTXID:       77,
 	},
 	{
 		Code:        "54",
@@ -269,6 +306,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Phú Yên",
 		VTPostID:    41,
 		HaravanCode: "PY",
+		NTXID:       78,
 	},
 	{
 		Code:        "56",
@@ -276,6 +314,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Khánh Hòa",
 		VTPostID:    42,
 		HaravanCode: "KH",
+		NTXID:       79,
 	},
 	{
 		Code:        "62",
@@ -283,6 +322,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Kon Tum",
 		VTPostID:    43,
 		HaravanCode: "KT",
+		NTXID:       82,
 	},
 	{
 		Code:        "64",
@@ -290,6 +330,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Gia Lai",
 		VTPostID:    44,
 		HaravanCode: "GL",
+		NTXID:       81,
 	},
 	{
 		Code:        "66",
@@ -297,6 +338,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Đắk Lắk",
 		VTPostID:    45,
 		HaravanCode: "DC",
+		NTXID:       47,
 		Alias:       []string{"Daklak", "Tỉnh Đắc Lắk", "Tỉnh Đắk Lắc", "Tỉnh Đắc Lắc"},
 	},
 	{
@@ -305,6 +347,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Đắk Nông",
 		VTPostID:    9,
 		HaravanCode: "DO",
+		NTXID:       48,
 		Alias:       []string{"Tỉnh Đắc Nông"},
 	},
 	{
@@ -313,6 +356,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Ninh Thuận",
 		VTPostID:    47,
 		HaravanCode: "NT",
+		NTXID:       85,
 	},
 	{
 		Code:        "60",
@@ -320,6 +364,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bình Thuận",
 		VTPostID:    52,
 		HaravanCode: "BU",
+		NTXID:       86,
 	},
 	{
 		Code:        "68",
@@ -327,6 +372,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Lâm Đồng",
 		VTPostID:    46,
 		HaravanCode: "LD",
+		NTXID:       49,
 	},
 	{
 		Code:        "70",
@@ -334,6 +380,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bình Phước",
 		VTPostID:    48,
 		HaravanCode: "BP",
+		NTXID:       93,
 	},
 	{
 		Code:        "72",
@@ -341,6 +388,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Tây Ninh",
 		VTPostID:    49,
 		HaravanCode: "TN",
+		NTXID:       70,
 	},
 	{
 		Code:        "74",
@@ -348,14 +396,15 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bình Dương",
 		VTPostID:    50,
 		HaravanCode: "BI",
+		NTXID:       61,
 	},
 	{
 		Code:        "75",
 		Region:      location.South,
 		Name:        "Tỉnh Đồng Nai",
 		VTPostID:    51,
-		NTXID:       60,
 		HaravanCode: "DN",
+		NTXID:       60,
 	},
 	{
 		Code:        "77",
@@ -363,6 +412,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bà Rịa - Vũng Tàu",
 		VTPostID:    53,
 		HaravanCode: "BV",
+		NTXID:       72,
 		Alias:       []string{"Vũng Tàu", "Bà Rịa", "BRVT", "BR-VT"},
 	},
 	{
@@ -370,8 +420,8 @@ var Provinces = []*types.Province{
 		Region:      location.South,
 		Name:        "Thành phố Hồ Chí Minh",
 		VTPostID:    2,
-		NTXID:       50,
 		HaravanCode: "HC",
+		NTXID:       50,
 		Special:     true,
 		Alias:       []string{"HCM", "TPHCM"},
 	},
@@ -381,6 +431,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Long An",
 		VTPostID:    54,
 		HaravanCode: "LA",
+		NTXID:       62,
 	},
 	{
 		Code:        "82",
@@ -388,6 +439,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Tiền Giang",
 		VTPostID:    6,
 		HaravanCode: "TG",
+		NTXID:       63,
 	},
 	{
 		Code:        "83",
@@ -395,6 +447,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bến Tre",
 		VTPostID:    58,
 		HaravanCode: "BT",
+		NTXID:       71,
 	},
 	{
 		Code:        "84",
@@ -402,6 +455,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Trà Vinh",
 		VTPostID:    60,
 		HaravanCode: "TV",
+		NTXID:       84,
 	},
 	{
 		Code:        "86",
@@ -409,6 +463,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Vĩnh Long",
 		VTPostID:    57,
 		HaravanCode: "VL",
+		NTXID:       64,
 	},
 	{
 		Code:        "87",
@@ -416,6 +471,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Đồng Tháp",
 		VTPostID:    55,
 		HaravanCode: "DT",
+		NTXID:       66,
 	},
 	{
 		Code:        "89",
@@ -423,6 +479,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh An Giang",
 		VTPostID:    56,
 		HaravanCode: "AG",
+		NTXID:       67,
 	},
 	{
 		Code:        "91",
@@ -430,6 +487,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Kiên Giang",
 		VTPostID:    59,
 		HaravanCode: "KG",
+		NTXID:       68,
 	},
 	{
 		Code:        "92",
@@ -437,6 +495,7 @@ var Provinces = []*types.Province{
 		Name:        "Thành phố Cần Thơ",
 		VTPostID:    5,
 		HaravanCode: "CN",
+		NTXID:       65,
 	},
 	{
 		Code:        "93",
@@ -444,6 +503,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Hậu Giang",
 		VTPostID:    8,
 		HaravanCode: "HU",
+		NTXID:       95,
 	},
 	{
 		Code:        "94",
@@ -451,6 +511,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Sóc Trăng",
 		VTPostID:    61,
 		HaravanCode: "ST",
+		NTXID:       83,
 	},
 	{
 		Code:        "95",
@@ -458,6 +519,7 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Bạc Liêu",
 		VTPostID:    62,
 		HaravanCode: "BL",
+		NTXID:       94,
 	},
 	{
 		Code:        "96",
@@ -465,5 +527,6 @@ var Provinces = []*types.Province{
 		Name:        "Tỉnh Cà Mau",
 		VTPostID:    63,
 		HaravanCode: "CM",
+		NTXID:       69,
 	},
 }
