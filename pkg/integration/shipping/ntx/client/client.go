@@ -36,7 +36,7 @@ type Client struct {
 	rclient       *httpreq.Resty
 }
 
-func New(env string, cfg Config) *Client {
+func New(cfg Config) *Client {
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 		Transport: &http.Transport{
@@ -49,16 +49,19 @@ func New(env string, cfg Config) *Client {
 			"username": cfg.Username,
 			"password": cfg.Password,
 		},
-		PartnerID: cfg.PartnerID,
-		rclient:   httpreq.NewResty(rcfg),
+		PaymentMethod: 10,
+		PartnerID:     cfg.PartnerID,
+		rclient:       httpreq.NewResty(rcfg),
 	}
-	switch env {
-	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
+
+	switch cmenv.Env() {
+	case cmenv.EnvDev:
 		c.baseUrl = "https://apisandbox.ntx.com.vn"
-		c.PaymentMethod = 10
-	case cmenv.PartnerEnvProd:
-		c.baseUrl = "https://apiws.ntx.com.vn"
+	case cmenv.EnvSandbox, cmenv.EnvStag:
+		c.baseUrl = "https://apisandbox.ntx.com.vn"
+	case cmenv.EnvProd:
 		c.PaymentMethod = 11
+		c.baseUrl = "https://apiws.ntx.com.vn"
 	default:
 		ll.Fatal("NTX: Invalid env")
 	}

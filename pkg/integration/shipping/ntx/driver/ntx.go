@@ -31,13 +31,12 @@ type NTXDriver struct {
 }
 
 func New(
-	env string,
 	cfg ntxclient.Config,
 	locationQS location.QueryBus,
 	identityQS identity.QueryBus,
 	shippingcodeQS shippingcode.QueryBus,
 ) *NTXDriver {
-	client := ntxclient.New(env, cfg)
+	client := ntxclient.New(cfg)
 	return &NTXDriver{
 		client:         client,
 		locationQS:     locationQS,
