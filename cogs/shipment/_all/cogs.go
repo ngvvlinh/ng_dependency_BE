@@ -159,9 +159,9 @@ func (d CarrierDriver) GetShipmentDriver(
 		return driver, nil
 	case connection_type.ConnectionProviderNTX:
 		driver := ntxdriver.New(env, ntxclient.Config{
-			Username:  "etop",
-			Password:  "hm73Tyrk9EzNnhSJ",
-			PartnerID: 350,
+			Username:  etopAffiliateAccount.Username,
+			Password:  etopAffiliateAccount.Password,
+			PartnerID: etopAffiliateAccount.PartnerID,
 		}, locationQS, identityQS, shippingcodeQS)
 		return driver, nil
 

@@ -71,6 +71,9 @@ type EtopAffiliateAccount struct {
 	Token     string
 	ShopID    string // GHN(v3): shop_id
 	SecretKey string // NinjaVan: client_secret
+	Username  string // NTX: username
+	Password  string // NTX: password
+	PartnerID int    // NTX: partner_id
 }
 
 func (a *EtopAffiliateAccount) GetUserID() string {
@@ -92,6 +95,27 @@ func (a *EtopAffiliateAccount) GetShopID() string {
 		return a.ShopID
 	}
 	return ""
+}
+
+func (a *EtopAffiliateAccount) GetUsername() string {
+	if a != nil {
+		return a.Username
+	}
+	return ""
+}
+
+func (a *EtopAffiliateAccount) GetPassword() string {
+	if a != nil {
+		return a.Password
+	}
+	return ""
+}
+
+func (a *EtopAffiliateAccount) GetPartnerID() int {
+	if a != nil {
+		return a.PartnerID
+	}
+	return 0
 }
 
 type ShopConnection struct {

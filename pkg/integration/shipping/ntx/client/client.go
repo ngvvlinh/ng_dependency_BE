@@ -62,6 +62,7 @@ func New(env string, cfg Config) *Client {
 	default:
 		ll.Fatal("NTX: Invalid env")
 	}
+
 	return c
 }
 

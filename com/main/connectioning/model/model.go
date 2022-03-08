@@ -63,6 +63,10 @@ type EtopAffiliateAccount struct {
 	ShopID string `json:"shop_id"`
 	// client_secret for NinjaVan
 	SecretKey string `json:"secret_key,omitempty"`
+	// NTX
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	PartnerID int    `json:"partner_id"`
 }
 
 type ShopConnectionExternalData struct {
