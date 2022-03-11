@@ -727,6 +727,7 @@ type ListShopExtendedsQuery struct {
 	IncludeWLPartnerShop bool
 	DateFrom             time.Time
 	DateTo               time.Time
+	Codes                []string
 
 	Result *ListShopExtendedsResponse `json:"-"`
 }
@@ -1558,6 +1559,7 @@ func (q *ListShopExtendedsQuery) GetArgs(ctx context.Context) (_ context.Context
 			IncludeWLPartnerShop: q.IncludeWLPartnerShop,
 			DateFrom:             q.DateFrom,
 			DateTo:               q.DateTo,
+			Codes:                q.Codes,
 		}
 }
 
@@ -1570,6 +1572,7 @@ func (q *ListShopExtendedsQuery) SetListShopQuery(args *ListShopQuery) {
 	q.IncludeWLPartnerShop = args.IncludeWLPartnerShop
 	q.DateFrom = args.DateFrom
 	q.DateTo = args.DateTo
+	q.Codes = args.Codes
 }
 
 func (q *ListShopsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopsByIDsArgs) {

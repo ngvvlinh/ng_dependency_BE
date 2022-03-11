@@ -356,11 +356,12 @@ type DeleteMoneyTransactionRequest struct {
 func (m *DeleteMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type FilterShopRequest struct {
-	Name     filter.FullTextSearch `json:"name"`
-	ShopIDs  []dot.ID              `json:"shop_ids"`
-	OwnerID  dot.ID                `json:"owner_id"`
-	DateFrom time.Time             `json:"date_from"`
-	DateTo   time.Time             `json:"date_to"`
+	Name      filter.FullTextSearch `json:"name"`
+	ShopIDs   []dot.ID              `json:"shop_ids"`
+	OwnerID   dot.ID                `json:"owner_id"`
+	DateFrom  time.Time             `json:"date_from"`
+	DateTo    time.Time             `json:"date_to"`
+	ShopCodes []string              `json:"shop_codes"`
 }
 
 func (m *FilterShopRequest) String() string { return jsonx.MustMarshalToString(m) }

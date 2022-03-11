@@ -281,6 +281,7 @@ type ListShopQuery struct {
 	IncludeWLPartnerShop bool
 	DateFrom             time.Time
 	DateTo               time.Time
+	Codes                []string
 }
 
 type ListShopExtendedsResponse struct {

@@ -78,6 +78,9 @@ func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.Lis
 	if args.OwnerID != 0 {
 		query = query.ByOwnerID(args.OwnerID)
 	}
+	if args.Codes != nil {
+		query = query.ByShopCodes(args.Codes...)
+	}
 	if args.IncludeWLPartnerShop {
 		query = query.IncludeWLPartnerShop()
 	}

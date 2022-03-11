@@ -9607,6 +9607,12 @@
           "type": "string",
           "format": "int64"
         },
+        "shop_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "shop_ids": {
           "type": "array",
           "items": {

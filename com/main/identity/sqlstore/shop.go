@@ -234,6 +234,11 @@ func (s *ShopStore) ByShopIDs(ids ...dot.ID) *ShopStore {
 	return s
 }
 
+func (s *ShopStore) ByShopCodes(code ...string) *ShopStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.shopFt.prefix, "code", code))
+	return s
+}
+
 func (s *ShopStore) UpdateShipFromAddressID(shipFromAddressID dot.ID) (int, error) {
 	return s.query().Where(s.preds).Table("shop").UpdateMap(
 		map[string]interface{}{

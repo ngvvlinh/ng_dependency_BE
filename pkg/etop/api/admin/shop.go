@@ -61,6 +61,7 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 		query.OwnerID = q.Filter.OwnerID
 		query.DateFrom = q.Filter.DateFrom
 		query.DateTo = q.Filter.DateTo
+		query.Codes = q.Filter.ShopCodes
 	}
 
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
