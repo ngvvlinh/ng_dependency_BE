@@ -53,11 +53,14 @@ const (
 	// ID: 2
 	// Mã trạng thái : PRI
 	// Vận đơn được NTX xác nhận lấy hàng
-	StateConfirmed State = "Đã xác nhận"
+	StateConfirmed   State = "Đã xác nhận"
+	StateConfirmedV2 State = "Đã tiếp nhận"
+
+	StatePicking State = "Chờ lấy hàng"
 
 	// ID: 3
 	// Mã trạng thái : LPC
-	// Vận đơn được NTX xác nhận lấy hàng
+	// Vận đơn đã được Nhân viên NTX lại lấy hàng và xác nhận chốt
 	StateSuccessfulPickup State = "Đã lấy hàng"
 
 	// ID: 4
@@ -82,7 +85,7 @@ const (
 
 	// ID: 8
 	// Mã trạng thái : NRT
-	// Vận đơn đi giao nhưng không liên hệ hoặc sự cố giao hàng. NTX lập đơn chuyển hoàn và Người nhận hàng hoàn
+	// Vận đơn đi giao nhưng không liên hệ hoặc sự cố giao hàng. NTX lập đơn chuyển hoàn và bắt đầu hoàn hàng
 	StateReturnToSender State = "Đang chuyển hoàn"
 
 	// ID: 9
@@ -135,7 +138,7 @@ func (s State) ToModel() typesshipping.State {
 	switch s {
 	case StateStaging:
 		return typesshipping.Created
-	case StateConfirmed:
+	case StateConfirmed, StateConfirmedV2:
 		return typesshipping.Confirmed
 	case StateSuccessfulPickup, StateTranshipment, StateEnterTheWarehouse, StateWaitForApproval, StateFullyApproved:
 		return typesshipping.Holding
@@ -149,7 +152,7 @@ func (s State) ToModel() typesshipping.State {
 		return typesshipping.Returning
 	case StateReturnedToSender:
 		return typesshipping.Returned
-	case StateUnsuccessfulPickup, StatePickupError:
+	case StateUnsuccessfulPickup, StatePickupError, StatePicking:
 		return typesshipping.Picking
 	default:
 		return typesshipping.Unknown
@@ -298,14 +301,13 @@ type CancelOrderRequest struct {
 }
 
 type CallbackOrder struct {
-	BillNo          string        `json:"bill_no"`
-	RefCode         string        `json:"ref_code"`
-	StatusID        int           `json:"status_id"`
-	StatusName      string        `json:"status_name"`
-	StatusTime      int           `json:"status_time"`
-	ShippingFee     int           `json:"shipping_fee"`
-	ListIssue       []interface{} `json:"list_issue"`
-	Weight          float64       `json:"weight"`
-	DimensionWeight int           `json:"dimension_weight"`
-	CodAmount       int           `json:"cod_amount"`
+	BillNo          string  `json:"bill_no"`
+	RefCode         string  `json:"ref_code"`
+	StatusID        int     `json:"status_id"`
+	StatusName      string  `json:"status_name"`
+	StatusTime      int     `json:"status_time"`
+	ShippingFee     int     `json:"shipping_fee"`
+	Weight          float64 `json:"weight"`
+	DimensionWeight int     `json:"dimension_weight"`
+	CodAmount       int     `json:"cod_amount"`
 }
