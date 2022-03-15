@@ -92,8 +92,8 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		if err != nil {
 			return cm.Errorf(cm.FailedPrecondition, err, err.Error()).WithMeta("result", "ignore")
 		}
+
 		updateFfm.LastSyncAt = t0
-		// UpdateInfo other time
 		updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 
 		weight := float64(msg.Weight) * 1000
@@ -156,7 +156,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ntxclient.Call
 
 	query := &modelx.GetFulfillmentQuery{
 		ShippingProvider: shipping_provider.NTX,
-		ShippingCode:     orderCode,
+		ShippingCode:     orderCode.String(),
 	}
 	if err := wh.OrderStore.GetFulfillment(ctx, query); err != nil {
 		return nil, cm.MapError(err).
@@ -174,8 +174,8 @@ func (wh *Webhook) saveLogsWebhook(ctx context.Context, msg ntxclient.CallbackOr
 	webhookData := &logmodel.ShippingProviderWebhook{
 		ID:                    cm.NewID(),
 		ShippingProvider:      shipping_provider.NTX.String(),
-		ShippingCode:          msg.BillNo,
-		ExternalShippingState: msg.StatusName,
+		ShippingCode:          msg.BillNo.String(),
+		ExternalShippingState: msg.StatusName.String(),
 		ShippingState:         shippingState.String(),
 		Error:                 model.ToError(err),
 	}

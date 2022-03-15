@@ -298,13 +298,13 @@ type CancelOrderRequest struct {
 }
 
 type CallbackOrder struct {
-	BillNo          string  `json:"bill_no"`
-	RefCode         string  `json:"ref_code"`
-	StatusID        int     `json:"status_id"`
-	StatusName      string  `json:"status_name"`
-	StatusTime      int     `json:"status_time"`
-	ShippingFee     int     `json:"shipping_fee"`
-	Weight          float64 `json:"weight"`
-	DimensionWeight int     `json:"dimension_weight"`
-	CodAmount       int     `json:"cod_amount"`
+	BillNo          String `json:"bill_no"`
+	RefCode         String `json:"ref_code"`
+	StatusID        Int    `json:"status_id"`
+	StatusName      String `json:"status_name"`
+	StatusTime      Time   `json:"status_time"`
+	ShippingFee     Int    `json:"shipping_fee"`
+	Weight          Float  `json:"weight"`
+	DimensionWeight Float  `json:"dimension_weight"`
+	CodAmount       Int    `json:"cod_amount"`
 }

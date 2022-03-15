@@ -22,7 +22,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ntxclient.CallbackOr
 	update := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
 		ExternalShippingUpdatedAt: time.Now(),
-		ExternalShippingState:     msg.StatusName,
+		ExternalShippingState:     msg.StatusName.String(),
 		ExternalShippingStatus:    state.ToStatus5(),
 		ExternalShippingData:      data,
 		ShippingState:             state.ToModel(),
