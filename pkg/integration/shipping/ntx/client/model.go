@@ -53,10 +53,7 @@ const (
 	// ID: 2
 	// Mã trạng thái : PRI
 	// Vận đơn được NTX xác nhận lấy hàng
-	StateConfirmed   State = "Đã xác nhận"
-	StateConfirmedV2 State = "Đã tiếp nhận"
-
-	StatePicking State = "Chờ lấy hàng"
+	StateConfirmed State = "Đã tiếp nhận"
 
 	// ID: 3
 	// Mã trạng thái : LPC
@@ -138,7 +135,7 @@ func (s State) ToModel() typesshipping.State {
 	switch s {
 	case StateStaging:
 		return typesshipping.Created
-	case StateConfirmed, StateConfirmedV2:
+	case StateConfirmed:
 		return typesshipping.Confirmed
 	case StateSuccessfulPickup, StateTranshipment, StateEnterTheWarehouse, StateWaitForApproval, StateFullyApproved:
 		return typesshipping.Holding
@@ -152,7 +149,7 @@ func (s State) ToModel() typesshipping.State {
 		return typesshipping.Returning
 	case StateReturnedToSender:
 		return typesshipping.Returned
-	case StateUnsuccessfulPickup, StatePickupError, StatePicking:
+	case StateUnsuccessfulPickup, StatePickupError:
 		return typesshipping.Picking
 	default:
 		return typesshipping.Unknown

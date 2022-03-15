@@ -74,7 +74,6 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	var err error
 	ctx := c.Req.Context()
 	defer func() {
-		// save to database etop_log
 		wh.saveLogsWebhook(ctx, msg, _err, ffm)
 	}()
 
