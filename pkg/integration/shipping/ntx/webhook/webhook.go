@@ -156,7 +156,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ntxclient.Call
 
 	query := &modelx.GetFulfillmentQuery{
 		ShippingProvider: shipping_provider.NTX,
-		ShippingCode:     orderCode.String(),
+		ShippingCode:     orderCode,
 	}
 	if err := wh.OrderStore.GetFulfillment(ctx, query); err != nil {
 		return nil, cm.MapError(err).
@@ -174,8 +174,8 @@ func (wh *Webhook) saveLogsWebhook(ctx context.Context, msg ntxclient.CallbackOr
 	webhookData := &logmodel.ShippingProviderWebhook{
 		ID:                    cm.NewID(),
 		ShippingProvider:      shipping_provider.NTX.String(),
-		ShippingCode:          msg.BillNo.String(),
-		ExternalShippingState: msg.StatusName.String(),
+		ShippingCode:          msg.BillNo,
+		ExternalShippingState: msg.StatusName,
 		ShippingState:         shippingState.String(),
 		Error:                 model.ToError(err),
 	}
