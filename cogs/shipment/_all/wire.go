@@ -4,6 +4,7 @@ package shipment_all
 
 import (
 	"github.com/google/wire"
+	"o.o/backend/pkg/etop/logic/money-transaction/ntximport"
 
 	_shipment "o.o/backend/cogs/shipment"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
@@ -36,6 +37,7 @@ var WireSet = wire.NewSet(
 	njvimport.WireSet,
 	dhlimport.WireSet,
 	snappyimport.WireSet,
+	ntximport.WireSet,
 	imhandlers.WireSet,
 	directwebhook.WireSet,
 	shippingcode.WireSet,

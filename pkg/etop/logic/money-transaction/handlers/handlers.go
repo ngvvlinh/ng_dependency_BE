@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"o.o/backend/pkg/etop/logic/money-transaction/ntximport"
 	"strings"
 	"time"
 
@@ -37,6 +38,7 @@ type ImportService struct {
 	JTExpressImporter *jtexpressimport.JTImporter
 	DHLImporter       *dhlimport.DHLImporter
 	NJVImporter       *njvimport.NJVImporter
+	NTXImporter       *ntximport.NTXImporter
 	SnappyImporter    *snappyimport.SnappyImporter
 }
 
@@ -139,6 +141,8 @@ func (s *ImportService) getCarrierImporter(ctx context.Context, connectionID dot
 		return s.VTPostImporter, shipping_provider.VTPost, nil
 	case connection_type.ConnectionProviderNinjaVan:
 		return s.NJVImporter, shipping_provider.NinjaVan, nil
+	case connection_type.ConnectionProviderNTX:
+		return s.NTXImporter, shipping_provider.NTX, nil
 	case connection_type.ConnectionProviderDHL:
 		return s.DHLImporter, shipping_provider.DHL, nil
 	case connection_type.ConnectionProviderPartner:
