@@ -50375,14 +50375,6 @@ var Wards = []*types.Ward{
 		VTPostID:     10295,
 		NTXID:        28962,
 	}, {
-		Code:         "28078",
-		DistrictCode: "805",
-		Name:         "Xã Mỹ Bình",
-		GhnCode:      "491108",
-		HaravanCode:  "28078",
-		VTPostID:     10301,
-		NTXID:        28969,
-	}, {
 		Code:         "28081",
 		DistrictCode: "805",
 		Name:         "Xã An Nhựt Tân",
@@ -50454,6 +50446,14 @@ var Wards = []*types.Ward{
 		HaravanCode:  "28105",
 		VTPostID:     10300,
 		NTXID:        28970,
+	}, {
+		Code:         "28078",
+		DistrictCode: "805",
+		Name:         "Xã Tân Bình",
+		GhnCode:      "800071",
+		HaravanCode:  "28078",
+		VTPostID:     26142,
+		NTXID:        29061,
 	}, {
 		Code:         "28108",
 		DistrictCode: "806",

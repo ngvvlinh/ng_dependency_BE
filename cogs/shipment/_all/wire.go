@@ -4,7 +4,6 @@ package shipment_all
 
 import (
 	"github.com/google/wire"
-	"o.o/backend/pkg/etop/logic/money-transaction/ntximport"
 
 	_shipment "o.o/backend/cogs/shipment"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
@@ -18,6 +17,7 @@ import (
 	imhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
 	"o.o/backend/pkg/etop/logic/money-transaction/jtexpressimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/njvimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/ntximport"
 	"o.o/backend/pkg/etop/logic/money-transaction/snappyimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	directwebhook "o.o/backend/pkg/integration/shipping/direct/webhook"
