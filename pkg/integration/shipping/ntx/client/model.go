@@ -6,7 +6,6 @@ import (
 	"o.o/api/top/types/etc/status5"
 	"o.o/backend/pkg/common/apifw/httpreq"
 	cc "o.o/backend/pkg/common/config"
-	"time"
 )
 
 type (
@@ -299,12 +298,12 @@ type CancelOrderRequest struct {
 }
 
 type CallbackOrder struct {
-	BillNo          string    `json:"bill_no"`
-	RefCode         string    `json:"ref_code"`
-	StatusID        int       `json:"status_id"`
-	StatusName      string    `json:"status_name"`
-	ShippingFee     int       `json:"shipping_fee"`
-	Weight          float64   `json:"weight"`
-	DimensionWeight float64   `json:"dimension_weight"`
-	CodAmount       int       `json:"cod_amount"`
+	BillNo          string  `json:"bill_no"`
+	RefCode         string  `json:"ref_code"`
+	StatusID        int     `json:"status_id"`
+	StatusName      string  `json:"status_name"`
+	ShippingFee     int     `json:"shipping_fee"`
+	Weight          float64 `json:"weight"`
+	DimensionWeight float64 `json:"dimension_weight"`
+	CodAmount       int     `json:"cod_amount"`
 }
