@@ -303,7 +303,6 @@ type CallbackOrder struct {
 	RefCode         string    `json:"ref_code"`
 	StatusID        int       `json:"status_id"`
 	StatusName      string    `json:"status_name"`
-	StatusTime      time.Time `json:"status_time"`
 	ShippingFee     int       `json:"shipping_fee"`
 	Weight          float64   `json:"weight"`
 	DimensionWeight float64   `json:"dimension_weight"`
