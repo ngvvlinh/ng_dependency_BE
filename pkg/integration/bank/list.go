@@ -5759,6 +5759,11 @@ var Provinces = []*Province{
 		MaNganHang:   "309",
 	},
 	{
+		MaTinh:       "17",
+		TenTinhThanh: "Hoa Binh",
+		MaNganHang:   "311",
+	},
+	{
 		MaTinh:       "56",
 		TenTinhThanh: "Khanh Hoa",
 		MaNganHang:   "309",
@@ -22083,6 +22088,12 @@ var Branches = []*Branch{
 		TenChiNhanh: "NHTMCP Quan Doi Binh Phuoc",
 		MaNganHang:  "311",
 		MaTinh:      "70",
+	},
+	{
+		MaChiNhanh:  "01311001",
+		TenChiNhanh: "NHTMCP Quan Doi Hoa Binh",
+		MaNganHang:  "311",
+		MaTinh:      "17",
 	},
 	{
 		MaChiNhanh:  "89314001",
