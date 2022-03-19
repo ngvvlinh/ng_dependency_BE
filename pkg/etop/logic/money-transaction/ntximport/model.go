@@ -9,168 +9,44 @@ var schema = imcsv.Schema{
 		Norm:    "stt",
 	},
 	{
-		Name:     "customer_code",
-		Display:  "Mã KH",
-		Norm:     "ma kh",
-		Optional: true,
+		Name:    "sender_phone",
+		Display: "ĐT người gửi",
+		Norm:    "dt nguoi gui",
 	},
 	{
-		Name:     "shop_id",
-		Display:  "Shop ID",
-		Norm:     "shop id",
-		Optional: true,
+		Name:    "waybill_number",
+		Display: "Số Vận Đơn",
+		Norm:    "so van don",
 	},
 	{
-		Name:     "customer_name",
-		Display:  "Tên KH",
-		Norm:     "ten KH",
-		Optional: true,
+		Name:    "shipping_code",
+		Display: "Số Tham Chiếu",
+		Norm:    "so tham chieu",
 	},
 	{
-		Name:     "branch",
-		Display:  "Chi Nhánh",
-		Norm:     "chi nhanh",
-		Optional: true,
+		Name:    "ref_code",
+		Display: "DO Khách Hàng",
+		Norm:    "do khach hang",
 	},
 	{
-		Name:     "num_vd",
-		Display:  "Số VĐ",
-		Norm:     "so vd",
-		Optional: true,
+		Name:    "payment_method",
+		Display: "HTTT",
+		Norm:    "httt",
 	},
 	{
-		Name:    "do",
-		Display: "DO",
-		Norm:    "do",
+		Name:    "cod_amount",
+		Display: "Tiền Thu Hộ",
+		Norm:    "tien thu ho",
 	},
 	{
-		Name:     "do_kh",
-		Display:  "DO KH",
-		Norm:     "do kh",
-		Optional: true,
+		Name:    "shipping_charges",
+		Display: "Cước vận chuyển cấn trừ",
+		Norm:    "cuoc van chuyen can tru",
 	},
 	{
-		Name:     "sent_date",
-		Display:  "Ngày Gửi",
-		Norm:     "ngay gui",
-		Optional: true,
-	},
-	{
-		Name:     "sender",
-		Display:  "Người Gửi",
-		Norm:     "nguoi gui",
-		Optional: true,
-	},
-	{
-		Name:     "sender_address",
-		Display:  "Địa Chỉ Gừi",
-		Norm:     "dia chi gui",
-		Optional: true,
-	},
-	{
-		Name:     "receiver",
-		Display:  "Người Nhận",
-		Norm:     "nguoi nhan",
-		Optional: true,
-	},
-	{
-		Name:     "receiver_address",
-		Display:  "Địa Chỉ Nhận",
-		Norm:     "dia chi nhan",
-		Optional: true,
-	},
-	{
-		Name:     "phone",
-		Display:  "Số Điện Thoại",
-		Norm:     "so dien thoai",
-		Optional: true,
-	},
-	{
-		Name:     "email",
-		Display:  "Email",
-		Norm:     "email",
-		Optional: true,
-	},
-	{
-		Name:     "from_province",
-		Display:  "Từ Tỉnh",
-		Norm:     "tu tinh",
-		Optional: true,
-	},
-	{
-		Name:     "from_district",
-		Display:  "Từ quận/huyện",
-		Norm:     "tu quan/huyen",
-		Optional: true,
-	},
-	{
-		Name:     "to_province",
-		Display:  "Đến Tỉnh",
-		Norm:     "den tinh",
-		Optional: true,
-	},
-	{
-		Name:     "to_district",
-		Display:  "Đến quận/huyện",
-		Norm:     "den quan/huyen",
-		Optional: true,
-	},
-	{
-		Name:     "signature",
-		Display:  "Chữ ký người nhận hàng",
-		Norm:     "chu ky nguoi nhan hang",
-		Optional: true,
-	},
-	{
-		Name:     "return_date",
-		Display:  "Ngày trả hàng",
-		Norm:     "ngay tra hang",
-		Optional: true,
-	},
-	{
-		Name:     "payment_method",
-		Display:  "Hình Thức Th/Toán",
-		Norm:     "hinh thuc th/toan",
-		Optional: true,
-	},
-	{
-		Name:     "service",
-		Display:  "Dịch Vụ",
-		Norm:     "dich vu",
-		Optional: true,
-	},
-	{
-		Name:     "pack_num",
-		Display:  "Số Kiện",
-		Norm:     "so kien",
-		Optional: true,
-	},
-	{
-		Name:     "weight",
-		Display:  "Trọng Lượng",
-		Norm:     "trong luong",
-		Optional: true,
-	},
-	{
-		Name:    "weight_exchange",
-		Display: "TL Quy Đổi",
-		Norm:    "tl quy doi",
-	},
-	{
-		Name:    "money_control",
-		Display: "Tiền Kiểm Soát",
-		Norm:    "tien kiem soat",
-	},
-	{
-		Name:     "insurance_fees",
-		Display:  "Phí Bảo Hiểm",
-		Norm:     "phi bao hiem",
-		Optional: true,
-	},
-	{
-		Name:    "total_charge",
-		Display: "Tổng cước",
-		Norm:    "tong cuoc",
+		Name:    "total_amount",
+		Display: "Tổng TT",
+		Norm:    "tong tt",
 	},
 }
 
@@ -180,7 +56,6 @@ type indexes struct {
 	stt          int
 	shippingCode int
 	codAmount    int
-	shippingFee  int
 }
 
 var (
@@ -195,8 +70,7 @@ func initIndexes(schema imcsv.Schema) indexes {
 	indexer := schema.Indexer()
 	return indexes{
 		stt:          indexer("stt"),
-		shippingCode: indexer("do"),
-		codAmount:    indexer("money_control"),
-		shippingFee:  indexer("total_charge"),
+		shippingCode: indexer("shipping_code"),
+		codAmount:    indexer("cod_amount"),
 	}
 }
