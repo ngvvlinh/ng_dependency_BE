@@ -524,7 +524,7 @@ var _acl = map[string]*permission.Decl{
 
 	"etop.User/SendEmailVerification":              {Type: CurUsr},
 	"etop.User/SendEmailVerificationUsingOTP":      {Type: CurUsr},
-	"etop.User/SendPhoneVerification":              {Type: Public},
+	"etop.User/SendPhoneVerification":              {Type: Public, Captcha: "1"},
 	"etop.User/VerifyEmailUsingToken":              {Type: CurUsr},
 	"etop.User/VerifyEmailUsingOTP":                {Type: CurUsr},
 	"etop.User/VerifyPhoneUsingToken":              {Type: Public},

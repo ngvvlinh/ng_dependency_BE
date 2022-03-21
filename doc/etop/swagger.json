@@ -3126,6 +3126,9 @@
       "properties": {
         "phone": {
           "type": "string"
+        },
+        "recaptcha_token": {
+          "type": "string"
         }
       }
     },

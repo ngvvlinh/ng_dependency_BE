@@ -642,7 +642,8 @@ func (m *SendEmailVerificationUsingOTPRequest) String() string { return jsonx.Mu
 
 type SendPhoneVerificationRequest struct {
 	// @required
-	Phone string `json:"phone"`
+	Phone          string `json:"phone"`
+	RecaptchaToken string `json:"recaptcha_token"`
 }
 
 func (m *SendPhoneVerificationRequest) String() string { return jsonx.MustMarshalToString(m) }
