@@ -2329,9 +2329,10 @@ var Districts = []*types.District{
 	{
 		Code:         "407",
 		ProvinceCode: "38",
-		Name:         "Huyện Tĩnh Gia",
+		Name:         "Thị Xã Nghi Sơn",
 		GhnID:        1870,
-		VTPostID:     347,
+		VTPostID:     1232,
+		NTXID:        3627,
 		HaravanCode:  "TH299",
 		UrbanType:    2,
 	},
