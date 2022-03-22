@@ -72,7 +72,7 @@ func (d *NTXDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.Fulfil
 
 	fromWard, fromDistrict, fromProvince := fromQuery.Result.Ward, fromQuery.Result.District, fromQuery.Result.Province
 	toWard, toDistrict, toProvince := toQuery.Result.Ward, toQuery.Result.District, toQuery.Result.Province
-	if toWard.VtpostId == 0 {
+	if toWard.NTXId == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "NTX không thể giao hàng tới địa chỉ này (%v, %v, %v)", toWard.Name, toDistrict.Name, toProvince.Name)
 	}
 
