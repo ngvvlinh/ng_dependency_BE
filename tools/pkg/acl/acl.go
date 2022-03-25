@@ -1436,9 +1436,10 @@ var _acl = map[string]*permission.Decl{
 	"etelecom.User/GetUserSetting": {Type: Shop, Actions: actions(ShopEtelecomUserSettingView)},
 
 	// Setting
-	"shop.Setting/CreateSetting": {Type: Shop},
-	"shop.Setting/UpdateSetting": {Type: Shop},
-	"shop.Setting/GetSetting":    {Type: Shop},
+	"shop.Setting/CreateSetting":  {Type: Shop},
+	"shop.Setting/UpdateSetting":  {Type: Shop},
+	"shop.Setting/GetSetting":     {Type: Shop},
+	"shop.Setting/GetShopSetting": {Type: Shop},
 
 	// Account User
 	"shop.AccountUser/CreateAccountUser":         {Type: Shop, Actions: actions(ShopAccountUserCreate)},

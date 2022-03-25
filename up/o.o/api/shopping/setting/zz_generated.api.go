@@ -67,12 +67,24 @@ func (h QueryServiceHandler) HandleGetShopSetting(ctx context.Context, msg *GetS
 	return err
 }
 
+type GetShopSettingDirectShipmentQuery struct {
+	ShopID dot.ID
+
+	Result *ShopSetting `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopSettingDirectShipment(ctx context.Context, msg *GetShopSettingDirectShipmentQuery) (err error) {
+	msg.Result, err = h.inner.GetShopSettingDirectShipment(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *UpdateShopSettingCommand) command()               {}
 func (q *UpdateShopSettingDirectShipmentCommand) command() {}
 
-func (q *GetShopSettingQuery) query() {}
+func (q *GetShopSettingQuery) query()               {}
+func (q *GetShopSettingDirectShipmentQuery) query() {}
 
 // implement conversion
 
@@ -123,6 +135,17 @@ func (q *GetShopSettingQuery) SetGetShopSettingArgs(args *GetShopSettingArgs) {
 	q.ShopID = args.ShopID
 }
 
+func (q *GetShopSettingDirectShipmentQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopSettingArgs) {
+	return ctx,
+		&GetShopSettingArgs{
+			ShopID: q.ShopID,
+		}
+}
+
+func (q *GetShopSettingDirectShipmentQuery) SetGetShopSettingArgs(args *GetShopSettingArgs) {
+	q.ShopID = args.ShopID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -153,5 +176,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetShopSetting)
+	b.AddHandler(h.HandleGetShopSettingDirectShipment)
 	return QueryBus{b}
 }

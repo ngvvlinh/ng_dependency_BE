@@ -503,6 +503,7 @@ type ContactService interface {
 // +apix:path:2=/shop.Setting
 type SettingService interface {
 	GetSetting(context.Context, *cm.Empty) (*ShopSetting, error)
+	GetShopSetting(context.Context, *cm.Empty) (*ShopSetting, error)
 	UpdateSetting(context.Context, *UpdateSettingRequest) (*ShopSetting, error)
 }
 
