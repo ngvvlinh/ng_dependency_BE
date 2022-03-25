@@ -62,7 +62,7 @@ import (
 	pm16 "o.o/backend/com/main/connectioning/pm"
 	query16 "o.o/backend/com/main/connectioning/query"
 	aggregate21 "o.o/backend/com/main/contact/aggregate"
-	query25 "o.o/backend/com/main/contact/query"
+	query26 "o.o/backend/com/main/contact/query"
 	"o.o/backend/com/main/credit"
 	pm25 "o.o/backend/com/main/credit/pm"
 	aggregate25 "o.o/backend/com/main/department/aggregate"
@@ -127,7 +127,7 @@ import (
 	pm18 "o.o/backend/com/shopping/customering/pm"
 	query3 "o.o/backend/com/shopping/customering/query"
 	aggregate22 "o.o/backend/com/shopping/setting/aggregate"
-	query26 "o.o/backend/com/shopping/setting/query"
+	query24 "o.o/backend/com/shopping/setting/query"
 	"o.o/backend/com/shopping/setting/util"
 	aggregate11 "o.o/backend/com/shopping/suppliering/aggregate"
 	query7 "o.o/backend/com/shopping/suppliering/query"
@@ -145,7 +145,7 @@ import (
 	"o.o/backend/com/supporting/ticket/provider"
 	query4 "o.o/backend/com/supporting/ticket/query"
 	aggregate19 "o.o/backend/com/web/webserver/aggregate"
-	query24 "o.o/backend/com/web/webserver/query"
+	query25 "o.o/backend/com/web/webserver/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	auth2 "o.o/backend/pkg/common/authorization/auth"
@@ -763,6 +763,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShippingAggregate: shippingCommandBus,
 		OrderStore:        orderStoreInterface,
 	}
+	shopSettingUtil := util.NewShopSettingUtil(store)
+	shopSettingQuery := query24.NewShopSettingQuery(mainDB, shopSettingUtil)
+	settingQueryBus := query24.ShopSettingQueryMessageBus(shopSettingQuery)
 	connectionService := &connection.ConnectionService{
 		Session:            session,
 		ShipmentManager:    shipmentManager,
@@ -770,6 +773,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ConnectionAggr:     connectioningCommandBus,
 		IdentityQuery:      queryBus,
 		AccountshipnowAggr: accountshipnowCommandBus,
+		ShopSettingQuery:   settingQueryBus,
 	}
 	refundAggregate := aggregate17.NewRefundAggregate(mainDB, busBus, orderStoreInterface)
 	refundCommandBus := aggregate17.RefundAggregateMessageBus(refundAggregate)
@@ -795,8 +799,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webServerDB := databases.WebServer
 	webserverAggregate := aggregate19.New(busBus, webServerDB, catalogQueryBus)
 	webserverCommandBus := aggregate19.WebserverAggregateMessageBus(webserverAggregate)
-	webserverQueryService := query24.New(busBus, webServerDB, catalogQueryBus)
-	webserverQueryBus := query24.WebserverQueryServiceMessageBus(webserverQueryService)
+	webserverQueryService := query25.New(busBus, webServerDB, catalogQueryBus)
+	webserverQueryBus := query25.WebserverQueryServiceMessageBus(webserverQueryService)
 	webServerService := &ws.WebServerService{
 		Session:        session,
 		CatalogQuery:   catalogQueryBus,
@@ -819,8 +823,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SubrProductQuery:  subscriptionproductQueryBus,
 		SubrPlanQuery:     subscriptionplanQueryBus,
 	}
-	contactQuery := query25.NewContactQuery(mainDB)
-	contactQueryBus := query25.ContactQueryMessageBus(contactQuery)
+	contactQuery := query26.NewContactQuery(mainDB)
+	contactQueryBus := query26.ContactQueryMessageBus(contactQuery)
 	driver3 := ticket_all.SupportedTicketDriver(busBus, shippingQueryBus, contactQueryBus)
 	ticketManager, err := provider.NewTicketManager(connectionManager, busBus, driver3, connectioningQueryBus)
 	if err != nil {
@@ -852,9 +856,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:    session,
 		CreditAggr: creditCommandBus,
 	}
-	shopSettingUtil := util.NewShopSettingUtil(store)
-	shopSettingQuery := query26.NewShopSettingQuery(mainDB, shopSettingUtil)
-	settingQueryBus := query26.ShopSettingQueryMessageBus(shopSettingQuery)
 	shopSettingAggregate := aggregate22.NewShopSettingAggregate(mainDB, addressCommandBus, shopSettingUtil)
 	settingCommandBus := aggregate22.ShopSettingAggregateMessageBus(shopSettingAggregate)
 	settingService := &setting.SettingService{
@@ -983,6 +984,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	adminConnectionService := admin.ConnectionService{
 		Session:         session,
+		SettingAggr:     settingCommandBus,
 		ConnectionAggr:  connectioningCommandBus,
 		ConnectionQuery: connectioningQueryBus,
 	}

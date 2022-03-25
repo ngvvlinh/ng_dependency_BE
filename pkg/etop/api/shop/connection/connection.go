@@ -6,6 +6,7 @@ import (
 	"o.o/api/main/accountshipnow"
 	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
+	shopsetting "o.o/api/shopping/setting"
 	api "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
@@ -28,6 +29,7 @@ type ConnectionService struct {
 	ConnectionAggr     connectioning.CommandBus
 	IdentityQuery      identity.QueryBus
 	AccountshipnowAggr accountshipnow.CommandBus
+	ShopSettingQuery   shopsetting.QueryBus
 }
 
 func (s *ConnectionService) Clone() api.ConnectionService { res := *s; return &res }
@@ -103,9 +105,14 @@ func (s *ConnectionService) GetShopConnections(ctx context.Context, q *types.Get
 }
 
 func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *types.RegisterShopConnectionRequest) (*types.ShopConnection, error) {
+	shopID := s.SS.Shop().ID
+	if err := s.checkShopConnectDirectShipmentPermission(ctx, shopID); err != nil {
+		return nil, err
+	}
+
 	cmd := &carrier.ShopConnectionSignUpArgs{
 		ConnectionID: q.ConnectionID,
-		ShopID:       s.SS.Shop().ID,
+		ShopID:       shopID,
 		Name:         q.Name,
 		Identifier:   q.Email,
 		Password:     q.Password,
@@ -122,7 +129,25 @@ func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *types
 	return result, nil
 }
 
+func (s *ConnectionService) checkShopConnectDirectShipmentPermission(ctx context.Context, shopID dot.ID) error {
+	shopSettingQuery := &shopsetting.GetShopSettingQuery{
+		ShopID: shopID,
+	}
+	if err := s.ShopSettingQuery.Dispatch(ctx, shopSettingQuery); err != nil {
+		return err
+	}
+	if !shopSettingQuery.Result.AllowConnectDirectShipment {
+		return cm.ErrPermissionDenied
+	}
+	return nil
+}
+
 func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *types.LoginShopConnectionRequest) (res *types.LoginShopConnectionResponse, err error) {
+	shopID := s.SS.Shop().ID
+	if err := s.checkShopConnectDirectShipmentPermission(ctx, shopID); err != nil {
+		return nil, err
+	}
+
 	identifier := cm.Coalesce(q.Identifier, q.Email)
 	queryConn := &connectioning.GetConnectionByIDQuery{
 		ID: q.ConnectionID,
@@ -135,7 +160,7 @@ func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *types.Lo
 	case connection_type.ConnectionSubtypeShipment:
 		cmd := &carrier.ShopConnectionSignInArgs{
 			ConnectionID: q.ConnectionID,
-			ShopID:       s.SS.Shop().ID,
+			ShopID:       shopID,
 			Identifier:   identifier,
 			Password:     q.Password,
 		}
@@ -150,7 +175,7 @@ func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *types.Lo
 		// TODO: handle multiple shipnow connection
 		// just handle ahamove now
 		cmd := &accountshipnow.CreateExternalAccountAhamoveCommand{
-			ShopID:       s.SS.Shop().ID,
+			ShopID:       shopID,
 			OwnerID:      user.ID,
 			Phone:        phoneNorm.String(),
 			Name:         user.FullName,

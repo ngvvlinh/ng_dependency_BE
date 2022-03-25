@@ -22,16 +22,17 @@ func Convert_core_Setting_to_api_Setting(in *setting.ShopSetting) *shoptypes.Sho
 	}
 
 	res := &shoptypes.ShopSetting{
-		ShopID:          in.ShopID,
-		PaymentTypeID:   paymentTypeID,
-		ReturnAddressID: in.ReturnAddressID,
-		ReturnAddress:   Convert_core_Address_To_api_Address(in.ReturnAddress),
-		TryOn:           tryOn,
-		ShippingNote:    in.ShippingNote,
-		Weight:          in.Weight,
-		HideAllComments: in.HideAllComments,
-		CreatedAt:       cmapi.PbTime(in.CreatedAt),
-		UpdatedAt:       cmapi.PbTime(in.UpdatedAt),
+		ShopID:                     in.ShopID,
+		PaymentTypeID:              paymentTypeID,
+		ReturnAddressID:            in.ReturnAddressID,
+		ReturnAddress:              Convert_core_Address_To_api_Address(in.ReturnAddress),
+		TryOn:                      tryOn,
+		ShippingNote:               in.ShippingNote,
+		Weight:                     in.Weight,
+		HideAllComments:            in.HideAllComments,
+		CreatedAt:                  cmapi.PbTime(in.CreatedAt),
+		UpdatedAt:                  cmapi.PbTime(in.UpdatedAt),
+		AllowConnectDirectShipment: in.AllowConnectDirectShipment,
 	}
 	return res
 }

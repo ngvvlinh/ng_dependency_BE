@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/connectioning"
+	"o.o/api/shopping/setting"
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
@@ -16,6 +17,7 @@ import (
 type ConnectionService struct {
 	session.Session
 
+	SettingAggr     setting.CommandBus
 	ConnectionAggr  connectioning.CommandBus
 	ConnectionQuery connectioning.QueryBus
 }
@@ -42,6 +44,22 @@ func (s *ConnectionService) GetConnections(ctx context.Context, r *types.GetConn
 	}
 	result := &types.GetConnectionsResponse{
 		Connections: convertpb.PbConnections(query.Result),
+	}
+	return result, nil
+}
+
+func (s *ConnectionService) UpdateConnectDirectShipmentShopSetting(ctx context.Context, r *types.UpdateDirectShipmentSettingRequest) (*types.UpdateDirectShipmentSettingResponse, error) {
+	cmd := &setting.UpdateShopSettingDirectShipmentCommand{
+		ShopID:                     r.ShopID,
+		AllowConnectDirectShipment: r.AllowConnectDirectShipment,
+	}
+
+	if err := s.SettingAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	result := &types.UpdateDirectShipmentSettingResponse{
+		ShopID:                     cmd.ShopID,
+		AllowConnectDirectShipment: cmd.AllowConnectDirectShipment,
 	}
 	return result, nil
 }

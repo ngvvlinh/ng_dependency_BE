@@ -11,13 +11,14 @@ import (
 // +convert:type=setting.ShopSetting
 // +sqlgen
 type ShopSetting struct {
-	ShopID          dot.ID
-	PaymentTypeID   shipping_payment_type.ShippingPaymentType
-	ReturnAddressID dot.ID
-	TryOn           try_on.TryOnCode
-	ShippingNote    string
-	Weight          int
-	HideAllComments dot.NullBool
-	CreatedAt       time.Time `sq:"create"`
-	UpdatedAt       time.Time `sq:"update"`
+	ShopID                     dot.ID
+	PaymentTypeID              shipping_payment_type.ShippingPaymentType
+	ReturnAddressID            dot.ID
+	TryOn                      try_on.TryOnCode
+	ShippingNote               string
+	Weight                     int
+	HideAllComments            dot.NullBool
+	CreatedAt                  time.Time `sq:"create"`
+	UpdatedAt                  time.Time `sq:"update"`
+	AllowConnectDirectShipment bool
 }

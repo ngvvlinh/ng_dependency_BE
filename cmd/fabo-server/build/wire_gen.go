@@ -461,6 +461,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ConnectionAggr:     connectioningCommandBus,
 		IdentityQuery:      queryBus,
 		AccountshipnowAggr: accountshipnowCommandBus,
+		ShopSettingQuery:   settingQueryBus,
 	}
 	shopServers := fabo2.NewServers(store, shopMiscService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, notificationService, authorizeService, shipmentService, settingService, connectionService)
 	fbPageUtil := fbpage.NewFbPageUtil(store)

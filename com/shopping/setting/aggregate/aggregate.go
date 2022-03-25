@@ -179,3 +179,22 @@ func (s *ShopSettingAggregate) createReturnAddress(
 	}
 	return createReturnAddressCmd.Result, nil
 }
+
+func (s *ShopSettingAggregate) UpdateShopSettingDirectShipment(
+	ctx context.Context, args *setting.UpdateDirectShopSettingArgs,
+) (*setting.ShopSetting, error) {
+	if args.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id")
+	}
+
+	shopSetting := new(setting.ShopSetting)
+	if err := scheme.Convert(args, shopSetting); err != nil {
+		return nil, err
+	}
+
+	if err := s.store(ctx).UpdateDirectShipmentShopSettingDB(shopSetting); err != nil {
+		return shopSetting, err
+	}
+
+	return shopSetting, nil
+}

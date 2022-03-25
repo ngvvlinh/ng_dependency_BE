@@ -126,3 +126,14 @@ func (s *ShopSettingStore) GetShopSetting() (*setting.ShopSetting, error) {
 	}
 	return result, err
 }
+
+func (s *ShopSettingStore) UpdateDirectShipmentShopSettingDB(shopSetting *setting.ShopSetting) error {
+	var update = make(map[string]interface{})
+	if shopSetting != nil {
+		update["allow_connect_direct_shipment"] = shopSetting.AllowConnectDirectShipment
+	}
+	if err := s.query().Table("shop_setting").Where(s.ft.ByShopID(shopSetting.ShopID)).ShouldUpdateMap(update); err != nil {
+		return err
+	}
+	return nil
+}

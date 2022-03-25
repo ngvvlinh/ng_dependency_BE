@@ -44,6 +44,18 @@ func (h AggregateHandler) HandleUpdateShopSetting(ctx context.Context, msg *Upda
 	return err
 }
 
+type UpdateShopSettingDirectShipmentCommand struct {
+	ShopID                     dot.ID
+	AllowConnectDirectShipment bool
+
+	Result *ShopSetting `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopSettingDirectShipment(ctx context.Context, msg *UpdateShopSettingDirectShipmentCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopSettingDirectShipment(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShopSettingQuery struct {
 	ShopID dot.ID
 
@@ -57,7 +69,8 @@ func (h QueryServiceHandler) HandleGetShopSetting(ctx context.Context, msg *GetS
 
 // implement interfaces
 
-func (q *UpdateShopSettingCommand) command() {}
+func (q *UpdateShopSettingCommand) command()               {}
+func (q *UpdateShopSettingDirectShipmentCommand) command() {}
 
 func (q *GetShopSettingQuery) query() {}
 
@@ -86,6 +99,19 @@ func (q *UpdateShopSettingCommand) SetUpdateShopSettingArgs(args *UpdateShopSett
 	q.HideAllComments = args.HideAllComments
 }
 
+func (q *UpdateShopSettingDirectShipmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateDirectShopSettingArgs) {
+	return ctx,
+		&UpdateDirectShopSettingArgs{
+			ShopID:                     q.ShopID,
+			AllowConnectDirectShipment: q.AllowConnectDirectShipment,
+		}
+}
+
+func (q *UpdateShopSettingDirectShipmentCommand) SetUpdateDirectShopSettingArgs(args *UpdateDirectShopSettingArgs) {
+	q.ShopID = args.ShopID
+	q.AllowConnectDirectShipment = args.AllowConnectDirectShipment
+}
+
 func (q *GetShopSettingQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopSettingArgs) {
 	return ctx,
 		&GetShopSettingArgs{
@@ -110,6 +136,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleUpdateShopSetting)
+	b.AddHandler(h.HandleUpdateShopSettingDirectShipment)
 	return CommandBus{b}
 }
 

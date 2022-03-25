@@ -3159,16 +3159,17 @@ type DeleteContactRequest struct {
 func (m *DeleteContactRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopSetting struct {
-	ShopID          dot.ID                                        `json:"shop_id"`
-	PaymentTypeID   shipping_payment_type.NullShippingPaymentType `json:"payment_type_id"`
-	ReturnAddressID dot.ID                                        `json:"return_address_id"`
-	ReturnAddress   *etop.Address                                 `json:"return_address"`
-	TryOn           try_on.NullTryOnCode                          `json:"try_on"`
-	ShippingNote    string                                        `json:"shipping_note"`
-	Weight          int                                           `json:"weight"`
-	HideAllComments dot.NullBool                                  `json:"hide_all_comments"`
-	CreatedAt       dot.Time                                      `json:"created_at"`
-	UpdatedAt       dot.Time                                      `json:"updated_at"`
+	ShopID                     dot.ID                                        `json:"shop_id"`
+	PaymentTypeID              shipping_payment_type.NullShippingPaymentType `json:"payment_type_id"`
+	ReturnAddressID            dot.ID                                        `json:"return_address_id"`
+	ReturnAddress              *etop.Address                                 `json:"return_address"`
+	TryOn                      try_on.NullTryOnCode                          `json:"try_on"`
+	ShippingNote               string                                        `json:"shipping_note"`
+	Weight                     int                                           `json:"weight"`
+	HideAllComments            dot.NullBool                                  `json:"hide_all_comments"`
+	CreatedAt                  dot.Time                                      `json:"created_at"`
+	UpdatedAt                  dot.Time                                      `json:"updated_at"`
+	AllowConnectDirectShipment bool                                          `json:"allow_connect_direct_shipment"`
 }
 
 func (m *ShopSetting) String() string { return jsonx.MustMarshalToString(m) }
@@ -3222,11 +3223,11 @@ type CreateIssueResponse struct {
 func (m *CreateIssueResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateAccountUserRequest struct {
-	FullName string                    `json:"full_name"`
-	Phone    string                    `json:"phone"`
-	Roles    []shop_user_role.UserRole `json:"roles"`
-	Password string                    `json:"password"`
-	DepartmentID dot.ID               `json:"department_id"`
+	FullName     string                    `json:"full_name"`
+	Phone        string                    `json:"phone"`
+	Roles        []shop_user_role.UserRole `json:"roles"`
+	Password     string                    `json:"password"`
+	DepartmentID dot.ID                    `json:"department_id"`
 }
 
 func (m *CreateAccountUserRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -3267,8 +3268,8 @@ type FilterGetAccountUsersRequest struct {
 	ExactRoles      []shop_user_role.UserRole `json:"exact_roles"`
 	UserIDs         []dot.ID                  `json:"user_ids"`
 	HasExtension    dot.NullBool              `json:"has_extension"`
-	HasDepartment   dot.NullBool          `json:"has_department"`
-	DepartmentID    dot.ID                `json:"department_id"`
+	HasDepartment   dot.NullBool              `json:"has_department"`
+	DepartmentID    dot.ID                    `json:"department_id"`
 }
 
 func (m *FilterGetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -3286,7 +3287,7 @@ type UpdateAccountUserRequest struct {
 	Roles    []shop_user_role.UserRole `json:"roles"`
 	// Có thể đổi mật khẩu cho nhân viên, nếu nhân viên đó chưa đổi mật khẩu lần nào.
 	// Tức mật khẩu vẫn đang ở dạng khởi tạo khi vừa mới tạo tài khoản.
-	Password string `json:"password"`
+	Password     string `json:"password"`
 	DepartmentID dot.ID `json:"department_id"`
 }
 

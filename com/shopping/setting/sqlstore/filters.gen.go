@@ -178,3 +178,22 @@ func (ft *ShopSettingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFil
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }
+
+func (ft *ShopSettingFilters) ByAllowConnectDirectShipment(AllowConnectDirectShipment bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "allow_connect_direct_shipment",
+		Value:  AllowConnectDirectShipment,
+		IsNil:  bool(!AllowConnectDirectShipment),
+	}
+}
+
+func (ft *ShopSettingFilters) ByAllowConnectDirectShipmentPtr(AllowConnectDirectShipment *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "allow_connect_direct_shipment",
+		Value:  AllowConnectDirectShipment,
+		IsNil:  AllowConnectDirectShipment == nil,
+		IsZero: AllowConnectDirectShipment != nil && bool(!(*AllowConnectDirectShipment)),
+	}
+}

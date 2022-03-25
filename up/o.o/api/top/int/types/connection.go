@@ -226,3 +226,22 @@ type CreateBuiltinConnectionRequest struct {
 func (m *CreateBuiltinConnectionRequest) String() string {
 	return jsonx.MustMarshalToString(m)
 }
+
+type UpdateDirectShipmentSettingRequest struct {
+	ShopID                     dot.ID `json:"shop_id"`
+	AllowConnectDirectShipment bool   `json:"allow_connect_direct_shipment"`
+}
+
+func (m *UpdateDirectShipmentSettingRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateDirectShipmentSettingResponse struct {
+	ShopID                     dot.ID `json:"shop_id"`
+	AllowConnectDirectShipment bool   `json:"allow_connect_direct_shipment"`
+}
+
+func (m *UpdateDirectShipmentSettingResponse) Reset() {
+	*m = UpdateDirectShipmentSettingResponse{}
+}
+func (m *UpdateDirectShipmentSettingResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}

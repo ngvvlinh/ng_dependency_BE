@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShopSettings []*ShopSetting
 
 const __sqlShopSetting_Table = "shop_setting"
-const __sqlShopSetting_ListCols = "\"shop_id\",\"payment_type_id\",\"return_address_id\",\"try_on\",\"shipping_note\",\"weight\",\"hide_all_comments\",\"created_at\",\"updated_at\""
-const __sqlShopSetting_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"payment_type_id\" = EXCLUDED.\"payment_type_id\",\"return_address_id\" = EXCLUDED.\"return_address_id\",\"try_on\" = EXCLUDED.\"try_on\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"weight\" = EXCLUDED.\"weight\",\"hide_all_comments\" = EXCLUDED.\"hide_all_comments\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlShopSetting_ListCols = "\"shop_id\",\"payment_type_id\",\"return_address_id\",\"try_on\",\"shipping_note\",\"weight\",\"hide_all_comments\",\"created_at\",\"updated_at\",\"allow_connect_direct_shipment\""
+const __sqlShopSetting_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"payment_type_id\" = EXCLUDED.\"payment_type_id\",\"return_address_id\" = EXCLUDED.\"return_address_id\",\"try_on\" = EXCLUDED.\"try_on\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"weight\" = EXCLUDED.\"weight\",\"hide_all_comments\" = EXCLUDED.\"hide_all_comments\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"allow_connect_direct_shipment\" = EXCLUDED.\"allow_connect_direct_shipment\""
 const __sqlShopSetting_Insert = "INSERT INTO \"shop_setting\" (" + __sqlShopSetting_ListCols + ") VALUES"
 const __sqlShopSetting_Select = "SELECT " + __sqlShopSetting_ListCols + " FROM \"shop_setting\""
 const __sqlShopSetting_Select_history = "SELECT " + __sqlShopSetting_ListCols + " FROM history.\"shop_setting\""
@@ -121,6 +121,13 @@ func (m *ShopSetting) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"allow_connect_direct_shipment": {
+			ColumnName:       "allow_connect_direct_shipment",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "shop_setting", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -143,6 +150,7 @@ func (m *ShopSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.HideAllComments,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
+		core.Bool(m.AllowConnectDirectShipment),
 	}
 }
 
@@ -157,6 +165,7 @@ func (m *ShopSetting) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.HideAllComments,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		(*core.Bool)(&m.AllowConnectDirectShipment),
 	}
 }
 
@@ -194,7 +203,7 @@ func (_ *ShopSettings) SQLSelect(w SQLWriter) error {
 func (m *ShopSetting) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSetting_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -204,7 +213,7 @@ func (ms ShopSettings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSetting_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(10)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -307,6 +316,14 @@ func (m *ShopSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
+	if m.AllowConnectDirectShipment {
+		flag = true
+		w.WriteName("allow_connect_direct_shipment")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AllowConnectDirectShipment)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -317,7 +334,7 @@ func (m *ShopSetting) SQLUpdate(w SQLWriter) error {
 func (m *ShopSetting) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSetting_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -354,17 +371,20 @@ func (m ShopSettingHistory) HideAllComments() core.Interface {
 }
 func (m ShopSettingHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m ShopSettingHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m ShopSettingHistory) AllowConnectDirectShipment() core.Interface {
+	return core.Interface{m["allow_connect_direct_shipment"]}
+}
 
 func (m *ShopSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopSettingHistory, 9)
+	res := make(ShopSettingHistory, 10)
 	res["shop_id"] = data[0]
 	res["payment_type_id"] = data[1]
 	res["return_address_id"] = data[2]
@@ -374,14 +394,15 @@ func (m *ShopSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["hide_all_comments"] = data[6]
 	res["created_at"] = data[7]
 	res["updated_at"] = data[8]
+	res["allow_connect_direct_shipment"] = data[9]
 	*m = res
 	return nil
 }
 
 func (ms *ShopSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopSettingHistories, 0, 128)
@@ -399,6 +420,7 @@ func (ms *ShopSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["hide_all_comments"] = data[6]
 		m["created_at"] = data[7]
 		m["updated_at"] = data[8]
+		m["allow_connect_direct_shipment"] = data[9]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

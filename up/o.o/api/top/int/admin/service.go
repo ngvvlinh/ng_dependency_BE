@@ -121,6 +121,7 @@ type ConnectionService interface {
 	DisableConnection(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
 	GetConnectionServices(context.Context, *cm.IDRequest) (*types.GetConnectionServicesResponse, error)
 
+	UpdateConnectDirectShipmentShopSetting(context.Context, *types.UpdateDirectShipmentSettingRequest) (*types.UpdateDirectShipmentSettingResponse, error)
 	CreateBuiltinConnection(context.Context, *types.CreateBuiltinConnectionRequest) (*types.Connection, error)
 	GetBuiltinShopConnections(context.Context, *cm.Empty) (*types.GetShopConnectionsResponse, error)
 	UpdateShopConnection(context.Context, *types.UpdateShopConnectionRequest) (*cm.UpdatedResponse, error)

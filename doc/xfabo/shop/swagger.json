@@ -4242,6 +4242,9 @@
     "paShopSetting": {
       "type": "object",
       "properties": {
+        "allow_connect_direct_shipment": {
+          "type": "boolean"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"

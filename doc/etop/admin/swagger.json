@@ -393,6 +393,33 @@
         }
       }
     },
+    "/api/admin.Connection/UpdateConnectDirectShipmentShopSetting": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "UpdateConnectDirectShipmentShopSetting",
+        "operationId": "admin.Connection-UpdateConnectDirectShipmentShopSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateDirectShipmentSettingRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdUpdateDirectShipmentSettingResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Connection/UpdateShopConnection": {
       "post": {
         "tags": [
@@ -7795,6 +7822,30 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "qdUpdateDirectShipmentSettingRequest": {
+      "type": "object",
+      "properties": {
+        "allow_connect_direct_shipment": {
+          "type": "boolean"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdUpdateDirectShipmentSettingResponse": {
+      "type": "object",
+      "properties": {
+        "allow_connect_direct_shipment": {
+          "type": "boolean"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
