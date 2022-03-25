@@ -18,6 +18,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetShopSetting(context.Context, *GetShopSettingArgs) (*ShopSetting, error)
+	GetShopSettingDirectShipment(context.Context, *GetShopSettingArgs) (*ShopSetting, error)
 }
 
 //-- queries --//

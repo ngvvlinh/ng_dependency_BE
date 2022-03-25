@@ -66,3 +66,16 @@ func (s ShopSettingQuery) GetShopSetting(
 
 	return shopSetting, nil
 }
+
+func (s ShopSettingQuery) GetShopSettingDirectShipment(
+	ctx context.Context, args *setting.GetShopSettingArgs,
+) (shopSetting *setting.ShopSetting, err error) {
+	if args.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id")
+	}
+	shopSetting, err = s.store(ctx).ShopID(args.ShopID).GetShopSetting()
+	if err != nil {
+		return nil, err
+	}
+	return shopSetting, nil
+}

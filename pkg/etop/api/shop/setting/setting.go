@@ -40,6 +40,17 @@ func (s *SettingService) GetSetting(
 	return convertpb.Convert_core_Setting_to_api_Setting(shopSetting), nil
 }
 
+func (s *SettingService) GetShopSetting(ctx context.Context, empty *pbcm.Empty) (*api.ShopSetting, error) {
+	getShopSettingQuery := &setting.GetShopSettingDirectShipmentQuery{
+		ShopID: s.SS.Shop().ID,
+	}
+	if err := s.SettingQuery.Dispatch(ctx, getShopSettingQuery); err != nil {
+		return nil, err
+	}
+	shopSetting := getShopSettingQuery.Result
+	return convertpb.Convert_core_Setting_to_api_Setting(shopSetting), nil
+}
+
 func (s *SettingService) UpdateSetting(
 	ctx context.Context, req *api.UpdateSettingRequest,
 ) (*api.ShopSetting, error) {

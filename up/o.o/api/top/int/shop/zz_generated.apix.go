@@ -4629,6 +4629,7 @@ func NewSettingServiceServer(builder func() SettingService, hooks ...httprpc.Hoo
 const SettingServicePathPrefix = "/shop.Setting/"
 
 const Path_Setting_GetSetting = "/shop.Setting/GetSetting"
+const Path_Setting_GetShopSetting = "/shop.Setting/GetShopSetting"
 const Path_Setting_UpdateSetting = "/shop.Setting/UpdateSetting"
 
 func (s *SettingServiceServer) PathPrefix() string {
@@ -4674,6 +4675,19 @@ func (s *SettingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 				return
 			}
 			resp, err = inner.GetSetting(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Setting/GetShopSetting":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShopSetting(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

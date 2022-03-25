@@ -2018,6 +2018,33 @@
         }
       }
     },
+    "/api/shop.Setting/GetShopSetting": {
+      "post": {
+        "tags": [
+          "Setting"
+        ],
+        "summary": "GetShopSetting",
+        "operationId": "shop.Setting-GetShopSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopSetting"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Setting/UpdateSetting": {
       "post": {
         "tags": [
