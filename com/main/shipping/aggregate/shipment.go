@@ -643,7 +643,8 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 	case shipstate.Unknown,
 		shipstate.Default,
 		shipstate.Created,
-		shipstate.Picking:
+		shipstate.Picking,
+		shipstate.Confirmed:
 	// continue
 	default:
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn đang ở trạng thái '%v'. Không thể hủy.", ffm.ShippingState.GetLabelRefName())
