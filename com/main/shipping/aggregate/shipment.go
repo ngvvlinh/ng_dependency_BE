@@ -638,6 +638,17 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 	if err != nil {
 		return err
 	}
+
+	switch ffm.ShippingState {
+	case shipstate.Unknown,
+		shipstate.Default,
+		shipstate.Created,
+		shipstate.Picking:
+	// continue
+	default:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn đang ở trạng thái '%v'. Không thể hủy.", ffm.ShippingState.GetLabelRefName())
+	}
+
 	switch ffm.Status {
 	case status5.P, status5.NS:
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hoàn thành. Không thể hủy")
@@ -658,11 +669,9 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 			return err
 		}
 	}
-
 	if err := a.ffmStore(ctx).CancelFulfillment(args); err != nil {
 		return err
 	}
-
 	return err
 }
 
