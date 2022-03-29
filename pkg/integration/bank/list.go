@@ -25342,6 +25342,12 @@ var Branches = []*Branch{
 		MaTinh:      "01",
 	},
 	{
+		MaChiNhanh:  "01203001",
+		TenChiNhanh: "NHTMCP Ngoai thuong VN Dan Phuong",
+		MaNganHang:  "301",
+		MaTinh:      "01",
+	},
+	{
 		MaChiNhanh:  "VCBBRANCH34",
 		TenChiNhanh: "NHTMCP Ngoai thuong VN Ha Tinh",
 		MaNganHang:  "301",
