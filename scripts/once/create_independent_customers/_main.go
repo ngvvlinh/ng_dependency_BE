@@ -35,10 +35,10 @@ func main() {
 	cmenv.SetEnvironment(cfg.Env)
 
 	postgres := cfg.Postgres
-	postgres.Database = "etopv1"
-	postgres.Port = 5433
-	postgres.Username = "etop"
-	postgres.Password = "Kng9vczxDfFTLJQp"
+	postgres.Database = "etop"
+	postgres.Port = 5432
+	postgres.Username = "postgres"
+	postgres.Password = "postgres"
 
 	if db, err = cmsql.Connect(postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))
