@@ -6529,7 +6529,7 @@ var Districts = []*types.District{
 		VTPostID:     4,
 		NTXID:        2908,
 		HaravanCode:  "HI688",
-		UrbanType:    1,
+		UrbanType:    -1,
 	},
 	{
 		Code:         "009",
