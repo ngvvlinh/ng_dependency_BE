@@ -643,7 +643,6 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 	case shipstate.Unknown,
 		shipstate.Default,
 		shipstate.Created,
-		shipstate.Picking,
 		shipstate.Confirmed:
 	// continue
 	default:
