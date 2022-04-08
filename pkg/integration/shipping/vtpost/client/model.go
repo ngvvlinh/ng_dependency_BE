@@ -492,11 +492,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*shippingsharemod
 		total += shippingFeeLine.Cost
 	}
 	if sf.MoneyTotalFee != 0 {
-		fee := sf.MoneyTotal - total
-		moneyTotalFee := int(math.Floor(float64(sf.MoneyTotalFee) * IncludeVAT))
-		if math.Abs(float64(fee-moneyTotalFee)) > 10 {
-			return nil, cm.Error(cm.FailedPrecondition, "VTPOST: Total shipping does not match", nil)
-		}
+		fee := sf.MoneyTotal
 		shippingFeeLine := &shippingsharemodel.ShippingFeeLine{
 			ShippingFeeType:     shipping_fee_type.Main,
 			Cost:                fee,
