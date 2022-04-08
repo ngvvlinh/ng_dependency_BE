@@ -20,6 +20,7 @@ type ConnectionService struct {
 	SettingAggr     setting.CommandBus
 	ConnectionAggr  connectioning.CommandBus
 	ConnectionQuery connectioning.QueryBus
+	SettingQuery    setting.QueryBus
 }
 
 func (s *ConnectionService) Clone() admin.ConnectionService {
@@ -44,6 +45,20 @@ func (s *ConnectionService) GetConnections(ctx context.Context, r *types.GetConn
 	}
 	result := &types.GetConnectionsResponse{
 		Connections: convertpb.PbConnections(query.Result),
+	}
+	return result, nil
+}
+
+func (s *ConnectionService) GetConnectDirectShipmentShopSetting(ctx context.Context, r *types.GetConnectDirectShipmentShopSettingRequest) (*types.GetConnectDirectShipmentSettingResponse, error) {
+	query := &setting.GetShopSettingDirectShipmentQuery{
+		ShopID: r.ShopID,
+	}
+	if err := s.SettingQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	result := &types.GetConnectDirectShipmentSettingResponse{
+		ShopID:                     query.ShopID,
+		AllowConnectDirectShipment: query.Result.AllowConnectDirectShipment,
 	}
 	return result, nil
 }

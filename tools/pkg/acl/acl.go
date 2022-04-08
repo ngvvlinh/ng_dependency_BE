@@ -456,6 +456,7 @@ const (
 	AdminConnectionServiceView       permission.ActionType = "admin/connection_service:view"
 
 	// AdminDirectShipment
+	AdminConnectDirectShipmentView   permission.ActionType = "admin/shop_connection_direct_shipment:view"
 	AdminConnectDirectShipmentUpdate permission.ActionType = "admin/shop_connection_direct_shipment:update"
 
 	// Admin custom region
@@ -859,6 +860,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.Notification/CreateNotifications": {Type: EtopAdmin},
 
 	"admin.Connection/GetConnections":                         {Type: EtopAdmin, Actions: actions(AdminConnectionView)},
+	"admin.Connection/GetConnectDirectShipmentShopSetting":    {Type: EtopAdmin, Actions: actions(AdminConnectDirectShipmentView)},
 	"admin.Connection/ConfirmConnection":                      {Type: EtopAdmin, Actions: actions(AdminConnectionConfirm)},
 	"admin.Connection/DisableConnection":                      {Type: EtopAdmin, Actions: actions(AdminConnectionDisable)},
 	"admin.Connection/CreateBuiltinConnection":                {Type: EtopAdmin, Actions: actions(AdminConnectionBuiltinCreate)},

@@ -303,6 +303,7 @@ const adminPolicy = `
 	p, admin/shop_connection_builtin:create, admin, ad_sale, ad_salelead
 	p, admin/shop_connection:update, admin
 	p, admin/shop_connection_direct_shipment:update, admin, ad_sale, ad_salelead, ad_customerservice, ad_customerservice_lead
+	p, admin/shop_connection_direct_shipment:view, admin, ad_sale, ad_salelead, ad_customerservice, ad_customerservice_lead
 	p, admin/connection_service:view, admin, ad_sale, ad_salelead
 	# admin custom region
 	p, admin/custom_region:create, admin, ad_salelead

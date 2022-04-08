@@ -245,3 +245,23 @@ func (m *UpdateDirectShipmentSettingResponse) Reset() {
 func (m *UpdateDirectShipmentSettingResponse) String() string {
 	return jsonx.MustMarshalToString(m)
 }
+
+type GetConnectDirectShipmentShopSettingRequest struct {
+	ShopID dot.ID `json:"shop_id"`
+}
+
+func (m *GetConnectDirectShipmentShopSettingRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetConnectDirectShipmentSettingResponse struct {
+	ShopID                     dot.ID `json:"shop_id"`
+	AllowConnectDirectShipment bool   `json:"allow_connect_direct_shipment"`
+}
+
+func (m *GetConnectDirectShipmentSettingResponse) Reset() {
+	*m = GetConnectDirectShipmentSettingResponse{}
+}
+func (m *GetConnectDirectShipmentSettingResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}

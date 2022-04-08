@@ -302,6 +302,7 @@ const Path_Connection_ConfirmConnection = "/admin.Connection/ConfirmConnection"
 const Path_Connection_CreateBuiltinConnection = "/admin.Connection/CreateBuiltinConnection"
 const Path_Connection_DisableConnection = "/admin.Connection/DisableConnection"
 const Path_Connection_GetBuiltinShopConnections = "/admin.Connection/GetBuiltinShopConnections"
+const Path_Connection_GetConnectDirectShipmentShopSetting = "/admin.Connection/GetConnectDirectShipmentShopSetting"
 const Path_Connection_GetConnectionServices = "/admin.Connection/GetConnectionServices"
 const Path_Connection_GetConnections = "/admin.Connection/GetConnections"
 const Path_Connection_UpdateConnectDirectShipmentShopSetting = "/admin.Connection/UpdateConnectDirectShipmentShopSetting"
@@ -389,6 +390,19 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 				return
 			}
 			resp, err = inner.GetBuiltinShopConnections(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Connection/GetConnectDirectShipmentShopSetting":
+		msg := &inttypes.GetConnectDirectShipmentShopSettingRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetConnectDirectShipmentShopSetting(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

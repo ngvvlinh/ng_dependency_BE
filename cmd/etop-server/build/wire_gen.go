@@ -987,6 +987,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SettingAggr:     settingCommandBus,
 		ConnectionAggr:  connectioningCommandBus,
 		ConnectionQuery: connectioningQueryBus,
+		SettingQuery:    settingQueryBus,
 	}
 	shipmentpriceAggregate := shipmentprice.NewAggregate(mainDB, store, pricelistQueryBus, shipmentserviceQueryBus)
 	shipmentpriceCommandBus := shipmentprice.AggregateMessageBus(shipmentpriceAggregate)
