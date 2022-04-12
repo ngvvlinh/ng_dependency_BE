@@ -119,6 +119,7 @@ func Build(
 			"vtpay",
 			"kpay",
 			"redis",
+			"elasticsearch",
 			"captcha",
 			"ExportDirs",
 			"UploadDirs",

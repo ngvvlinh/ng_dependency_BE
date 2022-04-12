@@ -34,6 +34,10 @@ func ForwardHeaders(next http.Handler, configs ...Config) http.HandlerFunc {
 		authorization := r.Header.Get("Authorization")
 		if cfg.AllowQueryAuthorization && authorization == "" {
 			token := r.URL.Query().Get("__token")
+			if r.URL.Query().Get("token") != "" && token == "" {
+				token = r.URL.Query().Get("token")
+			}
+
 			if token != "" {
 				authorization = "Bearer " + token
 			}

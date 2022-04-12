@@ -3,6 +3,7 @@ package server_max
 import (
 	"context"
 	"net/http"
+	"o.o/backend/pkg/etop/apix/portsip_pbx"
 	"strings"
 
 	_main "o.o/backend/cogs/server/main"
@@ -113,6 +114,16 @@ func BuildAuthxHandler(
 
 	rt.POST("/v1/authx/AuthUser", authxService.AuthUser)
 	return httpx.MakeServer("/v1/authx/", rt)
+}
+
+func BuildPortSipPBXHandler(
+	portsipService portsip_pbx.PortsipService,
+) _main.PortSipHandler {
+	rt := httpx.New()
+	rt.Use(httpx.RecoverAndLog(false))
+
+	rt.GET("/portsip-pbx/v1/cdr", portsipService.GetCallLogs)
+	return httpx.MakeServer("/portsip-pbx/v1/", rt)
 }
 
 func GetIP(r *http.Request) string {

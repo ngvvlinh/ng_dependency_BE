@@ -130,6 +130,7 @@ func BuildMainServer(
 	intHandlers _main.IntHandlers,
 	extHandlers _main.ExtHandlers,
 	authxHandler _main.AuthxHandler,
+	portsipHandler _main.PortSipHandler,
 	sharedCfg config_server.SharedConfig,
 	cfg config.Config,
 	adminImport server_admin.ImportServer,
@@ -171,6 +172,7 @@ func BuildMainServer(
 	mux.Handle(kpayServer.PathPrefix(), kpayServer)
 	mux.Handle(reportServer.PathPrefix(), mwares(reportServer))
 	mux.Handle(authxHandler.PathPrefix(), mwares(authxHandler))
+	mux.Handle(portsipHandler.PathPrefix(), mwares(portsipHandler))
 
 	if sharedCfg.ServeDoc {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))

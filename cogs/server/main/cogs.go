@@ -10,3 +10,5 @@ type IntHandlers []httprpc.Server
 type ExtHandlers []httprpc.Server
 
 type AuthxHandler httpx.Server
+
+type PortSipHandler httpx.Server
