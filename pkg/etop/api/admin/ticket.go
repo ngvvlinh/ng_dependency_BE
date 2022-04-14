@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
@@ -315,6 +316,7 @@ func (s *TicketService) GetTicketLabels(ctx context.Context, req *api.GetTicketL
 }
 
 func (s *TicketService) CreateTicketLabel(ctx context.Context, request *api.CreateTicketLabelRequest) (*shoptypes.TicketLabel, error) {
+	fmt.Println("?>>>>>")
 	cmd := &ticket.CreateTicketLabelCommand{
 		Type:     ticket_type.System,
 		Name:     request.Name,

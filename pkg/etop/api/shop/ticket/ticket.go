@@ -2,6 +2,7 @@ package ticket
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/main/authorization"
 	"o.o/api/supporting/ticket"
@@ -432,7 +433,9 @@ func (s *TicketService) GetTicketComments(ctx context.Context, req *api.GetTicke
 }
 
 func (s *TicketService) CreateTicketLabel(ctx context.Context, req *api.CreateTicketLabelRequest) (*shoptypes.TicketLabel, error) {
+	fmt.Println("get rule", isLeader(s.SS.GetRoles()))
 	if !isLeader(s.SS.GetRoles()) {
+		fmt.Println("?/?")
 		return nil, cm.ErrPermissionDenied
 	}
 	cmd := &ticket.CreateTicketLabelCommand{

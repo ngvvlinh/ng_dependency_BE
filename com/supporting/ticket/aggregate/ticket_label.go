@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/supporting/ticket"
 	"o.o/api/top/types/etc/ticket/ticket_type"
@@ -15,6 +16,7 @@ import (
 var scheme = conversion.Build(convert.RegisterConversions)
 
 func (a TicketAggregate) CreateTicketLabel(ctx context.Context, args *ticket.CreateTicketLabelArgs) (*ticket.TicketLabel, error) {
+	fmt.Println("????")
 	var ticketLabelCore = &ticket.TicketLabel{}
 	err := scheme.Convert(args, ticketLabelCore)
 	if err != nil {
