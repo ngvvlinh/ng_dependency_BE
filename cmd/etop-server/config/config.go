@@ -35,7 +35,8 @@ type Config struct {
 	Databases    database_all.Config        `yaml:",inline"`
 	Shipment     shipment_all.Config        `yaml:",inline"`
 
-	Redis cc.Redis `yaml:"redis"`
+	Redis         cc.Redis         `yaml:"redis"`
+	Elasticsearch cc.Elasticsearch `yaml:"elasticsearch"`
 
 	Kafka cc.Kafka `yaml:"kafka"`
 
@@ -78,9 +79,10 @@ type Config struct {
 // Default ...
 func Default() Config {
 	cfg := Config{
-		SharedConfig: config_server.DefaultConfig(),
-		Databases:    database_all.DefaultConfig(),
-		Redis:        cc.DefaultRedis(),
+		SharedConfig:  config_server.DefaultConfig(),
+		Databases:     database_all.DefaultConfig(),
+		Redis:         cc.DefaultRedis(),
+		Elasticsearch: cc.DefaultElasticsearch(),
 		Kafka: cc.Kafka{
 			Enabled:     false,
 			Brokers:     nil,

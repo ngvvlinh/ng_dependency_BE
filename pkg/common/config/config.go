@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"o.o/backend/pkg/common/elasticsearch"
 	"os"
 	"reflect"
 	"strconv"
@@ -272,6 +273,31 @@ func DefaultRedis() Redis {
 
 func RedisMustLoadEnv(c *Redis, prefix ...string) {
 	p := "ET_REDIS"
+	if len(prefix) > 0 {
+		p = prefix[0]
+	}
+	EnvMap{
+		p + "_PORT":     &c.Port,
+		p + "_HOST":     &c.Host,
+		p + "_USERNAME": &c.Username,
+		p + "_PASSWORD": &c.Password,
+	}.MustLoad()
+}
+
+type Elasticsearch = elasticsearch.ElasticSearch
+
+// DefaultES ...
+func DefaultElasticsearch() Elasticsearch {
+	return Elasticsearch{
+		Host:     "localhost",
+		Port:     "9200",
+		Username: "",
+		Password: "",
+	}
+}
+
+func ElasticsearchMustLoadEnv(c *Elasticsearch, prefix ...string) {
+	p := "ET_ELASTICSEARCH"
 	if len(prefix) > 0 {
 		p = prefix[0]
 	}

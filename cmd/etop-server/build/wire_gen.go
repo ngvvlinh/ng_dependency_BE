@@ -150,6 +150,7 @@ import (
 	"o.o/backend/pkg/common/apifw/health"
 	auth2 "o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/elasticsearch"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/admin"
 	"o.o/backend/pkg/etop/api/admin/_all"
@@ -211,6 +212,7 @@ import (
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
 	"o.o/backend/pkg/etop/apix/partnerimport"
+	"o.o/backend/pkg/etop/apix/portsip_pbx"
 	"o.o/backend/pkg/etop/apix/shipping"
 	"o.o/backend/pkg/etop/apix/shop"
 	"o.o/backend/pkg/etop/apix/shopping"
@@ -1366,6 +1368,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		St: middlewareSessionStarter,
 	}
 	authxHandler := server_max.BuildAuthxHandler(authxService)
+	elasticSearch := cfg.Elasticsearch
+	elasticsearchStore := elasticsearch.Connect(elasticSearch)
+	portsipService := portsip_pbx.PortsipService{
+		SS:            middlewareSessionStarter,
+		ESStore:       elasticsearchStore,
+		EtelecomQuery: etelecomQueryBus,
+	}
+	portSipHandler := server_max.BuildPortSipPBXHandler(portsipService)
 	ghnimportImport := ghnimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
@@ -1451,7 +1461,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityQuery: queryBus,
 	}
 	reportServer := reportserver.BuildReportServer(reportService, session)
-	mainServer := BuildMainServer(service, intHandlers, extHandlers, authxHandler, sharedConfig, cfg, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, kPayHandler, reportServer)
+	mainServer := BuildMainServer(service, intHandlers, extHandlers, authxHandler, portSipHandler, sharedConfig, cfg, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, kPayHandler, reportServer)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, locationQueryBus)
 	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook
