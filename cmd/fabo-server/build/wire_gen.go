@@ -111,6 +111,7 @@ import (
 	fabo3 "o.o/backend/pkg/fabo"
 	"o.o/backend/pkg/fabo/faboinfo"
 	"o.o/backend/pkg/integration/email"
+	"o.o/backend/pkg/integration/oidc/client"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
 	"o.o/backend/pkg/integration/sms"
 )
@@ -186,9 +187,11 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	logDB := databases.Log
 	smsLogAggregate := aggregate.NewSmsLogAggregate(busBus, logDB)
 	smslogCommandBus := aggregate.SmsLogAggregateMessageBus(smsLogAggregate)
-	client := sms.New(smsConfig, v, smslogCommandBus)
+	smsClient := sms.New(smsConfig, v, smslogCommandBus)
 	smtpConfig := cfg.SMTP
 	emailClient := email.New(smtpConfig)
+	clientConfig := cfg.OIDC
+	clientClient := client.New(clientConfig)
 	userStoreFactory := sqlstore.NewUserStore(mainDB)
 	login := &sqlstore.Login{
 		UserStore: userStoreInterface,
@@ -206,8 +209,9 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		AuthStore:         generator,
 		TokenStore:        tokenStore,
 		RedisStore:        store,
-		SMSClient:         client,
+		SMSClient:         smsClient,
 		EmailClient:       emailClient,
+		OidcClient:        clientClient,
 		UserStore:         userStoreFactory,
 		UserStoreIface:    userStoreInterface,
 		ShopStore:         shopStoreInterface,
@@ -244,7 +248,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	invitationConfig := cfg.Invitation
 	customerQuery := query3.NewCustomerQuery(mainDB)
 	customeringQueryBus := query3.CustomerQueryMessageBus(customerQuery)
-	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, client, emailClient, accountUserStoreInterface, shopStoreInterface, userStoreInterface, store)
+	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, smsClient, emailClient, accountUserStoreInterface, shopStoreInterface, userStoreInterface, store)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := &aggregate3.AuthorizationAggregate{
 		Auth:             authorizer,

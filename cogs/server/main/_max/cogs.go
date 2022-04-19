@@ -3,6 +3,7 @@ package server_max
 import (
 	"context"
 	"net/http"
+	"o.o/backend/pkg/etop/apix/oidc"
 	"o.o/backend/pkg/etop/apix/portsip_pbx"
 	"strings"
 
@@ -124,6 +125,16 @@ func BuildPortSipPBXHandler(
 
 	rt.GET("/portsip-pbx/v1/cdr", portsipService.GetCallLogs)
 	return httpx.MakeServer("/portsip-pbx/v1/", rt)
+}
+
+func BuildOIDCHandler(
+	oidcService oidc.OIDCService,
+) _main.OIDCHandler {
+	rt := httpx.New()
+	rt.Use(httpx.RecoverAndLog(false))
+
+	rt.GET("/v1/oauth2/callback", oidcService.Callback)
+	return httpx.MakeServer("/v1/oauth2/", rt)
 }
 
 func GetIP(r *http.Request) string {

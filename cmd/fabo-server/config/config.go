@@ -15,6 +15,7 @@ import (
 	"o.o/backend/pkg/etop/api/export"
 	orderS "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/integration/email"
+	oidcclient "o.o/backend/pkg/integration/oidc/client"
 	"o.o/backend/pkg/integration/sms"
 )
 
@@ -50,6 +51,7 @@ type Config struct {
 
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
 	Webhook     WebhookConfig      `yaml:"webhook"`
+	OIDC        oidcclient.Config  `yaml:"oidc"`
 }
 
 type WebhookConfig struct {
@@ -120,6 +122,7 @@ func Load() (cfg Config, err error) {
 	cfg.SMS.MustLoadEnv()
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
+	cfg.OIDC.MustLoadEnv()
 
 	// TODO(vu): remove this
 	cfg.Shipment.GHN.MustLoadEnv()

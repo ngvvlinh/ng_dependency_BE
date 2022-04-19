@@ -97,6 +97,7 @@ import (
 	telecomstore "o.o/backend/pkg/etop/sqlstore/telecom"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/jira"
+	"o.o/backend/pkg/integration/oidc"
 	saffapi "o.o/backend/pkg/services/affiliate/api"
 	"o.o/capi"
 )
@@ -131,6 +132,7 @@ func Build(
 			"WebphonePublicKey",
 			"AdminPortsip",
 			"Jira",
+			"OIDC",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
@@ -227,6 +229,7 @@ func Build(
 		telecom_all.WireSet,
 
 		jira.WireSet,
+		oidc.WireSet,
 
 		ProvidePolicy,
 		auth.WireSet,

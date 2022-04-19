@@ -1348,3 +1348,15 @@ type WebphoneLoginRequest struct {
 }
 
 func (m *WebphoneLoginRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetAuthCodeURLResponse struct {
+	AuthURL string `json:"auth_url"`
+}
+
+func (m *GetAuthCodeURLResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type VerifyTokenUsingCodeRequest struct {
+	Code string `json:"code"`
+}
+
+func (m *VerifyTokenUsingCodeRequest) String() string { return jsonx.MustMarshalToString(m) }

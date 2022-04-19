@@ -209,6 +209,7 @@ import (
 	"o.o/backend/pkg/etop/apix/authx"
 	"o.o/backend/pkg/etop/apix/mc/vht"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
+	"o.o/backend/pkg/etop/apix/oidc"
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
 	"o.o/backend/pkg/etop/apix/partnerimport"
@@ -243,11 +244,12 @@ import (
 	"o.o/backend/pkg/etop/sqlstore/telecom"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/jira/driver"
+	"o.o/backend/pkg/integration/oidc/client"
 	"o.o/backend/pkg/integration/payment/kpay"
 	"o.o/backend/pkg/integration/payment/vtpay"
-	"o.o/backend/pkg/integration/payment/vtpay/client"
+	client2 "o.o/backend/pkg/integration/payment/vtpay/client"
 	"o.o/backend/pkg/integration/shipnow/ahamove"
-	client2 "o.o/backend/pkg/integration/shipnow/ahamove/client"
+	client3 "o.o/backend/pkg/integration/shipnow/ahamove/client"
 	server3 "o.o/backend/pkg/integration/shipnow/ahamove/server"
 	webhook7 "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
 	webhook2 "o.o/backend/pkg/integration/shipping/direct/webhook"
@@ -336,6 +338,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	smsClient := sms.New(smsConfig, v, smslogCommandBus)
 	smtpConfig := cfg.SMTP
 	emailClient := email.New(smtpConfig)
+	clientConfig := cfg.OIDC
+	clientClient := client.New(clientConfig)
 	userStoreFactory := sqlstore.NewUserStore(mainDB)
 	login := &sqlstore.Login{
 		UserStore: userStoreInterface,
@@ -355,6 +359,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		RedisStore:        store,
 		SMSClient:         smsClient,
 		EmailClient:       emailClient,
+		OidcClient:        clientClient,
 		UserStore:         userStoreFactory,
 		UserStoreIface:    userStoreInterface,
 		ShopStore:         shopStoreInterface,
@@ -685,10 +690,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		OrderLogic:     orderLogic,
 		OrderStore:     orderStoreInterface,
 	}
-	clientConfig := cfg.VTPay
-	vtpayProvider := vtpay.New(clientConfig)
-	config2 := cfg.KPay
-	kpayProvider := kpay.New(config2)
+	config2 := cfg.VTPay
+	vtpayProvider := vtpay.New(config2)
+	config3 := cfg.KPay
+	kpayProvider := kpay.New(config3)
 	v3 := payment_all.AllSupportedPaymentProviders(vtpayProvider, kpayProvider)
 	paymentManager := manager2.NewManager(v3, orderingQueryBus)
 	managerCommandBus := manager2.ManagerMesssageBus(paymentManager)
@@ -913,8 +918,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		InvoiceAggr:  invoicingCommandBus,
 		InvoiceQuery: invoicingQueryBus,
 	}
-	config3 := cfg.Jira
-	jiraDriver := driver.New(config3)
+	config4 := cfg.Jira
+	jiraDriver := driver.New(config4)
 	jiraService := &jira.JiraService{
 		Session: session,
 		Driver:  jiraDriver,
@@ -1368,6 +1373,32 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		St: middlewareSessionStarter,
 	}
 	authxHandler := server_max.BuildAuthxHandler(authxService)
+	rootUserService := root.UserService{
+		Session:           session,
+		IdentityAggr:      commandBus,
+		IdentityQuery:     queryBus,
+		InvitationQuery:   invitationQueryBus,
+		NotifyQuery:       notifyQueryBus,
+		NotifyAggr:        notifyCommandBus,
+		EventBus:          busBus,
+		AuthStore:         generator,
+		TokenStore:        tokenStore,
+		RedisStore:        store,
+		SMSClient:         smsClient,
+		EmailClient:       emailClient,
+		OidcClient:        clientClient,
+		UserStore:         userStoreFactory,
+		UserStoreIface:    userStoreInterface,
+		ShopStore:         shopStoreInterface,
+		AccountUserStore:  accountUserStoreInterface,
+		LoginIface:        loginInterface,
+		WebphonePublicKey: webphonePublicKey,
+	}
+	oidcService := oidc.OIDCService{
+		SS:          middlewareSessionStarter,
+		Userservice: rootUserService,
+	}
+	oidcHandler := server_max.BuildOIDCHandler(oidcService)
 	elasticSearch := cfg.Elasticsearch
 	elasticsearchStore := elasticsearch.Connect(elasticSearch)
 	portsipService := portsip_pbx.PortsipService{
@@ -1442,10 +1473,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, import3, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
-	clientClient := client.New(clientConfig)
-	vtpayAggregate := vtpay2.NewAggregate(mainDB, orderingQueryBus, orderingCommandBus, paymentCommandBus, clientClient)
+	client4 := client2.New(config2)
+	vtpayAggregate := vtpay2.NewAggregate(mainDB, orderingQueryBus, orderingCommandBus, paymentCommandBus, client4)
 	vtpayCommandBus := vtpay2.AggregateMessageBus(vtpayAggregate)
-	aggregate34 := aggregate27.NewAggregate(orderingQueryBus, orderingCommandBus, vtpayCommandBus, clientClient)
+	aggregate34 := aggregate27.NewAggregate(orderingQueryBus, orderingCommandBus, vtpayCommandBus, client4)
 	gatewayCommandBus := aggregate27.AggregateMessageBus(aggregate34)
 	aggregate35 := aggregate28.New(logDB)
 	serverServer := server.New(gatewayCommandBus, aggregate35)
@@ -1461,7 +1492,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityQuery: queryBus,
 	}
 	reportServer := reportserver.BuildReportServer(reportService, session)
-	mainServer := BuildMainServer(service, intHandlers, extHandlers, authxHandler, portSipHandler, sharedConfig, cfg, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, kPayHandler, reportServer)
+	mainServer := BuildMainServer(service, intHandlers, extHandlers, authxHandler, oidcHandler, portSipHandler, sharedConfig, cfg, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, kPayHandler, reportServer)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, locationQueryBus)
 	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook
@@ -1479,10 +1510,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webhook11 := webhook6.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	ntxWebhookServer := _ntx.NewNTXWebhookServer(_ntxWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook11)
 	serverWebhookConfig := cfg.AhamoveWebhook
-	config4 := cfg.Ahamove
-	client3 := client2.New(config4)
+	config5 := cfg.Ahamove
+	client5 := client3.New(config5)
 	urlConfig := shipnow_all.AhamoveConfig(cfg)
-	ahamoveCarrier := ahamove.New(client3, urlConfig, locationQueryBus, queryBus, accountshipnowQueryBus)
+	ahamoveCarrier := ahamove.New(client5, urlConfig, locationQueryBus, queryBus, accountshipnowQueryBus)
 	ahamoveVerificationFileServer := server3.NewAhamoveVerificationFileServer(ctx, accountshipnowQueryBus)
 	webhook12 := webhook7.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)
 	ahamoveWebhookServer := server3.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, queryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook12)

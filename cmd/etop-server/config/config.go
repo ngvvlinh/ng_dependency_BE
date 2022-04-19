@@ -22,6 +22,7 @@ import (
 	orderS "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/integration/email"
 	jiraclient "o.o/backend/pkg/integration/jira/client"
+	oidcclient "o.o/backend/pkg/integration/oidc/client"
 	kpayclient "o.o/backend/pkg/integration/payment/kpay/client"
 	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "o.o/backend/pkg/integration/shipnow/ahamove/client"
@@ -74,6 +75,7 @@ type Config struct {
 
 	AdminPortsip telecom_all.AdminPortsipConfig `yaml:"admin_portsip"`
 	Jira         jiraclient.Config              `yaml:"jira"`
+	OIDC         oidcclient.Config              `yaml:"oidc"`
 }
 
 // Default ...
@@ -172,6 +174,7 @@ func Load(isTest bool) (Config, error) {
 	cfg.VTPay.MustLoadEnv()
 	cfg.KPay.MustLoadEnv()
 	cfg.Jira.MustLoadEnv()
+	cfg.OIDC.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 
 	if cfg.ThirdPartyHost == "" && cfg.SharedConfig.Env != cmenv.EnvDev.String() {
