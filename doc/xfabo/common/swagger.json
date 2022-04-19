@@ -841,7 +841,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/baGetAuthCodeURLRequest"
             }
           }
         ],
@@ -2261,10 +2261,18 @@
         }
       }
     },
+    "baGetAuthCodeURLRequest": {
+      "type": "object",
+      "properties": {
+        "redirect_type": {
+          "$ref": "#/definitions/baRedirectType"
+        }
+      }
+    },
     "baGetAuthCodeURLResponse": {
       "type": "object",
       "properties": {
-        "auth_url": {
+        "url": {
           "type": "string"
         }
       }
@@ -2799,6 +2807,13 @@
           "type": "string"
         }
       }
+    },
+    "baRedirectType": {
+      "type": "string",
+      "enum": [
+        "web",
+        "app"
+      ]
     },
     "baRegisterResponse": {
       "type": "object",

@@ -7,6 +7,7 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 	"net/http"
+	"o.o/api/top/int/etop"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpreq"
 	"o.o/backend/pkg/common/authorization/auth"
@@ -22,7 +23,10 @@ type Config struct {
 	ClientID     string `yaml:"client_id"`
 	ClientSecret string `yaml:"client_secret"`
 	BaseURL      string `yaml:"base_url" `
-	RedirectURL  string `yaml:"redirect_url"`
+	RedirectUrls struct {
+		App string `yaml:"app"`
+		Web string `yaml:"web"`
+	} `yaml:"redirect_urls"`
 }
 
 func (c *Config) MustLoadEnv(prefix ...string) {
@@ -35,7 +39,7 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 		p + "_CLIENT_ID":     &c.ClientID,
 		p + "_CLIENT_SECRET": &c.ClientSecret,
 		p + "_BASE_URL":      &c.BaseURL,
-		p + "_REDIRECT_URL":  &c.RedirectURL,
+		p + "_REDIRECT_URLS": &c.RedirectUrls,
 	}.MustLoad()
 }
 
@@ -66,7 +70,7 @@ func New(cfg Config) *Client {
 		oAuth2Config: &oauth2.Config{
 			ClientID:     cfg.ClientID,
 			ClientSecret: cfg.ClientSecret,
-			RedirectURL:  cfg.RedirectURL,
+			RedirectURL:  cfg.RedirectUrls.Web,
 			Endpoint:     provider.Endpoint(),
 			Scopes:       []string{oidc.ScopeOpenID, oidc.ScopeOfflineAccess, "profile", "phone", "email", "role"},
 		},
@@ -74,7 +78,10 @@ func New(cfg Config) *Client {
 	}
 }
 
-func (c *Client) GetAuthURL() string {
+func (c *Client) GetAuthURL(redirectType etop.RedirectType) string {
+	if redirectType == etop.APP {
+		c.oAuth2Config.RedirectURL = c.cfg.RedirectUrls.App
+	}
 	return c.oAuth2Config.AuthCodeURL(auth.RandomToken(16))
 }
 

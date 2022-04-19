@@ -2,9 +2,12 @@ package server_max
 
 import (
 	"context"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"o.o/api/top/int/etop"
 	"o.o/backend/pkg/etop/apix/oidc"
 	"o.o/backend/pkg/etop/apix/portsip_pbx"
+	oidcclient "o.o/backend/pkg/integration/oidc/client"
 	"strings"
 
 	_main "o.o/backend/cogs/server/main"
@@ -129,10 +132,19 @@ func BuildPortSipPBXHandler(
 
 func BuildOIDCHandler(
 	oidcService oidc.OIDCService,
+	OidcClient *oidcclient.Client,
 ) _main.OIDCHandler {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(false))
 
+	rt.Router.GET("/v1/oauth2/", func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+		redirectType := etop.WEB
+		if req.URL.Query().Get("redirect_type") == etop.APP.String() {
+			redirectType = etop.APP
+		}
+
+		http.Redirect(w, req, OidcClient.GetAuthURL(redirectType), http.StatusFound)
+	})
 	rt.GET("/v1/oauth2/callback", oidcService.Callback)
 	return httpx.MakeServer("/v1/oauth2/", rt)
 }

@@ -42,7 +42,7 @@ type UserService interface {
 	// oAuth 2.0
 	//
 	// Verify user with OIDC
-	GetAuthCodeURL(context.Context, *cm.Empty) (*GetAuthCodeURLResponse, error)
+	GetAuthCodeURL(context.Context, *GetAuthCodeURLRequest) (*GetAuthCodeURLResponse, error)
 	VerifyTokenUsingCode(context.Context, *VerifyTokenUsingCodeRequest) (*LoginResponse, error)
 
 	// SessionInfo

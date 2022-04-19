@@ -2246,9 +2246,9 @@ func (s *UserService) RegisterSimplify(ctx context.Context, r *api.RegisterSimpl
 	return resp, nil
 }
 
-func (s *UserService) GetAuthCodeURL(ctx context.Context, empty *pbcm.Empty) (*api.GetAuthCodeURLResponse, error) {
+func (s *UserService) GetAuthCodeURL(ctx context.Context, req *api.GetAuthCodeURLRequest) (*api.GetAuthCodeURLResponse, error) {
 	return &api.GetAuthCodeURLResponse{
-		AuthURL: s.OidcClient.GetAuthURL(),
+		URL: s.OidcClient.GetAuthURL(req.RedirectType),
 	}, nil
 }
 

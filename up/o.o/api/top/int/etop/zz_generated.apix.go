@@ -1168,7 +1168,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 		}
 		return msg, fn, nil
 	case "/etop.User/GetAuthCodeURL":
-		msg := &common.Empty{}
+		msg := &GetAuthCodeURLRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

@@ -1398,7 +1398,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SS:          middlewareSessionStarter,
 		Userservice: rootUserService,
 	}
-	oidcHandler := server_max.BuildOIDCHandler(oidcService)
+	oidcHandler := server_max.BuildOIDCHandler(oidcService, clientClient)
 	elasticSearch := cfg.Elasticsearch
 	elasticsearchStore := elasticsearch.Connect(elasticSearch)
 	portsipService := portsip_pbx.PortsipService{
