@@ -279,7 +279,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 	totalItems = order.TotalItems
 	basketValue = order.BasketValue
 	totalAmount = order.TotalAmount
-	variantIDs = variantIDs
+	//variantIDs = variantIDs
 
 	typeFrom := etopmodel.FFShop
 	typeTo := etopmodel.FFCustomer
