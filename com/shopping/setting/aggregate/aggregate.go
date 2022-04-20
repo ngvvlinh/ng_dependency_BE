@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
 
 	addressing "o.o/api/main/address"
 	"o.o/api/shopping/setting"
@@ -197,4 +198,17 @@ func (s *ShopSettingAggregate) UpdateShopSettingDirectShipment(
 	}
 
 	return shopSetting, nil
+}
+
+func (s *ShopSettingAggregate) InsertShopSettingDirectShipment(ctx context.Context, args *setting.InsertDirectShopSettingArgs) (*setting.ShopSetting, error) {
+	fmt.Println("run aggregate")
+	if args.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id")
+	}
+
+	shopSetting := new(setting.ShopSetting)
+	if err := scheme.Convert(args, shopSetting); err != nil {
+		return nil, err
+	}
+	return nil, nil
 }

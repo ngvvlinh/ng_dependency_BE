@@ -39,6 +39,10 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*settingmodel.ShopSetting) = out0
 		return nil
 	})
+	s.Register((*setting.InsertDirectShopSettingArgs)(nil), (*setting.ShopSetting)(nil), func(arg, out interface{}) error {
+		Apply_setting_InsertDirectShopSettingArgs_setting_ShopSetting(arg.(*setting.InsertDirectShopSettingArgs), out.(*setting.ShopSetting))
+		return nil
+	})
 	s.Register((*setting.UpdateDirectShopSettingArgs)(nil), (*setting.ShopSetting)(nil), func(arg, out interface{}) error {
 		Apply_setting_UpdateDirectShopSettingArgs_setting_ShopSetting(arg.(*setting.UpdateDirectShopSettingArgs), out.(*setting.ShopSetting))
 		return nil
@@ -122,6 +126,31 @@ func Convert_setting_ShopSettings_settingmodel_ShopSettings(args []*setting.Shop
 		outs[i] = Convert_setting_ShopSetting_settingmodel_ShopSetting(args[i], &tmps[i])
 	}
 	return outs
+}
+
+func Apply_setting_InsertDirectShopSettingArgs_setting_ShopSetting(arg *setting.InsertDirectShopSettingArgs, out *setting.ShopSetting) *setting.ShopSetting {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &setting.ShopSetting{}
+	}
+	apply_setting_InsertDirectShopSettingArgs_setting_ShopSetting(arg, out)
+	return out
+}
+
+func apply_setting_InsertDirectShopSettingArgs_setting_ShopSetting(arg *setting.InsertDirectShopSettingArgs, out *setting.ShopSetting) {
+	out.ShopID = arg.ShopID                                         // simple assign
+	out.ReturnAddress = out.ReturnAddress                           // no change
+	out.ReturnAddressID = out.ReturnAddressID                       // no change
+	out.PaymentTypeID = out.PaymentTypeID                           // no change
+	out.TryOn = out.TryOn                                           // no change
+	out.ShippingNote = out.ShippingNote                             // no change
+	out.Weight = out.Weight                                         // no change
+	out.HideAllComments = out.HideAllComments                       // no change
+	out.CreatedAt = out.CreatedAt                                   // no change
+	out.UpdatedAt = out.UpdatedAt                                   // no change
+	out.AllowConnectDirectShipment = arg.AllowConnectDirectShipment // simple assign
 }
 
 func Apply_setting_UpdateDirectShopSettingArgs_setting_ShopSetting(arg *setting.UpdateDirectShopSettingArgs, out *setting.ShopSetting) *setting.ShopSetting {

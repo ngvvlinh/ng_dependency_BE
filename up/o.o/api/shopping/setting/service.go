@@ -14,6 +14,7 @@ import (
 type Aggregate interface {
 	UpdateShopSetting(context.Context, *UpdateShopSettingArgs) (*ShopSetting, error)
 	UpdateShopSettingDirectShipment(context.Context, *UpdateDirectShopSettingArgs) (*ShopSetting, error)
+	InsertShopSettingDirectShipment(context.Context, *InsertDirectShopSettingArgs) (*ShopSetting, error)
 }
 
 type QueryService interface {
@@ -43,6 +44,14 @@ type UpdateShopSettingArgs struct {
 
 // +convert:update=ShopSetting
 type UpdateDirectShopSettingArgs struct {
+	ShopID                     dot.ID
+	AllowConnectDirectShipment bool
+}
+
+//-- commands --//
+
+// +convert:update=ShopSetting
+type InsertDirectShopSettingArgs struct {
 	ShopID                     dot.ID
 	AllowConnectDirectShipment bool
 }

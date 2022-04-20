@@ -27,6 +27,18 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 	return b.bus.Dispatch(ctx, msg)
 }
 
+type InsertShopSettingDirectShipmentCommand struct {
+	ShopID                     dot.ID
+	AllowConnectDirectShipment bool
+
+	Result *ShopSetting `json:"-"`
+}
+
+func (h AggregateHandler) HandleInsertShopSettingDirectShipment(ctx context.Context, msg *InsertShopSettingDirectShipmentCommand) (err error) {
+	msg.Result, err = h.inner.InsertShopSettingDirectShipment(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateShopSettingCommand struct {
 	ShopID          dot.ID
 	ReturnAddress   *address.Address
@@ -80,6 +92,7 @@ func (h QueryServiceHandler) HandleGetShopSettingDirectShipment(ctx context.Cont
 
 // implement interfaces
 
+func (q *InsertShopSettingDirectShipmentCommand) command() {}
 func (q *UpdateShopSettingCommand) command()               {}
 func (q *UpdateShopSettingDirectShipmentCommand) command() {}
 
@@ -87,6 +100,19 @@ func (q *GetShopSettingQuery) query()               {}
 func (q *GetShopSettingDirectShipmentQuery) query() {}
 
 // implement conversion
+
+func (q *InsertShopSettingDirectShipmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *InsertDirectShopSettingArgs) {
+	return ctx,
+		&InsertDirectShopSettingArgs{
+			ShopID:                     q.ShopID,
+			AllowConnectDirectShipment: q.AllowConnectDirectShipment,
+		}
+}
+
+func (q *InsertShopSettingDirectShipmentCommand) SetInsertDirectShopSettingArgs(args *InsertDirectShopSettingArgs) {
+	q.ShopID = args.ShopID
+	q.AllowConnectDirectShipment = args.AllowConnectDirectShipment
+}
 
 func (q *UpdateShopSettingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopSettingArgs) {
 	return ctx,
@@ -158,6 +184,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleInsertShopSettingDirectShipment)
 	b.AddHandler(h.HandleUpdateShopSetting)
 	b.AddHandler(h.HandleUpdateShopSettingDirectShipment)
 	return CommandBus{b}

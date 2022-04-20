@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/main/connectioning"
 	"o.o/api/shopping/setting"
@@ -49,6 +50,12 @@ func (s *ConnectionService) GetConnections(ctx context.Context, r *types.GetConn
 }
 
 func (s *ConnectionService) UpdateConnectDirectShipmentShopSetting(ctx context.Context, r *types.UpdateDirectShipmentSettingRequest) (*types.UpdateDirectShipmentSettingResponse, error) {
+	update := &setting.InsertDirectShopSettingArgs{
+		ShopID:                     r.ShopID,
+		AllowConnectDirectShipment: r.AllowConnectDirectShipment,
+	}
+	fmt.Println("check update >>", update)
+
 	cmd := &setting.UpdateShopSettingDirectShipmentCommand{
 		ShopID:                     r.ShopID,
 		AllowConnectDirectShipment: r.AllowConnectDirectShipment,
@@ -57,6 +64,7 @@ func (s *ConnectionService) UpdateConnectDirectShipmentShopSetting(ctx context.C
 	if err := s.SettingAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	result := &types.UpdateDirectShipmentSettingResponse{
 		ShopID:                     cmd.ShopID,
 		AllowConnectDirectShipment: cmd.AllowConnectDirectShipment,

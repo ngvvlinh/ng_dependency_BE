@@ -38,8 +38,11 @@ require (
 	github.com/google/wire v0.4.1-0.20200530155014-5633f1675aa9
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/gorilla/schema v1.1.0
+	github.com/hirokidaichi/goviz v0.0.0-20140425160843-c57591cb2ad9 // indirect
+	github.com/jessevdk/go-flags v1.5.0 // indirect
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/k0kubun/pp v3.0.1+incompatible
+	github.com/kisielk/godepgraph v0.0.0-20190626013829-57a7e4a651a9 // indirect
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/lfittl/pg_query_go v1.0.0
