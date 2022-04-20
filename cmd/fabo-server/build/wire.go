@@ -33,8 +33,8 @@ import (
 	"o.o/backend/com/main/address"
 	"o.o/backend/com/main/catalog"
 	"o.o/backend/com/main/connectioning"
-	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/department"
+	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/inventory/aggregatex"
 	"o.o/backend/com/main/location"
 	"o.o/backend/com/main/ordering"
@@ -61,6 +61,7 @@ import (
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
 	"o.o/backend/pkg/integration/email"
+	"o.o/backend/pkg/integration/oidc"
 	"o.o/capi"
 )
 
@@ -87,6 +88,7 @@ func Build(
 			"Webhook",
 			"FlagFaboOrderAutoConfirmPaymentStatus",
 			"WebphonePublicKey",
+			"OIDC",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
@@ -135,6 +137,7 @@ func Build(
 
 		ProvidePolicy,
 		auth.WireSet,
+		oidc.WireSet,
 
 		// fabo
 		handler.WireSet,

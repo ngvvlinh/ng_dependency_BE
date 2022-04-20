@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"o.o/api/top/types/etc/user_source"
+	oidcclient "o.o/backend/pkg/integration/oidc/client"
 	"strings"
 	"time"
 
@@ -73,6 +75,7 @@ const (
 	signalUpdateUserEmail               SignalUpdate = "update-email"
 	signalUpdateUserPhone               SignalUpdate = "update-phone"
 	keyRequestRegisterSimplify          string       = "register-simplify"
+	defaultOIDCUserPassword             string       = "1q2w3E*"
 )
 
 type UserService struct {
@@ -89,6 +92,7 @@ type UserService struct {
 	RedisStore       redis.Store
 	SMSClient        *sms.Client
 	EmailClient      *email.Client
+	OidcClient       *oidcclient.Client
 	UserStore        sqlstore.UserStoreFactory
 	UserStoreIface   sqlstore.UserStoreInterface
 	ShopStore        sqlstore.ShopStoreInterface
@@ -2240,4 +2244,62 @@ func (s *UserService) RegisterSimplify(ctx context.Context, r *api.RegisterSimpl
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (s *UserService) GetAuthCodeURL(ctx context.Context, req *api.GetAuthCodeURLRequest) (*api.GetAuthCodeURLResponse, error) {
+	return &api.GetAuthCodeURLResponse{
+		URL: s.OidcClient.GetAuthURL(req.RedirectType),
+	}, nil
+}
+
+func (s *UserService) VerifyTokenUsingCode(ctx context.Context, req *api.VerifyTokenUsingCodeRequest) (*api.LoginResponse, error) {
+	if req.Code == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Invalid code")
+	}
+
+	results, err := s.OidcClient.VerifyToken(ctx, req.Code)
+	if err != nil {
+		return nil, err
+	}
+
+	claims := results.IDTokenClaims
+	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Phone: claims.PhoneNumber,
+	}
+
+	err = s.UserStoreIface.GetUserByEmailOrPhone(ctx, query)
+	if err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return nil, err
+	} else if query.Result.ID == 0 {
+		_, err = s.register(ctx, nil, &api.CreateUserRequest{
+			FullName:       fmt.Sprintf("%s %s", claims.FamilyName, claims.GivenName),
+			Phone:          claims.PhoneNumber,
+			Email:          claims.Email,
+			Password:       defaultOIDCUserPassword,
+			AgreeTos:       true,
+			AgreeEmailInfo: dot.NullBool{true, true},
+			Source:         user_source.Etop,
+		}, false)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, query); err != nil {
+			return nil, err
+		}
+	}
+
+	user := query.Result
+	res, err := s.CreateLoginResponse(
+		ctx, nil, "", user.ID, user,
+		0, account_type.Etop.Enum(),
+		true,
+		0,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	setCookieForEcomify(ctx, res.Account)
+	return res, err
 }

@@ -964,6 +964,34 @@
         }
       }
     },
+    "/api/etop.User/GetAuthCodeURL": {
+      "post": {
+        "description": "oAuth 2.0\n\nVerify user with OIDC\n",
+        "tags": [
+          "User"
+        ],
+        "summary": "GetAuthCodeURL",
+        "operationId": "etop.User-GetAuthCodeURL",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baGetAuthCodeURLRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baGetAuthCodeURLResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/GetNotifySetting": {
       "post": {
         "tags": [
@@ -1613,6 +1641,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktMessageResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.User/VerifyTokenUsingCode": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "VerifyTokenUsingCode",
+        "operationId": "etop.User-VerifyTokenUsingCode",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baVerifyTokenUsingCodeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baLoginResponse"
             }
           }
         }
@@ -2351,6 +2406,22 @@
         }
       }
     },
+    "baGetAuthCodeURLRequest": {
+      "type": "object",
+      "properties": {
+        "redirect_type": {
+          "$ref": "#/definitions/baRedirectType"
+        }
+      }
+    },
+    "baGetAuthCodeURLResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
     "baGetBankBranchesRequest": {
       "type": "object",
       "properties": {
@@ -2932,6 +3003,13 @@
           }
         }
       }
+    },
+    "baRedirectType": {
+      "type": "string",
+      "enum": [
+        "web",
+        "app"
+      ]
     },
     "baRegisterResponse": {
       "type": "object",
@@ -3798,6 +3876,14 @@
       ],
       "properties": {
         "verification_token": {
+          "type": "string"
+        }
+      }
+    },
+    "baVerifyTokenUsingCodeRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
           "type": "string"
         }
       }

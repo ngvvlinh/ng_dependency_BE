@@ -39,6 +39,12 @@ type UserService interface {
 	// Log the user in and generate access token.
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 
+	// oAuth 2.0
+	//
+	// Verify user with OIDC
+	GetAuthCodeURL(context.Context, *GetAuthCodeURLRequest) (*GetAuthCodeURLResponse, error)
+	VerifyTokenUsingCode(context.Context, *VerifyTokenUsingCodeRequest) (*LoginResponse, error)
+
 	// SessionInfo
 	//
 	// Return current session info.

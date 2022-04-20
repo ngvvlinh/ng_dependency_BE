@@ -23,6 +23,7 @@ require (
 	github.com/aws/aws-sdk-go v1.40.1
 	github.com/axw/gocov v1.0.0
 	github.com/casbin/casbin v1.9.1
+	github.com/coreos/go-oidc/v3 v3.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
 	github.com/dustin/go-humanize v1.0.0

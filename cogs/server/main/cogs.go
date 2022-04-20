@@ -11,4 +11,6 @@ type ExtHandlers []httprpc.Server
 
 type AuthxHandler httpx.Server
 
+type OIDCHandler httpx.Server
+
 type PortSipHandler httpx.Server

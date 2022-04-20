@@ -1027,6 +1027,7 @@ const Path_User_ChangeRefAff = "/etop.User/ChangeRefAff"
 const Path_User_CheckUserRegistration = "/etop.User/CheckUserRegistration"
 const Path_User_DisableNotifyTopic = "/etop.User/DisableNotifyTopic"
 const Path_User_EnableNotifyTopic = "/etop.User/EnableNotifyTopic"
+const Path_User_GetAuthCodeURL = "/etop.User/GetAuthCodeURL"
 const Path_User_GetNotifySetting = "/etop.User/GetNotifySetting"
 const Path_User_InitSession = "/etop.User/InitSession"
 const Path_User_Login = "/etop.User/Login"
@@ -1051,6 +1052,7 @@ const Path_User_VerifyEmailUsingOTP = "/etop.User/VerifyEmailUsingOTP"
 const Path_User_VerifyEmailUsingToken = "/etop.User/VerifyEmailUsingToken"
 const Path_User_VerifyPhoneResetPasswordUsingToken = "/etop.User/VerifyPhoneResetPasswordUsingToken"
 const Path_User_VerifyPhoneUsingToken = "/etop.User/VerifyPhoneUsingToken"
+const Path_User_VerifyTokenUsingCode = "/etop.User/VerifyTokenUsingCode"
 const Path_User_WebphoneLogin = "/etop.User/WebphoneLogin"
 const Path_User_WebphoneRequestLogin = "/etop.User/WebphoneRequestLogin"
 
@@ -1162,6 +1164,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.EnableNotifyTopic(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.User/GetAuthCodeURL":
+		msg := &GetAuthCodeURLRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetAuthCodeURL(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1474,6 +1489,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.VerifyPhoneUsingToken(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.User/VerifyTokenUsingCode":
+		msg := &VerifyTokenUsingCodeRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.VerifyTokenUsingCode(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

@@ -17,6 +17,23 @@ import (
 	"o.o/common/jsonx"
 )
 
+// +enum
+// +enum:zero=null
+type RedirectType int
+
+type NullRedirectType struct {
+	Enum  RedirectType
+	Valid bool
+}
+
+const (
+	// +enum=web
+	WEB RedirectType = 1
+
+	// +enum=app
+	APP RedirectType = 2
+)
+
 type GetTicketLabelsResponse struct {
 	TicketLabels []*shoptypes.TicketLabel `json:"ticket_labels"`
 }
@@ -1348,3 +1365,21 @@ type WebphoneLoginRequest struct {
 }
 
 func (m *WebphoneLoginRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetAuthCodeURLRequest struct {
+	RedirectType RedirectType `json:"redirect_type"`
+}
+
+func (m *GetAuthCodeURLRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetAuthCodeURLResponse struct {
+	URL string `json:"url"`
+}
+
+func (m *GetAuthCodeURLResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type VerifyTokenUsingCodeRequest struct {
+	Code string `json:"code"`
+}
+
+func (m *VerifyTokenUsingCodeRequest) String() string { return jsonx.MustMarshalToString(m) }
